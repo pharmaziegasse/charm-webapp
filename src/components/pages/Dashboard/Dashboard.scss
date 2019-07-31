@@ -75,11 +75,23 @@ footer .pulse {
   }
 }
 
+//> Chart Card
+.chart-card{
+  box-shadow: none;
+}
+
 //> Coach Card
 .coach-card{
   img{
     height: 100px;
   }
+}
+
+//> Timeline Card
+.timeline-card{
+  box-shadow: none;
+  font-weight: 300;
+  max-width: 600px;
 }
 
 /** 

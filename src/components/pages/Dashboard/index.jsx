@@ -111,7 +111,7 @@ class HomePage extends React.Component {
         <MDBContainer>
           <MDBRow className="justify-content-center">
             <MDBCol md="6">
-              <MDBCard>
+              <MDBCard className="chart-card">
                 <MDBCardBody>
                   <MDBCardTitle className="mb-4">Ihr Hautzustand</MDBCardTitle>
                   <Radar data={this.state.dataRadar} options={this.state.dataRadarOptions} plugins={this.state.dataRadarPlugins} />
@@ -123,24 +123,110 @@ class HomePage extends React.Component {
               </MDBCard>
             </MDBCol>
             <MDBCol md="6">
-              <MDBCard>
-                <MDBCardBody>
-                  <MDBCardTitle>Card title</MDBCardTitle>
-                  <MDBCardText>
-                    Some quick example text to build on the card title and make
-                    up the bulk of the card&apos;s content.
-                  </MDBCardText>
+              <MDBCard className="timeline-card">
+                <MDBCardBody className="py-0">
+                  <MDBRow>
+                    <div className="mdb-feed">
+                      <div className="news">
+                        <div className="label">
+                          <img
+                            src="https://mdbootstrap.com/img/Photos/Avatars/img%20(18)-mini.jpg"
+                            alt=""
+                            className="rounded-circle z-depth-1-half"
+                          />
+                        </div>
+                        <div className="excerpt">
+                          <div className="brief">
+                            <a href="#!" className="name">
+                              Monika
+                            </a> hat Ihr neues Programm <a href="#!">versendet</a>
+                            <div className="date">Vor 10 Stunden</div>
+                          </div>
+                          <div className="added-images">
+                            <img
+                              src="https://pharmaziegasse.at/media/images/IMG_9948.original.jpg"
+                              alt=""
+                              className="z-depth-1 rounded mb-md-0 mb-2"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="news">
+                        <div className="label">
+                          <img
+                            src="https://mdbootstrap.com/img/Photos/Avatars/img%20(20)-mini.jpg"
+                            alt=""
+                            className="rounded-circle z-depth-1-half"
+                          />
+                        </div>
+                        <div className="excerpt">
+                          <div className="brief">
+                            Sie haben sich die Verbesserungen angesehen
+                            <div href="#!" className="date">
+                              Vor 14 Stunden
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="news">
+                        <div className="label">
+                          <img
+                            src="https://mdbootstrap.com/img/Photos/Avatars/img%20(18)-mini.jpg"
+                            alt=""
+                            className="rounded-circle z-depth-1-half"
+                          />
+                        </div>
+                        <div className="excerpt">
+                          <div className="brief">
+                            <a href="#!" className="name">
+                              Monika
+                            </a> hat Ihr Programm verbessert
+                            <div className="date">Vor 2 Tagen</div>
+                          </div>
+                          <div className="added-text">
+                            Da Ihre unreine Haut am meisten Potential für Verbesserungen bietet, habe ich Ihr individuelles Programm genau auf Ihre Bedürfnisse hin angepasst.
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="news">
+                        <div className="label">
+                          <img
+                            src="https://mdbootstrap.com/img/Photos/Avatars/img%20(20)-mini.jpg"
+                            alt=""
+                            className="rounded-circle z-depth-1-half"
+                          />
+                        </div>
+                        <div className="excerpt">
+                          <div className="brief">
+                            Sie haben Ihren <a href="#!">Hautzustand</a> aktualisiert
+                            <div className="date">Vor 3 Tagen</div>
+                          </div>
+                          <div className="added-images">
+                            <img
+                              src="https://pixnio.com/free-images/2017/11/30/2017-11-30-18-11-20-1200x800.jpg"
+                              alt=""
+                              className="z-depth-1 rounded"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <a href="!#">Gesamte Timeline anzeigen</a>
+                    </div>
+                  </MDBRow>
                 </MDBCardBody>
               </MDBCard>
             </MDBCol>
-            <MDBCol md="10" className="my-4">
+            <MDBCol md="10" className="my-5">
               <MDBCard className="coach-card">
                 <MDBCardBody>
                   <MDBRow>
                     <MDBCol md="auto pl-5">
                       <MDBAvatar>
                         <img
-                          src="https://mdbootstrap.com/img/Photos/Avatars/img%20(20).jpg"
+                          src="https://mdbootstrap.com/img/Photos/Avatars/img%20(18).jpg"
                           alt=""
                           className="rounded-circle img-fluid"
                         />
