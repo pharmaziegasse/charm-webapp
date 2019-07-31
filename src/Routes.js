@@ -9,14 +9,14 @@ import { Route, Switch } from 'react-router-dom';
  * HomePage: A basic template page
  */
 import {
-  HomePage
+  Dashboard
 } from './components/pages';
 
 class Routes extends React.Component {
   render() {
     return (
       <Switch>
-        <Route exact path='/' component={HomePage} />
+        <Route exact path='/' component={Dashboard} />
           
         <Route
           render={function () {
