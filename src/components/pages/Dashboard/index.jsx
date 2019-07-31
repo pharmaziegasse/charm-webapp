@@ -1,6 +1,6 @@
 //> React
 // Contains all the functionality necessary to define React components
-import React from 'react';
+import React, { Fragment } from 'react';
 
 //> MDB
 // "Material Design for Bootstrap" is a great UI design framework
@@ -17,6 +17,7 @@ import {
   MDBCardImage,
   MDBCardText,
   MDBAnimation,
+  MDBBtn,
 } from 'mdbreact';
 
 //> Images
@@ -36,16 +37,13 @@ class HomePage extends React.Component {
   scrollToTop = () => window.scrollTo(0, 0);
   render() {
     return (
-      <>
-        <MDBCard className="support-card">
-          <MDBCardBody>
-            <MDBCardTitle>Card title</MDBCardTitle>
-            <MDBCardText>
-              Some quick example text to build on the card title and make
-              up the bulk of the card&apos;s content.
-            </MDBCardText>
-          </MDBCardBody>
-        </MDBCard>
+      <Fragment>
+        <div className="support-card">
+          <MDBBtn tag="a" size="lg" floating gradient="night-fade">
+            <MDBIcon far icon="comments fa-2x" />
+          </MDBBtn>
+          <MDBBtn rounded outline color="secondary">Coach kontaktieren</MDBBtn>
+        </div>
         <MDBContainer>
           <MDBRow>
             <MDBCol md="6">
@@ -83,7 +81,7 @@ class HomePage extends React.Component {
             </MDBCol>
           </MDBRow>
         </MDBContainer>
-      </>
+      </Fragment>
     );
   }
 }
