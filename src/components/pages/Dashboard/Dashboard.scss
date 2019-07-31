@@ -62,6 +62,21 @@ footer .pulse {
   animation-name: pulse;
 }
 
+//> Floating in eternal space
+// Support Card
+.support-card{
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  max-width: 400px;
+}
+@media screen and (max-width: 600px) {
+  .support-card{
+    display: none;
+  }
+}
+
+
 /** 
  * SPDX-License-Identifier: (EUPL-1.2)
  * Copyright © 2019 Werbeagentur Christian Aichner

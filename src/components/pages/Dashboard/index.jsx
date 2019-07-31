@@ -36,7 +36,54 @@ class HomePage extends React.Component {
   scrollToTop = () => window.scrollTo(0, 0);
   render() {
     return (
-      null
+      <>
+        <MDBCard className="support-card">
+          <MDBCardBody>
+            <MDBCardTitle>Card title</MDBCardTitle>
+            <MDBCardText>
+              Some quick example text to build on the card title and make
+              up the bulk of the card&apos;s content.
+            </MDBCardText>
+          </MDBCardBody>
+        </MDBCard>
+        <MDBContainer>
+          <MDBRow>
+            <MDBCol md="6">
+              <MDBCard>
+                <MDBCardBody>
+                  <MDBCardTitle>Card title</MDBCardTitle>
+                  <MDBCardText>
+                    Some quick example text to build on the card title and make
+                    up the bulk of the card&apos;s content.
+                  </MDBCardText>
+                </MDBCardBody>
+              </MDBCard>
+            </MDBCol>
+            <MDBCol md="6">
+              <MDBCard>
+                <MDBCardBody>
+                  <MDBCardTitle>Card title</MDBCardTitle>
+                  <MDBCardText>
+                    Some quick example text to build on the card title and make
+                    up the bulk of the card&apos;s content.
+                  </MDBCardText>
+                </MDBCardBody>
+              </MDBCard>
+            </MDBCol>
+            <MDBCol md="12" className="my-4">
+              <MDBCard>
+                <MDBCardBody>
+                  <MDBCardTitle>Card title</MDBCardTitle>
+                  <MDBCardText>
+                    Some quick example text to build on the card title and make
+                    up the bulk of the card&apos;s content.
+                  </MDBCardText>
+                </MDBCardBody>
+              </MDBCard>
+            </MDBCol>
+          </MDBRow>
+        </MDBContainer>
+      </>
     );
   }
 }

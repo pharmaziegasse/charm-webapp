@@ -64,8 +64,8 @@ class Footer extends React.Component{
                     <MDBContainer fluid>
                         &copy; 2018 - {new Date().getFullYear()} Copyright: Pharmaziegasse<sup>®</sup>
                         <br />
-                        <p class="text-center my-2">
-                            Made with <i class="fas fa-heart pulse red-text" aria-hidden="true"></i> by
+                        <p className="text-center my-2">
+                            Made with <i className="fas fa-heart pulse red-text" aria-hidden="true"></i> by
                             <a target="_blank" rel="noopener noreferrer" href="https://www.aichner-christian.com?refer=charm">Werbeagentur Christian Aichner</a>
                         </p>
                     </MDBContainer>
