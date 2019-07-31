@@ -5,8 +5,6 @@ import React, { Fragment } from 'react';
 //> MDB
 // "Material Design for Bootstrap" is a great UI design framework
 import {
-  MDBEdgeHeader,
-  MDBFreeBird,
   MDBContainer,
   MDBCol,
   MDBRow,
@@ -14,26 +12,92 @@ import {
   MDBIcon,
   MDBCard,
   MDBCardTitle,
-  MDBCardImage,
   MDBCardText,
   MDBAnimation,
   MDBBtn,
+  MDBAvatar,
 } from 'mdbreact';
-
-//> Images
-// Logo of MDB React
-import MDBLogo from '../../../assets/mdb-react-small.png';
-// Logo of Advertisement Agency Christian Aichner
-import AgencyLogo from '../../../assets/agency-small.png';
-// Image of a handshake
-import HireUs from '../../../assets/content/hire-us.jpg';
-// Logo of the React Bootstrap (outrun) project
-// Ref: https://github.com/aichner/React-Outrun
-import Outrun from '../../../assets/content/outrun.jpg';
-// Image of someone coding
-import Projects from '../../../assets/content/projects.jpg';
+// Radar chart
+import { Radar } from "react-chartjs-2";
 
 class HomePage extends React.Component {
+  state = {
+    dataRadar: {
+      labels: [
+        'Große Poren',
+        'Sensible Haut',
+        'Hautalterung',
+        'Ölige Haut',
+        'Trockene Haut',
+        'Unreine Haut',
+        'Pigmentflecken',
+        'Zeichen\noxidativen Stresses'
+      ],
+      datasets: [{
+          label: '# of Votes',
+          data: [10, 7, 10, 10, 4, 10, 2, 5],
+          backgroundColor: [
+              'rgba(150, 0, 150, 0.2)',
+          ],
+          borderColor: [
+              'rgba(150, 0, 150, 1)',
+          ],
+          borderWidth: 1
+      }]
+    },
+    dataRadarOptions: {
+        responsive: true,
+        elements: {
+            line: {
+                tension: 0.4
+            }
+        },
+        legend: {
+            display: false,
+        },
+        scale: {
+            ticks: {
+                beginAtZero: true,
+                max: 10,
+                min: 0
+            }
+        },
+        scales: {
+            yAxes: [{
+                gridLines: {
+                    display: false,
+                    drawBorder: false
+                },
+                ticks: {
+                    display: false
+                }
+            }],
+            xAxes: [{
+                gridLines: {
+                    display: false,
+                    drawBorder: false
+                },
+                ticks: {
+                    beginAtZero: true,
+                    display: false,
+                    stepSize: 1,
+                    min: 0,
+                    max: 10
+                }
+            }]
+        }
+    },
+    dataRadarPlugins: [{
+        beforeInit: function (chart) {
+        chart.data.labels.forEach(function (e, i, a) {
+            if (/\n/.test(e)) {
+            a[i] = e.split(/\n/)
+            }
+        })
+        }
+    }]
+  }
+
   scrollToTop = () => window.scrollTo(0, 0);
   render() {
     return (
@@ -49,8 +113,9 @@ class HomePage extends React.Component {
             <MDBCol md="6">
               <MDBCard>
                 <MDBCardBody>
-                  <MDBCardTitle>Card title</MDBCardTitle>
-                  <MDBCardText>
+                  <MDBCardTitle className="mb-4">Ihr Hautzustand</MDBCardTitle>
+                  <Radar data={this.state.dataRadar} options={this.state.dataRadarOptions} plugins={this.state.dataRadarPlugins} />
+                  <MDBCardText className="mt-4">
                     Some quick example text to build on the card title and make
                     up the bulk of the card&apos;s content.
                   </MDBCardText>
@@ -69,7 +134,7 @@ class HomePage extends React.Component {
               </MDBCard>
             </MDBCol>
             <MDBCol md="12" className="my-4">
-              <MDBCard>
+              <MDBCard className="coach-card">
                 <MDBCardBody>
                   <MDBCardTitle>Card title</MDBCardTitle>
                   <MDBCardText>
