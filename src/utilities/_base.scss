@@ -6,6 +6,13 @@
 }
 
 // Navigation
+.side-nav ul li ~ .nav-settings{
+	width: 100%;
+	bottom: 0;
+	position: absolute;
+}
+
+// Custom colors
 .unique-blue{
 	background-color: $unique-blue !important;
 	&.darken-1{
