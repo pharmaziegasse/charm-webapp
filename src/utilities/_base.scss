@@ -6,51 +6,55 @@
 }
 
 // Navigation
-.agency-dark{
-	background-color: $agencyDark !important;
+.unique-blue{
+	background-color: $unique-blue !important;
 	&.darken-1{
-		background-color: darken($agencyDark, 5%) !important;
+		background-color: darken($unique-blue, 5%) !important;
 	}
 	&.darken-2{
-		background-color: darken($agencyDark, 10%) !important;
+		background-color: darken($unique-blue, 10%) !important;
 	}
 	&.darken-3{
-		background-color: darken($agencyDark, 15%) !important;
+		background-color: darken($unique-blue, 15%) !important;
 	}
 	&.lighten-1{
-		background-color: lighten($agencyDark, 10%) !important;
+		background-color: lighten($unique-blue, 10%) !important;
 	}
 	&.lighten-2{
-		background-color: lighten($agencyDark, 20%) !important;
+		background-color: lighten($unique-blue, 20%) !important;
 	}
 	&.lighten-3{
-		background-color: lighten($agencyDark, 30%) !important;
+		background-color: lighten($unique-blue, 30%) !important;
 	}
 }
-.agency-red{
-	background-color: $agencyRed !important;
+.unique-darkblue{
+	background-color: $unique-darkblue !important;
 	&.darken-1{
-		background-color: darken($agencyRed, 10%) !important;
+		background-color: darken($unique-darkblue, 10%) !important;
 	}
 	&.darken-21{
-		background-color: darken($agencyRed, 20%) !important;
+		background-color: darken($unique-darkblue, 20%) !important;
 	}
 	&.darken-3{
-		background-color: darken($agencyRed, 30%) !important;
+		background-color: darken($unique-darkblue, 30%) !important;
 	}
 	&.lighten-1{
-		background-color: lighten($agencyRed, 10%) !important;
+		background-color: lighten($unique-darkblue, 10%) !important;
 	}
 	&.lighten-2{
-		background-color: lighten($agencyRed, 20%) !important;
+		background-color: lighten($unique-darkblue, 20%) !important;
 	}
 	&.lighten-3{
-		background-color: lighten($agencyRed, 30%) !important;
+		background-color: lighten($unique-darkblue, 30%) !important;
 	}
 }
 
-.red-text{
-	color: $agencyRed !important;
+.unique-darkblue-text{
+	color: $unique-darkblue !important;
+}
+
+.unique-blue-text{
+	color: $unique-blue !important;
 }
 
 /** 
