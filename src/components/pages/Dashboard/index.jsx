@@ -109,7 +109,7 @@ class HomePage extends React.Component {
           <MDBBtn rounded outline color="secondary">Coach kontaktieren</MDBBtn>
         </div>
         <MDBContainer>
-          <MDBRow>
+          <MDBRow className="justify-content-center">
             <MDBCol md="6">
               <MDBCard>
                 <MDBCardBody>
@@ -133,14 +133,27 @@ class HomePage extends React.Component {
                 </MDBCardBody>
               </MDBCard>
             </MDBCol>
-            <MDBCol md="12" className="my-4">
+            <MDBCol md="10" className="my-4">
               <MDBCard className="coach-card">
                 <MDBCardBody>
-                  <MDBCardTitle>Card title</MDBCardTitle>
-                  <MDBCardText>
-                    Some quick example text to build on the card title and make
-                    up the bulk of the card&apos;s content.
-                  </MDBCardText>
+                  <MDBRow>
+                    <MDBCol md="auto pl-5">
+                      <MDBAvatar>
+                        <img
+                          src="https://mdbootstrap.com/img/Photos/Avatars/img%20(20).jpg"
+                          alt=""
+                          className="rounded-circle img-fluid"
+                        />
+                      </MDBAvatar>
+                    </MDBCol>
+                    <MDBCol className="align-self-center">
+                      <h4>Monika Mustermann</h4>
+                      <p className="text-muted m-0">Ihr persölicher Beauty Coach</p>
+                    </MDBCol>
+                    <MDBCol className="align-self-center text-right pr-5">
+                      <MDBBtn rounded outline color="secondary">Coach kontaktieren</MDBBtn>
+                    </MDBCol>
+                  </MDBRow>
                 </MDBCardBody>
               </MDBCard>
             </MDBCol>
