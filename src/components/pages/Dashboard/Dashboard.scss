@@ -51,6 +51,49 @@ a.border.nav-link.border-light.rounded.mr-1:hover {
 	float:right;
 }
 
+//> Footer
+// Pulsating heart
+footer .pulse {
+  -webkit-animation: pulse 1s infinite;
+  animation: pulse 1s infinite;
+}
+.pulse {
+  -webkit-animation-name: pulse;
+  animation-name: pulse;
+}
+
+//> Floating in eternal space
+// Support Card
+.support-card{
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+}
+@media screen and (max-width: 600px) {
+  .support-card{
+    display: none;
+  }
+}
+
+//> Chart Card
+.chart-card{
+  box-shadow: none;
+}
+
+//> Coach Card
+.coach-card{
+  img{
+    height: 100px;
+  }
+}
+
+//> Timeline Card
+.timeline-card{
+  box-shadow: none;
+  font-weight: 300;
+  max-width: 600px;
+}
+
 /** 
  * SPDX-License-Identifier: (EUPL-1.2)
  * Copyright © 2019 Werbeagentur Christian Aichner
