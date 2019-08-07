@@ -1,9 +1,9 @@
 //> React
 // Contains all the functionality necessary to define React components
-import React, { Fragment } from 'react';
+import React from 'react';
 
 // This returns null because to this point nothing should be displayed
-class ReportRevisions extends React.Component{
+class ReportRevision extends React.Component{
     render(){
         return(
             null
