@@ -10,7 +10,7 @@ import { Route, Switch } from 'react-router-dom';
  */
 import {
   Dashboard
-} from './components/pages';
+} from './components/pages/customer';
 
 class Routes extends React.Component {
   render() {

@@ -13,7 +13,6 @@ import {
   MDBCard,
   MDBCardTitle,
   MDBCardText,
-  MDBAnimation,
   MDBBtn,
   MDBAvatar,
 } from 'mdbreact';
