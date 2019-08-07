@@ -29,7 +29,7 @@ const report = {
     sections: {
         intro: "Pariatur cliche reprehenderit, <strong>enim eiusmod</strong> high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.",
         hautzustand: "Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.",
-        ending: "Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS."
+        ending: "Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.",
     }
 }
 
@@ -40,7 +40,6 @@ class ReportRevision extends React.Component{
             // Generate states for every section
             this.setState({ ["collapse"+i]: true })
             // Text Editor
-            console.log(report.sections[name]);
             if(report.sections[name] !== "" && report.sections[name] !== undefined){
                 // Save current section to text editor
                 this.setState({ ["value"+i]: RichTextEditor.createValueFromString(report.sections[name], 'html') })
@@ -85,12 +84,12 @@ class ReportRevision extends React.Component{
     }
 
     // Change text in box
-    onChange = (value) => {
-        //this.setState({ "value0": RichTextEditor.createValueFromString(value.toString('html'), 'html') })
+    onChange = (i,e) => {
+        // e contains the value and additional information about the editor
+        this.setState({["value"+i]: e});
     }
 
     render() {
-        console.log(this.state);
         return (
             <MDBContainer>
                 <MDBContainer className="mt-5">
@@ -120,9 +119,10 @@ class ReportRevision extends React.Component{
                                     <MDBCardBody>
                                         <RichTextEditor
                                             value={this.state["value"+i]}
-                                            onChange={this.onChange}
-                                            id={"test"+i}
+                                            className={"textfield"+i}
+                                            onChange={(e) => this.onChange(i, e)}
                                             readOnly={!this.state["collapse"+i]}
+                                            uniqueId="test123"
                                         />
                                     </MDBCardBody>
                                 </MDBCollapse>
