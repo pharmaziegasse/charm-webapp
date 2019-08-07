@@ -114,7 +114,7 @@ class ReportRevision extends React.Component{
                     <h3>Review individual beauty report</h3>
                     <p>Von {report.customer}</p>
 
-                    <MDBProgress material value={this.getStatus()} height="20px">
+                    <MDBProgress material color={this.getStatus() === 100 ? ("success") : ("secondary")} value={this.getStatus()} height="20px">
                     {this.getStatus() > 0 &&
                         <>{Math.round(this.getStatus())}% abgeschlossen</>
                     }
@@ -137,7 +137,7 @@ class ReportRevision extends React.Component{
                                     <MDBCardBody>
                                         <RichTextEditor
                                             value={this.state["value"+i]}
-                                            className={"textfield"+i}
+                                            className="textfield"
                                             onChange={(e) => this.onChange(i, e)}
                                             readOnly={!this.state["collapse"+i]}
                                             toolbarConfig={toolbarConfig}
