@@ -10,7 +10,7 @@
 /build
 
 # MDB React Pro (Due to MDB React Pro license, we may not include the package in open-source projects)
-mdbreact-4.18.1.tgz
+mdbreact-4.19.0.tgz
 
 # All editor configs but vscode
 .editorconfig
