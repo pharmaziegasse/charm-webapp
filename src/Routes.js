@@ -6,18 +6,26 @@ import { Route, Switch } from 'react-router-dom';
 
 //> Components
 /**
- * HomePage: A basic template page
+ * Dashboard: Basic Charm front-end for customers
  */
 import {
   Dashboard
-} from './components/pages';
+} from './components/pages/customer';
+/**
+ * ReportRevision: Page for coaches to review beauty reports
+ */
+import {
+  ReportRevision
+} from './components/pages/coach';
+
+
 
 class Routes extends React.Component {
   render() {
     return (
       <Switch>
         <Route exact path='/' component={Dashboard} />
-          
+        <Route exact path='/revision' component={ReportRevision} />
         <Route
           render={function () {
             return <h1>Not Found</h1>;
