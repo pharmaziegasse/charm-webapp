@@ -14,113 +14,109 @@ import {
   MDBRow,
   MDBCol,
   MDBInput,
+  MDBBtn,
+  MDBIcon,
 } from 'mdbreact';
 
+// Dummy data
+const report = {
+    customer: "Erika Mustermann",
+    coach: "Monika Mustermann",
+    sections: {
+        intro: "Pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.",
+        hautzustand: "Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.",
+        ending: "Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS."
+    }
+}
+
 class ReportRevision extends React.Component{
-    state={
-        collapse1: true,
-        collapse2: true,
-        collapse3: true,
+
+    // Generate states for every section
+    componentWillMount = () => {
+        Object.keys(report.sections).map((name, i) => 
+            this.setState({["collapse"+i]: true})
+        );
     }
 
+    // Toggle the visibility of the sections
     toggleCollapse = collapseID => () =>
     this.setState({
         [collapseID]: !(this.state[collapseID])
     });
 
-render() {
-    console.log(this.state);
-  return (
-    <MDBContainer>
-      <MDBContainer className="mt-5">
-        <h4>Review individual beauty report</h4>
-        <MDBProgress material value={33} height="20px">
-            33%
-        </MDBProgress>
-        <MDBCard className="mt-3">
-          <MDBCollapseHeader>
-            <MDBRow className="justify-content-center">
-                <MDBCol md="6" className="align-self-center">
-                    Intro
-                </MDBCol>
-                <MDBCol md="6" className="text-right">
-                    <MDBInput label="Überprüft" filled type="checkbox" id="checkbox1" onClick={this.toggleCollapse("collapse1")} />
-                </MDBCol>
-            </MDBRow>
-          </MDBCollapseHeader>
-          <MDBCollapse id="collapse1" isOpen={this.state.collapse1}>
-            <MDBCardBody>
-              Pariatur cliche reprehenderit, enim eiusmod high life accusamus
-              terry richardson ad squid. 3 wolf moon officia aute, non
-              cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
-              laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a
-              bird on it squid single-origin coffee nulla assumenda shoreditch
-              et. Nihil anim keffiyeh helvetica, craft beer labore wes
-              anderson cred nesciunt sapiente ea proident. Ad vegan excepteur
-              butcher vice lomo. Leggings occaecat craft beer farm-to-table,
-              raw denim aesthetic synth nesciunt you probably haven&apos;t
-              heard of them accusamus labore sustainable VHS.
-            </MDBCardBody>
-          </MDBCollapse>
-        </MDBCard>
+    // Get how many % of the sections are finished
+    getStatus = () => {
+        let reviewed = 0;
+        Object.keys(this.state).map((item, i) => {
+            // Get how many collapse items are reviewed
+            if(this.state[item] === false){
+                reviewed++;
+            }
+            return true;
+        })
+        let count = Object.keys(report.sections).length;
+        return (reviewed / count) * 100;
+    }
 
-        <MDBCard>
-          <MDBCollapseHeader>
-            <MDBRow className="justify-content-center">
-                <MDBCol md="6" className="align-self-center">
-                    Hautzustand
-                </MDBCol>
-                <MDBCol md="6" className="text-right">
-                    <MDBInput label="Überprüft" filled type="checkbox" id="checkbox2" onClick={this.toggleCollapse("collapse2")} />
-                </MDBCol>
-            </MDBRow>
-          </MDBCollapseHeader>
-          <MDBCollapse id="collapse2" isOpen={this.state.collapse2}>
-            <MDBCardBody>
-              Anim pariatur cliche reprehenderit, enim eiusmod high life
-              accusamus terry richardson ad squid. 3 wolf moon officia aute,
-              non cupidatat skateboard dolor brunch. Food truck quinoa
-              nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua
-              put a bird on it squid single-origin coffee nulla assumenda
-              shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore
-              wes anderson cred nesciunt sapiente ea proident. Ad vegan
-              excepteur butcher vice lomo. Leggings occaecat craft beer
-              farm-to-table, raw denim aesthetic synth nesciunt you probably
-              haven&apos;t heard of them accusamus labore sustainable VHS.
-            </MDBCardBody>
-          </MDBCollapse>
-        </MDBCard>
+    // Get if its finished
+    isFinished = () => {
+        if(this.getStatus() === 100){
+            // Is enabled
+            return false;
+        } else {
+            // Is disabled
+            return true;
+        }
+    }
 
-        <MDBCard>
-           <MDBCollapseHeader>
-            <MDBRow className="justify-content-center">
-                <MDBCol md="6" className="align-self-center">
-                    Intro
-                </MDBCol>
-                <MDBCol md="6" className="text-right">
-                    <MDBInput label="Überprüft" filled type="checkbox" id="checkbox3" onClick={this.toggleCollapse("collapse3")} />
-                </MDBCol>
-            </MDBRow>
-          </MDBCollapseHeader>
-          <MDBCollapse id="collapse3" isOpen={this.state.collapse3}>
-            <MDBCardBody>
-              Anim pariatur cliche reprehenderit, enim eiusmod high life
-              accusamus terry richardson ad squid. 3 wolf moon officia aute,
-              non cupidatat skateboard dolor brunch. Food truck quinoa
-              nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua
-              put a bird on it squid single-origin coffee nulla assumenda
-              shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore
-              wes anderson cred nesciunt sapiente ea proident. Ad vegan
-              excepteur butcher vice lomo. Leggings occaecat craft beer
-              farm-to-table, raw denim aesthetic synth nesciunt you probably
-              haven&apos;t heard of them accusamus labore sustainable VHS.
-            </MDBCardBody>
-          </MDBCollapse>
-        </MDBCard>
-      </MDBContainer>
-    </MDBContainer>
-    );
-  }
+    render() {
+        return (
+            <MDBContainer>
+                <MDBContainer className="mt-5">
+                    <h3>Review individual beauty report</h3>
+                    <p>Von {report.customer}</p>
+
+                    <MDBProgress material value={this.getStatus()} height="20px">
+                    {this.getStatus() > 0 &&
+                        <>{Math.round(this.getStatus())}% abgeschlossen</>
+                    }
+                        
+                    </MDBProgress>
+                    {Object.keys(report.sections).map((name, i) => {
+                        return(
+                            <MDBCard key={i} className="mt-3">
+                                <MDBCollapseHeader>
+                                    <MDBRow className="justify-content-center">
+                                        <MDBCol md="6" className="align-self-center">
+                                            Intro
+                                        </MDBCol>
+                                        <MDBCol md="6" className="text-right">
+                                            <MDBInput label="Überprüft" filled type="checkbox" id={"checkbox"+i} onClick={this.toggleCollapse("collapse"+i)} />
+                                        </MDBCol>
+                                    </MDBRow>
+                                </MDBCollapseHeader>
+                                <MDBCollapse id="collapse1" isOpen={this.state["collapse"+i]}>
+                                    <MDBCardBody>
+                                    {report.sections[name]}
+                                    </MDBCardBody>
+                                </MDBCollapse>
+                            </MDBCard>
+                        )
+                    })
+                    }
+                    <MDBRow className="my-4">
+                        <MDBCol md="6" className="text-left">
+                            <MDBBtn color="danger"><MDBIcon icon="times" className="pr-2" />Verwerfen</MDBBtn>
+                        </MDBCol>
+                        <MDBCol md="6" className="text-right">
+                            <MDBBtn color="success" disabled={this.isFinished()}><MDBIcon icon="save" className="pr-2" />Speichern</MDBBtn>
+                            <MDBBtn color="green" disabled={this.isFinished()}><MDBIcon far icon="file-pdf" className="pr-2" />Speichern + PDF</MDBBtn>
+                        </MDBCol>
+                    </MDBRow>
+                </MDBContainer>
+            </MDBContainer>
+        );
+    }
 }
 
 export default ReportRevision;
