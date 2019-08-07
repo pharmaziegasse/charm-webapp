@@ -2,6 +2,10 @@
 // Contains all the functionality necessary to define React components
 import React from 'react';
 
+//> Additional libraries
+// Rich-Text Editor
+import RichTextEditor from 'react-rte';
+
 //> MDB
 // "Material Design for Bootstrap" is a great UI design framework
 import {
@@ -23,19 +27,29 @@ const report = {
     customer: "Erika Mustermann",
     coach: "Monika Mustermann",
     sections: {
-        intro: "Pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.",
+        intro: "Pariatur cliche reprehenderit, <strong>enim eiusmod</strong> high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.",
         hautzustand: "Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.",
-        ending: "Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS."
+        ending: "Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.",
     }
 }
 
 class ReportRevision extends React.Component{
 
-    // Generate states for every section
     componentWillMount = () => {
-        Object.keys(report.sections).map((name, i) => 
-            this.setState({["collapse"+i]: true})
-        );
+        Object.keys(report.sections).map((name, i) => {
+            // Generate states for every section
+            this.setState({ ["collapse"+i]: true })
+            // Text Editor
+            if(report.sections[name] !== "" && report.sections[name] !== undefined){
+                // Save current section to text editor
+                this.setState({ ["value"+i]: RichTextEditor.createValueFromString(report.sections[name], 'html') })
+                return true;
+            } else {
+                // Create empty value if the section has no text
+                this.setState({ ["value"+i]: RichTextEditor.createEmptyValue() })
+                return false;
+            }
+        });
     }
 
     // Toggle the visibility of the sections
@@ -69,6 +83,12 @@ class ReportRevision extends React.Component{
         }
     }
 
+    // Change text in box
+    onChange = (i,e) => {
+        // e contains the value and additional information about the editor
+        this.setState({["value"+i]: e});
+    }
+
     render() {
         return (
             <MDBContainer>
@@ -97,7 +117,13 @@ class ReportRevision extends React.Component{
                                 </MDBCollapseHeader>
                                 <MDBCollapse id="collapse1" isOpen={this.state["collapse"+i]}>
                                     <MDBCardBody>
-                                    {report.sections[name]}
+                                        <RichTextEditor
+                                            value={this.state["value"+i]}
+                                            className={"textfield"+i}
+                                            onChange={(e) => this.onChange(i, e)}
+                                            readOnly={!this.state["collapse"+i]}
+                                            uniqueId="test123"
+                                        />
                                     </MDBCardBody>
                                 </MDBCollapse>
                             </MDBCard>
