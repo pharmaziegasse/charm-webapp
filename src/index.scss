@@ -1,8 +1,10 @@
-// Utilities
-@import 'utilities/variables';
-
-// Global
+//> Utilities
+// Variables
+@import 'utilities/variables'; 
+// Global CSS
 @import 'utilities/base';
+// Fonts
+@import 'utilities/fonts';
 
 // Local
 @import 'components/pages/customer/Dashboard/Dashboard.scss';

@@ -137,7 +137,7 @@ class ReportRevision extends React.Component{
                                     <MDBCardBody>
                                         <RichTextEditor
                                             value={this.state["value"+i]}
-                                            className={"textfield"+i}
+                                            className="textfield"
                                             onChange={(e) => this.onChange(i, e)}
                                             readOnly={!this.state["collapse"+i]}
                                             toolbarConfig={toolbarConfig}
