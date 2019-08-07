@@ -87,8 +87,8 @@ class ReportRevision extends React.Component{
                             <MDBCard key={i} className="mt-3">
                                 <MDBCollapseHeader>
                                     <MDBRow className="justify-content-center">
-                                        <MDBCol md="6" className="align-self-center">
-                                            Intro
+                                        <MDBCol md="6" className="align-self-center section-title">
+                                            {name}
                                         </MDBCol>
                                         <MDBCol md="6" className="text-right">
                                             <MDBInput label="Überprüft" filled type="checkbox" id={"checkbox"+i} onClick={this.toggleCollapse("collapse"+i)} />
