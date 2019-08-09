@@ -8,7 +8,7 @@ import ReactDOM from 'react-dom';
 // Font Awesome is an awesome icon library
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
-//> Connecting to backend
+//> Connect to backend
 // Apollo
 import { ApolloClient } from "apollo-client";
 import { ApolloProvider } from 'react-apollo';

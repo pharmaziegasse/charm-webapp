@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "apollo-boost": "^0.4.3",
     "apollo-cache-inmemory": "^1.4.3",
     "apollo-client": "^2.6.3",
     "apollo-link-http": "^1.5.15",
     "graphql": "^14.4.2",
+    "lodash.flowright": "^3.5.0",
     "mdbreact": "./mdbreact-4.19.0.tgz",
     "node-sass": "^4.12.0",
     "react": "^16.8.6",

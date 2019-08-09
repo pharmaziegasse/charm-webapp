@@ -6,6 +6,13 @@ import React from 'react';
 // Rich-Text Editor
 import RichTextEditor from 'react-rte';
 
+//> Connect to backend
+// Apollo
+import { graphql } from 'react-apollo';
+import { gql } from "apollo-boost";
+// Previously in react-apollo { compose } 
+import * as compose from 'lodash.flowright';
+
 //> MDB
 // "Material Design for Bootstrap" is a great UI design framework
 import {
@@ -21,6 +28,48 @@ import {
   MDBBtn,
   MDBIcon,
 } from 'mdbreact';
+
+//> Mutations
+// Update sections
+const UPDATE_SECTIONS_MUTATION = gql`
+    mutation register($token: String!, $values: GenericScalar!) {
+        registrationFormPage(token: $token, url: "/registration", values: $values) {
+            result
+            errors {
+            name
+            errors
+            }
+        }
+    }
+`;
+
+//> Queries
+// Get sections
+const GET_SECTIONS_DATA = gql`
+    query modal(
+        $token: String!
+    ){
+        pages(
+            token: $token
+        ){
+            ... on RegistrationFormPage{
+            registrationHead
+            registrationInfoText
+            registrationNewsletterText
+            registrationPrivacyText
+            registrationStepText
+            thankYouText
+            registrationButton{
+                buttonTitle
+                buttonPage{
+                    id
+                    urlPath
+                }
+            }
+            }
+        }
+    }
+`;
 
 // Dummy data
 const report = {
@@ -163,7 +212,14 @@ class ReportRevision extends React.Component{
     }
 }
 
-export default ReportRevision;
+export default compose(
+    graphql(UPDATE_SECTIONS_MUTATION, {
+        name: 'register'
+    }),
+    graphql(GET_SECTIONS_DATA, {
+        options: (props) => ({ variables: { "token": props.token } })
+    })
+)(ReportRevision);
 
 /** 
  * SPDX-License-Identifier: (EUPL-1.2)
