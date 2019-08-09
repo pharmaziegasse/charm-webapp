@@ -8,6 +8,12 @@ import ReactDOM from 'react-dom';
 // Font Awesome is an awesome icon library
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
+//> Connecting to backend
+// Apollo
+import { ApolloProvider } from 'react-apollo';
+import { HttpLink } from "apollo-link-http";
+import { InMemoryCache, IntrospectionFragmentMatcher } from "apollo-cache-inmemory";
+
 //> Bootstrap
 import 'bootstrap-css-only/css/bootstrap.min.css';
 
@@ -26,7 +32,12 @@ import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 
 // Render the root component to <div id="root"></div>
-ReactDOM.render( <App /> , document.getElementById('root'));
+ReactDOM.render( 
+    <ApolloProvider client={client}>
+        <App />
+    </ApolloProvider>,
+    document.getElementById('root')
+);
 
 registerServiceWorker();
 

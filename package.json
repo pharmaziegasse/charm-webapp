@@ -3,9 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "apollo-cache-inmemory": "^1.4.3",
+    "apollo-link-http": "^1.5.15",
     "mdbreact": "./mdbreact-4.19.0.tgz",
     "node-sass": "^4.12.0",
     "react": "^16.8.6",
+    "react-apollo": "^3.0.0",
     "react-dom": "^16.8.6",
     "react-router-dom": "^5.0.1",
     "react-rte": "^0.16.1",
