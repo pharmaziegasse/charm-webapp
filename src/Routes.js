@@ -15,7 +15,8 @@ import {
  * ReportRevision: Page for coaches to review beauty reports
  */
 import {
-  ReportRevision
+  ReportRevision,
+  ReportList,
 } from './components/pages/coach';
 
 
@@ -25,7 +26,8 @@ class Routes extends React.Component {
     return (
       <Switch>
         <Route exact path='/' component={Dashboard} />
-        <Route exact path='/revision' component={ReportRevision} />
+        <Route exact path='/report' component={ReportList} />
+        <Route exact path='/report/:id' component={ReportRevision} />
         <Route
           render={function () {
             return <h1>Not Found</h1>;

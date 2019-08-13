@@ -1,10 +1,12 @@
 //> Components
 // Import all components to export them for easy access from parent components
 import ReportRevision from './ReportRevision';
+import ReportList from './ReportList';
 
 export {
     ReportRevision,
-}
+    ReportList,
+};
 
 /** 
  * SPDX-License-Identifier: (EUPL-1.2)
