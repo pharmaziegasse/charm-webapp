@@ -16,14 +16,29 @@ import {
   MDBInput,
   MDBBtn,
   MDBIcon,
+  MDBListGroup,
+  MDBListGroupItem,
 } from 'mdbreact';
+
+// Dummy data
+const reports = [
+    { title: "Beautyreport", timestamp: "13.08.2019" },
+    { title: "Beautyreport", timestamp: "10.07.2019" },
+]
 
 class ReportList extends React.Component{
 
     render() {
         return (
-            <MDBContainer>
-                <p>Test</p>
+            <MDBContainer className="text-center">
+                <h2 className="mb-5">Beautyreports von Erika Mustermann</h2>
+                <MDBListGroup className="text-left m-auto" style={{ width: "22rem" }}>
+                {reports.map((value, i) => {
+                    return(
+                        <MDBListGroupItem href="#" hover>{value.title}<span className="float-right">{value.timestamp}</span></MDBListGroupItem>
+                    );
+                })}
+                </MDBListGroup>
             </MDBContainer>
         );
     }
