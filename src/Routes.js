@@ -21,11 +21,9 @@ import {
 /**
  * Login: Login page
  */
- import {
+import {
   Login
 } from './components/pages';
-
-
 
 class Routes extends React.Component {
   render() {
