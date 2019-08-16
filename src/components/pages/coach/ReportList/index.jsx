@@ -35,7 +35,12 @@ class ReportList extends React.Component{
                 <MDBListGroup className="text-left m-auto" style={{ width: "22rem" }}>
                 {reports.map((value, i) => {
                     return(
-                        <MDBListGroupItem href="#" hover>{value.title}<span className="float-right">{value.timestamp}</span></MDBListGroupItem>
+                        <MDBListGroupItem
+                        href="#"
+                        hover
+                        >
+                        {value.title}<span className="float-right">{value.timestamp}</span>
+                        </MDBListGroupItem>
                     );
                 })}
                 </MDBListGroup>
