@@ -29,7 +29,7 @@ class Routes extends React.Component {
   render() {
     return (
       <Switch>
-        <Route exact path='/' component={Dashboard} />
+        <Route exact path='/dashboard' component={Dashboard} />
         <Route exact path='/login' component={Login} />
         <Route exact path='/report' component={ReportList} />
         <Route exact path='/report/:id' component={ReportRevision} />
