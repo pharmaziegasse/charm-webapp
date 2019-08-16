@@ -18,13 +18,29 @@ import {
 
 //> Helpers
 // Authentication
-import isAuthed from '../../helpers/auth.js';
+import { isAuthed } from '../../helpers/auth.js';
+
+//> Backend Connection
+// Apollo
+import { graphql, Query } from "react-apollo";
+import { gql } from "apollo-boost";
+
+//> Queries and Mutations
+const LOGIN_USER = gql`
+    mutation tokenAuth{
+        tokenAuth(username: "simon", password: "admin") {
+            token
+        }
+    }
+`;
 
 class Login extends React.Component {
-
-    state = {
-        email: "",
-        password: ""
+    constructor(props){
+        super(props);
+        this.state = {
+            email: "",
+            password: ""
+        }
     }
 
     handleChange = (e) => {
@@ -36,9 +52,18 @@ class Login extends React.Component {
         e.preventDefault();
         // Validation
         e.target.className = "needs-validation was-validated";
-        // Sign user in
-        this.props.signIn(this.state);
+
+        this.login("simon", "admin");
     }
+
+    login = async (username, password) => {
+        await this.props.mutate()
+        .then(({ loading, data }) => {
+            console.log(data);
+        }).catch((loading, error) => {
+            console.warn('there was an error sending the query', error);
+        });
+    };
 
     render() {
         /* Redirect to Dashboard
@@ -49,7 +74,7 @@ class Login extends React.Component {
 
         return (
         <div>
-            <MDBEdgeHeader color="green lighten-3" />
+            <MDBEdgeHeader color="secondary-color lighten-3" />
             <MDBFreeBird>
                 <MDBRow>
                     <MDBCol
@@ -104,7 +129,9 @@ class Login extends React.Component {
     }
 }
 
-export default Login;
+const AuthWithMutation = graphql(LOGIN_USER)(Login);
+
+export default AuthWithMutation;
 
 /** 
  * SPDX-License-Identifier: (EUPL-1.2)

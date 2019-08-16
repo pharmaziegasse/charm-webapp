@@ -1,5 +1,5 @@
 // Check if token is valid
-export default function isAuthed(){
+export function isAuthed(){
     if(true){
         return false;
     }
