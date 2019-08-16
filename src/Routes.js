@@ -18,6 +18,12 @@ import {
   ReportRevision,
   ReportList,
 } from './components/pages/coach';
+/**
+ * Login: Login page
+ */
+ import {
+  Login
+} from './components/pages';
 
 
 
@@ -26,6 +32,7 @@ class Routes extends React.Component {
     return (
       <Switch>
         <Route exact path='/' component={Dashboard} />
+        <Route exact path='/login' component={Login} />
         <Route exact path='/report' component={ReportList} />
         <Route exact path='/report/:id' component={ReportRevision} />
         <Route

@@ -1,9 +1,9 @@
 //> Components
 // Import all components to export them for easy access from parent components
-import Dashboard from './Dashboard';
+import Login from './Login';
 
 export {
-    Dashboard,
+    Login,
 };
 
 /** 

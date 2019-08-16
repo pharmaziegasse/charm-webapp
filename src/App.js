@@ -21,7 +21,6 @@ class App extends React.Component {
     return (
       <Router>
         <div className="flyout">
-          <Navbar />
           <main className="mt-5">
             <Routes />
           </main>

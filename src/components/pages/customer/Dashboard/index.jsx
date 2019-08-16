@@ -19,6 +19,14 @@ import {
 // Radar chart
 import { Radar } from "react-chartjs-2";
 
+//> Components
+/**
+ * Navbar: User navigation bar
+ */
+import {
+  Navbar,
+} from '../../../molecules';
+
 class HomePage extends React.Component {
   state = {
     dataRadar: {
@@ -101,6 +109,7 @@ class HomePage extends React.Component {
   render() {
     return (
       <Fragment>
+      <Navbar />
         <div className="support-card">
           <MDBBtn tag="a" size="lg" floating gradient="night-fade">
             <MDBIcon far icon="comments fa-2x" />
