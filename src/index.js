@@ -51,25 +51,23 @@ const APILink = APIHost+"/api/graphiql";
 const LINK:HttpLink = new HttpLink({
   uri: APILink,
   // Additional fetch options like `credentials` or `headers`
-  credentials: 'include',
-  headers: {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET",
-    'Access-Control-Allow-Headers': 'application/json',
-    "Access-Control-Allow-Credentials" : true,
-    //"X-CSRFToken": Cookies.get('csrftoken')
-  },
-  fetchOptions: {
-    mode: "no-cors",
-  },
+  //credentials: 'include',
+  //headers: {
+  //  "Access-Control-Allow-Origin": "*",
+  //  "Access-Control-Allow-Methods": "GET",
+  //  'Access-Control-Allow-Headers': 'application/json',
+  //  "Access-Control-Allow-Credentials" : true,
+  //  "X-CSRFToken": Cookies.get('csrftoken')
+  //},
+  //fetchOptions: {
+  //  mode: "no-cors",
+  //},
 });
 
 // Apollo Client setup
 const client = new ApolloClient({
   cache,
   link: LINK,
-
-
 });
 
 // Render the root component to <div id="root"></div>
