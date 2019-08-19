@@ -75,8 +75,7 @@ class Anamnesis extends React.Component{
         // Normalize data
         console.log(this.state);
         let formvalues = {
-            "age": "5",
-            "uid": "uff"
+            ...this.state
         };
         // Check if the form values have been set
         if(formvalues !== null || formvalues !== undefined){
@@ -163,6 +162,13 @@ class Anamnesis extends React.Component{
             // CHeck if the state is currently empty - to prevent over writing
             if(this.state[item.name] === undefined || this.state[item.name] === "" || this.state[item.name] === null){
                 switch(item.name){
+                    case 'multiselect':
+                        let multiselect = item.defaultValue.split(', ');
+                        console.log(multiselect);
+                        this.setState({
+                            [item.name]: multiselect
+                        })
+                        break;
                     default:
                         this.setState({
                             [item.name]: item.defaultValue
