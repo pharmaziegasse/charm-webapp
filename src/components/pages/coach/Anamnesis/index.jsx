@@ -60,17 +60,40 @@ class Anamnesis extends React.Component{
     _handleCheckBoxChange = (e) => {
         this.setState({
             [e.target.name]: e.target.checked 
-        })
+        });
     }
 
     _handleSelectChange = (e) => {
         this.setState({
             [e.target.name]: e.target.value
-        })
+        });
     }
 
-    _setDefaultValue = (e) => {
-
+    _setDefaultValue = (item, i) => {
+        if(item.defaultValue !== "" && item.defaultValue !== undefined){
+            // CHeck if the state is currently empty - to prevent over writing
+            if(this.state[item.name] === undefined || this.state[item.name] === "" || this.state[item.name] === null){
+                switch(item.name){
+                    case "checkboxes":
+                        let arr = item.defaultValue.split(',');
+                        return arr.map((name, key) => {
+                            let n = name.trim().toLowerCase().replace(/ /g,'');
+                            if(this.state[n] === undefined || this.state[n] === "" || this.state[n] === null){
+                                console.log(n);
+                                this.setState({
+                                    [n]: true
+                                });
+                            }
+                            
+                        });
+                    default:
+                        this.setState({
+                            [item.name]: item.defaultValue
+                        });
+                }
+                
+            }
+        }
     }
 
     getSelectValues = (select) => {
@@ -153,7 +176,7 @@ class Anamnesis extends React.Component{
             let n = name.trim().toLowerCase().replace(/ /g,'');
             let display = name.trim();
             return(
-                <option key={key} value={n}>{display}</option>
+                <option key={key} value={display}>{display}</option>
             );
         });
     }
@@ -193,12 +216,10 @@ class Anamnesis extends React.Component{
                                         let formfields = data.pages[key].formFields;
                                         return formfields.map((item, i) => {
                                             console.log(item);
+                                            this._setDefaultValue(item, i);
                                             switch(item.fieldType.toLowerCase()){
                                                 case "singleline":
                                                     // TEXT Input
-                                                    if(item.defaultValue !== undefined){
-                                                        this._setDefaultValue();
-                                                    }
                                                     return(
                                                         <div key={i} className="form-group">
                                                             <label htmlFor={"fromGroupInput"+i}>
