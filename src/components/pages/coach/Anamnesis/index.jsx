@@ -72,8 +72,11 @@ class Anamnesis extends React.Component{
 
     sendData = async () => {
         // Set values that will be set
+        // Normalize data
+        console.log(this.state);
         let formvalues = {
-            ...this.state
+            "age": "5",
+            "uid": "uff"
         };
         // Check if the form values have been set
         if(formvalues !== null || formvalues !== undefined){
@@ -99,10 +102,54 @@ class Anamnesis extends React.Component{
         });
     }
 
-    _handleCheckBoxChange = (e) => {
-        this.setState({
-            [e.target.name]: e.target.checked 
-        });
+    _handleCheckBoxChange = (e, name, label) => {
+        // Get current active checkboxes
+        let current = this.state[name];
+        // Check if there currently are active checkboxes
+        if(current !== undefined){
+            // Check if there is a separator in the string
+            if(current.includes(", ")){
+                // There are two or more active checkboxes
+                let parts = current.split(', ');
+                // Check if this one active checkbox is the one that has been clicked
+                if(current.toLowerCase().includes(label.toLowerCase())){
+                    // Remove
+                    let filtered = parts.filter(function(ele){
+                        return ele != label;
+                    });
+                    // Update state
+                    this.setState({
+                        [name]: filtered.join(', ')
+                    });
+                } else {
+                    // Add to array
+                    parts.push(label);
+                    // Update state
+                    this.setState({
+                        [name]: parts.join(', ')
+                    });
+                }
+            } else {
+                // Check if this one active checkbox is the one that has been clicked
+                if(current.toLowerCase().includes(label.toLowerCase())){
+                    // No checkbox is active
+                    this.setState({
+                        [name]: undefined
+                    });
+                } else {
+                    // Add label to list
+                    this.setState({
+                        [name]: current + ", " + label
+                    })
+                }
+            }
+        } else {
+            // No active checkboxes - we can only add to the state
+            this.setState({
+                [name]: label
+            });
+        }
+        console.log("Current",current);
     }
 
     _handleSelectChange = (e) => {
@@ -116,18 +163,6 @@ class Anamnesis extends React.Component{
             // CHeck if the state is currently empty - to prevent over writing
             if(this.state[item.name] === undefined || this.state[item.name] === "" || this.state[item.name] === null){
                 switch(item.name){
-                    case "checkboxes":
-                        let arr = item.defaultValue.split(',');
-                        return arr.map((name, key) => {
-                            let n = name.trim().toLowerCase().replace(/ /g,'');
-                            if(this.state[n] === undefined || this.state[n] === "" || this.state[n] === null){
-                                console.log(n);
-                                this.setState({
-                                    [n]: true
-                                });
-                            }
-                            
-                        });
                     default:
                         this.setState({
                             [item.name]: item.defaultValue
@@ -173,23 +208,23 @@ class Anamnesis extends React.Component{
         
     }
 
-    printCheckboxes = (choices, i) => {
-        let arr = choices.split(',');
+    printCheckboxes = (item, i) => {
+        let arr = item.choices.split(',');
         return arr.map((name, key) => {
             let n = name.trim().toLowerCase().replace(/ /g,'');
             let display = name.trim();
-            return(
-                <MDBInput
-                key={key}
-                checked={this.state[n]}
-                name={n}
-                onChange={this._handleCheckBoxChange}
-                label={display}
-                filled
-                type="checkbox"
-                id={"fromGroupInput"+i+""+key}
-                />
-            );
+                return(
+                    <MDBInput
+                    key={key}
+                    checked={this.state[item.name] && this.state[item.name].indexOf(display) !== -1 ? (true) : (false)}
+                    name={n}
+                    onChange={(e) => this._handleCheckBoxChange(e, item.name, display)}
+                    label={display}
+                    filled
+                    type="checkbox"
+                    id={"fromGroupInput"+i+""+key}
+                    />
+                );
         });
     }
 
@@ -201,7 +236,7 @@ class Anamnesis extends React.Component{
             return(
                 <MDBInput
                 onClick={() => this.setState({[container]: display})}
-                checked={this.state[container] === display ? true : false}
+                checked={this.state[container] && this.state[container] === display ? true : false}
                 label={display}
                 key={key}
                 name={n}
@@ -257,7 +292,7 @@ class Anamnesis extends React.Component{
                                     if(key !== undefined){
                                         let formfields = data.pages[key].formFields;
                                         return formfields.map((item, i) => {
-                                            console.log(item);
+                                            //console.log(item);
                                             this._setDefaultValue(item, i);
                                             switch(item.fieldType.toLowerCase()){
                                                 case "singleline":
@@ -330,7 +365,7 @@ class Anamnesis extends React.Component{
                                                                 {item.helpText && item.helpText}
                                                             </label>
                                                                 <MDBFormInline className="justify-content-center">
-                                                                {this.printCheckboxes(item.choices, i)}
+                                                                {this.printCheckboxes(item, i)}
                                                                 </MDBFormInline>
                                                         </div>
                                                     );
