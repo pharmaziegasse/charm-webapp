@@ -39,7 +39,8 @@ class Login extends React.Component {
         super(props);
         this.state = {
             email: "",
-            password: ""
+            password: "",
+            isLogged: false
         }
     }
 
@@ -62,7 +63,8 @@ class Login extends React.Component {
             if(data !== undefined){
                 if(data.tokenAuth !== undefined){
                     if(data.tokenAuth.token !== undefined){
-                        localStorage.setItem('wca',data.tokenAuth.token)
+                        localStorage.setItem('wca',data.tokenAuth.token);
+                        this.setState({isLogged: true});
                     }
                 }
             }
@@ -120,9 +122,15 @@ class Login extends React.Component {
                                             Please enter a password
                                         </div>
                                         <div className="text-center mt-4">
-                                            <MDBBtn color="success" type="submit"><i className="fas fa-key pr-2"></i>Login</MDBBtn>
+                                            <MDBBtn color="success" type="submit">
+                                            <i className="fas fa-key pr-2"></i>Login
+                                            </MDBBtn>
                                         </div>
-                                        <p className="text-muted text-center mt-3">Not a member yet? No problem, just <Link to="/join"><strong>join us</strong></Link>!</p>
+                                        <p className="text-muted text-center mt-3">
+                                        Not a member yet? No problem, just <Link to="/join">
+                                        <strong>join us</strong>
+                                        </Link>!
+                                        </p>
                                     </form>
                                 </MDBCol>
                             </MDBRow>
