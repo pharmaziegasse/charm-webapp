@@ -69,6 +69,9 @@ class Anamnesis extends React.Component{
         })
     }
 
+    _setDefaultValue = (e) => {
+
+    }
 
     getSelectValues = (select) => {
         var result = [];
@@ -189,9 +192,13 @@ class Anamnesis extends React.Component{
                                     if(key !== undefined){
                                         let formfields = data.pages[key].formFields;
                                         return formfields.map((item, i) => {
+                                            console.log(item);
                                             switch(item.fieldType.toLowerCase()){
                                                 case "singleline":
                                                     // TEXT Input
+                                                    if(item.defaultValue !== undefined){
+                                                        this._setDefaultValue();
+                                                    }
                                                     return(
                                                         <div key={i} className="form-group">
                                                             <label htmlFor={"fromGroupInput"+i}>
@@ -216,7 +223,10 @@ class Anamnesis extends React.Component{
                                                                 {item.helpText && item.helpText}
                                                             </label>
                                                             <div className="def-number-input number-input ml-auto mr-auto mb-3">
-                                                                <button onClick={() => this._handleNumberClick(item.name,-1)} className="minus"></button>
+                                                                <button
+                                                                onClick={() => this._handleNumberClick(item.name,-1)}
+                                                                className="minus">
+                                                                </button>
                                                                 <input
                                                                 name={item.name}
                                                                 id={"fromGroupInput"+i}
@@ -224,7 +234,10 @@ class Anamnesis extends React.Component{
                                                                 onChange={this._handleChange}
                                                                 type="number"
                                                                 />
-                                                                <button onClick={() => this._handleNumberClick(item.name,1)}className="plus"></button>
+                                                                <button
+                                                                onClick={() => this._handleNumberClick(item.name,1)}
+                                                                className="plus">
+                                                                </button>
                                                             </div>
                                                         </div>
                                                     );
@@ -235,7 +248,15 @@ class Anamnesis extends React.Component{
                                                             <label htmlFor={"fromGroupInput"+i}>
                                                                 {item.helpText && item.helpText}
                                                             </label>
-                                                            <MDBInput checked={this.state[item.name]} name={item.name} onChange={this._handleCheckBoxChange} label={item.label && item.label} filled type="checkbox" id={"fromGroupInput"+i} />
+                                                            <MDBInput
+                                                            checked={this.state[item.name]}
+                                                            name={item.name}
+                                                            onChange={this._handleCheckBoxChange}
+                                                            label={item.label && item.label}
+                                                            filled
+                                                            type="checkbox"
+                                                            id={"fromGroupInput"+i}
+                                                            />
                                                         </div>
                                                     );
                                                 case "checkboxes":
@@ -258,7 +279,11 @@ class Anamnesis extends React.Component{
                                                                 {item.helpText && item.helpText}
                                                             </label>
                                                             <div>
-                                                                <select name={item.name} selected={this.state[item.name]} onChange={this._handleSelectChange} className="browser-default custom-select">
+                                                                <select
+                                                                name={item.name}
+                                                                selected={this.state[item.name]}
+                                                                onChange={this._handleSelectChange}
+                                                                className="browser-default custom-select">
                                                                 <option>Choose your option</option>
                                                                 {this.printOptions(item.choices, i)}
                                                                 </select>
@@ -273,7 +298,12 @@ class Anamnesis extends React.Component{
                                                                 {item.helpText && item.helpText}
                                                             </label>
                                                             <div>
-                                                                <select multiple name={item.name} selected={this.state[item.name]} onChange={this._handleMultiSelectChange} className="browser-default custom-select">
+                                                                <select
+                                                                multiple name={item.name}
+                                                                selected={this.state[item.name]}
+                                                                onChange={this._handleMultiSelectChange}
+                                                                className="browser-default custom-select"
+                                                                >
                                                                 <option>Choose your option</option>
                                                                 {this.printOptions(item.choices, i)}
                                                                 </select>
@@ -287,7 +317,7 @@ class Anamnesis extends React.Component{
                                                             <label htmlFor={"fromGroupInput"+i}>
                                                                 {item.helpText && item.helpText}
                                                             </label>
-                                                             <MDBFormInline>
+                                                            <MDBFormInline>
                                                                 {this.printRadio(item.choices, item.name, i)}
                                                             </MDBFormInline>
                                                         </div>
