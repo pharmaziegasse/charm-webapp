@@ -145,7 +145,6 @@ class Anamnesis extends React.Component{
     }
 
     _setDefaultValue = (item, i) => {
-        console.log(item);
         if(item.defaultValue !== "" && item.defaultValue !== undefined){
             // CHeck if the state is currently empty - to prevent over writing
             if(this.state[item.fieldType] === undefined || this.state[item.fieldType] === "" || this.state[item.fieldType] === null){
