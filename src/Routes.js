@@ -17,6 +17,7 @@ import {
 import {
   ReportRevision,
   ReportList,
+  Anamnesis,
 } from './components/pages/coach';
 /**
  * Login: Login page
@@ -31,7 +32,7 @@ class Routes extends React.Component {
       <Switch>
         <Route exact path='/dashboard' component={Dashboard} />
         <Route exact path='/login' component={Login} />
-        <Route exact path='/logout' component={localStorage.removeItem('wca')} />
+        <Route exact path='/anamnesis' component={Anamnesis} />
         <Route exact path='/report' component={ReportList} />
         <Route exact path='/report/:id' component={ReportRevision} />
         <Route
