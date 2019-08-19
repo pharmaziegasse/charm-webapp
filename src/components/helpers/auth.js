@@ -1,6 +1,10 @@
 // Check if token is valid
 export function isAuthed(){
-    if(true){
+    let token = localStorage.getItem('wca');
+    console.log(token);
+    if(token !== null && token !== undefined){
+        return true;
+    } else {
         return false;
     }
 }

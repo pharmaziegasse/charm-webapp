@@ -76,7 +76,7 @@ class Login extends React.Component {
          * If user is already logged in, redirect to Dashboard
          * This doubles as a neat way to redirect the user directly after login
          */
-        if(isAuthed === true) return <Redirect to="/dashboard"/> 
+        if(isAuthed() === true) return <Redirect to="/dashboard"/> 
 
         return (
         <div>
