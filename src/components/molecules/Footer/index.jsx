@@ -41,7 +41,7 @@ class Footer extends React.Component{
                         </li>
                         </ul>
                     </MDBCol>
-                     <MDBCol md="3">
+                    <MDBCol md="3">
                         <h5 className="title">Links</h5>
                         <ul>
                         <li className="list-unstyled">
@@ -66,7 +66,12 @@ class Footer extends React.Component{
                         <br />
                         <p className="text-center my-2">
                             Made with <i className="fas fa-heart pulse red-text" aria-hidden="true"></i> by
-                            <a target="_blank" rel="noopener noreferrer" href="https://www.aichner-christian.com?refer=charm">Werbeagentur Christian Aichner</a>
+                            <a
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            href="https://www.aichner-christian.com?refer=charm"
+                            > Werbeagentur Christian Aichner
+                            </a>
                         </p>
                     </MDBContainer>
                 </div>

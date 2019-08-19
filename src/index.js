@@ -33,7 +33,7 @@ import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 
 // Base url
-export const APIHost = '185.162.251.161';
+export const APIHost = 'https://charm.pharmaziegasse.at';
 
 // Cache setup
 const fragmentMatcher = new IntrospectionFragmentMatcher({
@@ -48,10 +48,26 @@ const cache = new InMemoryCache({ fragmentMatcher });
 // Create api url from base url
 const APILink = APIHost+"/api/graphiql";
 
+const LINK:HttpLink = new HttpLink({
+  uri: APILink,
+  // Additional fetch options like `credentials` or `headers`
+  //credentials: 'include',
+  //headers: {
+  //  "Access-Control-Allow-Origin": "*",
+  //  "Access-Control-Allow-Methods": "GET",
+  //  'Access-Control-Allow-Headers': 'application/json',
+  //  "Access-Control-Allow-Credentials" : true,
+  //  "X-CSRFToken": Cookies.get('csrftoken')
+  //},
+  //fetchOptions: {
+  //  mode: "no-cors",
+  //},
+});
+
 // Apollo Client setup
 const client = new ApolloClient({
   cache,
-  link: new HttpLink({ uri: APILink })
+  link: LINK,
 });
 
 // Render the root component to <div id="root"></div>
