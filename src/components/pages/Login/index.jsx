@@ -59,7 +59,13 @@ class Login extends React.Component {
     _login = async (email, password) => {
         await this.props.mutate({ variables: { "username": email, "password": password } })
         .then(({ loading, data }) => {
-            console.log(data);
+            if(data !== undefined){
+                if(data.tokenAuth !== undefined){
+                    if(data.tokenAuth.token !== undefined){
+                        localStorage.setItem('wca',data.tokenAuth.token)
+                    }
+                }
+            }
         }).catch((loading, error) => {
             console.warn('there was an error sending the query', error);
         });
