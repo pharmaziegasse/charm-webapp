@@ -63,6 +63,34 @@ class Anamnesis extends React.Component{
         })
     }
 
+    _handleSelectChange = (e) => {
+        this.setState({
+            [e.target.name]: e.target.value
+        })
+    }
+
+
+    getSelectValues = (select) => {
+        var result = [];
+        var options = select && select.options;
+        var opt;
+
+        for (var i=0, iLen=options.length; i<iLen; i++) {
+            opt = options[i];
+
+            if (opt.selected) {
+            result.push(opt.value || opt.text);
+            }
+        }
+        return result;
+    }
+
+    _handleMultiSelectChange = (e) => {
+        this.setState({
+            [e.target.name]: this.getSelectValues(e.target)
+        });
+    }
+
     _handleNumberClick = (name, type) => {
         // Check if state is empty
         if(this.state[name]){
@@ -79,12 +107,12 @@ class Anamnesis extends React.Component{
 
     printCheckboxes = (choices, i) => {
         let arr = choices.split(',');
-        console.log(arr);
         return arr.map((name, key) => {
             let n = name.trim().toLowerCase().replace(/ /g,'');
             let display = name.trim();
             return(
                 <MDBInput
+                key={key}
                 checked={this.state[n]}
                 name={n}
                 onChange={this._handleCheckBoxChange}
@@ -94,13 +122,43 @@ class Anamnesis extends React.Component{
                 id={"fromGroupInput"+i+""+key}
                 />
             );
-        })
+        });
+    }
+
+    printRadio = (choices, container, i) => {
+        let arr = choices.split(',');
+        return arr.map((name, key) => {
+            let n = name.trim().toLowerCase().replace(/ /g,'');
+            let display = name.trim();
+            return(
+                <MDBInput
+                onClick={() => this.setState({[container]: display})}
+                checked={this.state[container] === display ? true : false}
+                label={display}
+                key={key}
+                name={n}
+                type="radio"
+                id={"radio"+key}
+                />
+            );
+        });
+    }
+
+    printOptions = (choices, i) => {
+        let arr = choices.split(',');
+        return arr.map((name, key) => {
+            let n = name.trim().toLowerCase().replace(/ /g,'');
+            let display = name.trim();
+            return(
+                <option key={key} value={n}>{display}</option>
+            );
+        });
     }
 
     render() {
         console.log(this.state);
         // Route protection
-        if(isAuthed() === false) return <Redirect to="/login"/> 
+        if(isAuthed() === false) return <Redirect to="/login"/>
 
         return (
             <MDBContainer className="text-center">
@@ -131,7 +189,6 @@ class Anamnesis extends React.Component{
                                     if(key !== undefined){
                                         let formfields = data.pages[key].formFields;
                                         return formfields.map((item, i) => {
-                                            console.log(item);
                                             switch(item.fieldType.toLowerCase()){
                                                 case "singleline":
                                                     // TEXT Input
@@ -192,7 +249,49 @@ class Anamnesis extends React.Component{
                                                                 {this.printCheckboxes(item.choices, i)}
                                                                 </MDBFormInline>
                                                         </div>
-                                                        );
+                                                    );
+                                                case "dropdown":
+                                                    // SELECT Input
+                                                    return (
+                                                        <div key={i} >
+                                                            <label htmlFor={"fromGroupInput"+i}>
+                                                                {item.helpText && item.helpText}
+                                                            </label>
+                                                            <div>
+                                                                <select name={item.name} selected={this.state[item.name]} onChange={this._handleSelectChange} className="browser-default custom-select">
+                                                                <option>Choose your option</option>
+                                                                {this.printOptions(item.choices, i)}
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                case "multiselect":
+                                                    // MULTI SELECT Input
+                                                    return (
+                                                        <div key={i} >
+                                                            <label htmlFor={"fromGroupInput"+i}>
+                                                                {item.helpText && item.helpText}
+                                                            </label>
+                                                            <div>
+                                                                <select multiple name={item.name} selected={this.state[item.name]} onChange={this._handleMultiSelectChange} className="browser-default custom-select">
+                                                                <option>Choose your option</option>
+                                                                {this.printOptions(item.choices, i)}
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                case "radio":
+                                                    // RADIO Input
+                                                    return (
+                                                        <div key={i} >
+                                                            <label htmlFor={"fromGroupInput"+i}>
+                                                                {item.helpText && item.helpText}
+                                                            </label>
+                                                             <MDBFormInline>
+                                                                {this.printRadio(item.choices, item.name, i)}
+                                                            </MDBFormInline>
+                                                        </div>
+                                                    );
                                                 default:
                                                     return(
                                                         <div key={i} className="form-group">
