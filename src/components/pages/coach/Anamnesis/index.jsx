@@ -106,49 +106,30 @@ class Anamnesis extends React.Component{
         let current = this.state[name];
         // Check if there currently are active checkboxes
         if(current !== undefined){
-            // Check if there is a separator in the string
-            if(current.includes(", ")){
-                // There are two or more active checkboxes
-                let parts = current.split(', ');
-                // Check if this one active checkbox is the one that has been clicked
-                if(current.toLowerCase().includes(label.toLowerCase())){
-                    // Remove
-                    let filtered = parts.filter(function(ele){
-                        return ele != label;
-                    });
-                    // Update state
-                    this.setState({
-                        [name]: filtered.join(', ')
-                    });
-                } else {
-                    // Add to array
-                    parts.push(label);
-                    // Update state
-                    this.setState({
-                        [name]: parts.join(', ')
-                    });
-                }
+            if(current.includes(label)){
+                // Remove
+                let filtered = current.filter(function(ele){
+                    return ele != label;
+                });
+                // Update state
+                this.setState({
+                    [name]: filtered
+                });
             } else {
-                // Check if this one active checkbox is the one that has been clicked
-                if(current.toLowerCase().includes(label.toLowerCase())){
-                    // No checkbox is active
-                    this.setState({
-                        [name]: undefined
-                    });
-                } else {
-                    // Add label to list
-                    this.setState({
-                        [name]: current + ", " + label
-                    })
-                }
+                // Add to array
+                current.push(label);
+                // Update state
+                this.setState({
+                    [name]: current
+                });
             }
         } else {
             // No active checkboxes - we can only add to the state
+            let newCB = [label];
             this.setState({
-                [name]: label
+                [name]: newCB
             });
         }
-        console.log("Current",current);
     }
 
     _handleSelectChange = (e) => {
@@ -164,9 +145,14 @@ class Anamnesis extends React.Component{
                 switch(item.name){
                     case 'multiselect':
                         let multiselect = item.defaultValue.split(', ');
-                        console.log(multiselect);
                         this.setState({
                             [item.name]: multiselect
+                        })
+                        break;
+                    case 'checkboxes':
+                        let checkboxes = item.defaultValue.split(', ');
+                        this.setState({
+                            [item.name]: checkboxes
                         })
                         break;
                     default:
@@ -222,7 +208,7 @@ class Anamnesis extends React.Component{
                 return(
                     <MDBInput
                     key={key}
-                    checked={this.state[item.name] && this.state[item.name].indexOf(display) !== -1 ? (true) : (false)}
+                    checked={this.state[item.name] && this.state[item.name].includes(display) ? (true) : (false)}
                     name={n}
                     onChange={(e) => this._handleCheckBoxChange(e, item.name, display)}
                     label={display}
