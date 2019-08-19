@@ -12,6 +12,8 @@ import {
     MDBCol,
     MDBInput,
     MDBFormInline,
+    MDBBtn,
+    MDBIcon,
 } from 'mdbreact';
 
 //> Backend Connection
@@ -24,6 +26,7 @@ import gql from 'graphql-tag';
 import { isAuthed } from '../../../helpers/auth.js';
 
 //> Queries
+// Get forms
 const GET_FORMS = gql`
     query getAnamneseFields($token: String!) {
         pages (token: $token) {
@@ -42,6 +45,22 @@ const GET_FORMS = gql`
         }
     }
 `;
+// Update data
+const UPDATE_FORMS = gql`
+    mutation createAn ($token: String!, $values: GenericScalar!) {
+        anamneseAnFormPage(
+            token: $token,
+            url: "/newanamnese",
+            values: $values
+        ) {
+            result
+            errors {
+                name
+                errors
+            }
+        }
+    }
+`;
 
 class Anamnesis extends React.Component{
     constructor(props){
@@ -50,6 +69,29 @@ class Anamnesis extends React.Component{
 
         }
     }
+
+    sendData = async () => {
+        // Set values that will be set
+        let formvalues = {
+            ...this.state
+        };
+        // Check if the form values have been set
+        if(formvalues !== null || formvalues !== undefined){
+            // Call graphQL mutation
+            await this.props.update({
+                variables: {
+                    "token": localStorage.getItem('wca'),
+                    "values": formvalues
+                }
+            })
+            .then(({data}) => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error("Mutation error:",error);
+            })
+        }
+    };
 
     _handleChange = (e) => {
         this.setState({
@@ -189,7 +231,7 @@ class Anamnesis extends React.Component{
         return (
             <MDBContainer className="text-center">
                 <h2 className="mb-5">Anamnese für Erika Mustermann</h2>
-                <MDBRow className="flex-center">
+                <MDBRow className="flex-center mb-4">
                     <MDBCol md="6">
                         {
                         <Query query={GET_FORMS} variables={{ "token": localStorage.getItem('wca') }}>
@@ -359,9 +401,6 @@ class Anamnesis extends React.Component{
                                                         </div>
                                                     )
                                             }
-
-                                            console.log(item);
-                                            
                                         });
                                     }else {
                                         return null;
@@ -372,18 +411,20 @@ class Anamnesis extends React.Component{
                             }else {
                                 return null;
                             }
-                            
                         }}
                         </Query>
                         }
                     </MDBCol>
                 </MDBRow>
+                <MDBBtn color="secondary" onClick={this.sendData}><MDBIcon icon="save" className="pr-2" />Speichern</MDBBtn>
             </MDBContainer>
         );
     }
 }
 
-export default graphql(GET_FORMS)(Anamnesis);
+export default graphql(UPDATE_FORMS, {
+    name: 'update'
+})(Anamnesis);
 
 /** 
  * SPDX-License-Identifier: (EUPL-1.2)
