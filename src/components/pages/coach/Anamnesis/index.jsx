@@ -145,26 +145,43 @@ class Anamnesis extends React.Component{
     }
 
     _setDefaultValue = (item, i) => {
+        console.log(item);
         if(item.defaultValue !== "" && item.defaultValue !== undefined){
             // CHeck if the state is currently empty - to prevent over writing
-            if(this.state[item.name] === undefined || this.state[item.name] === "" || this.state[item.name] === null){
-                switch(item.name){
+            if(this.state[item.fieldType] === undefined || this.state[item.fieldType] === "" || this.state[item.fieldType] === null){
+                switch(item.fieldType){
                     case 'multiselect':
-                        let multiselect = item.defaultValue.split(', ');
-                        this.setState({
-                            [item.name]: multiselect
-                        })
+                        let multiselect = [];
+                        if(item.defaultValue.includes(', ')){
+                            multiselect = item.defaultValue.split(', ');
+                        } else {
+                            multiselect = [item.defaultValue]
+                        }
+                        if(!this.state[item.name]){
+                            this.setState({
+                                [item.name]: multiselect
+                            })
+                        }
                         break;
                     case 'checkboxes':
-                        let checkboxes = item.defaultValue.split(', ');
-                        this.setState({
-                            [item.name]: checkboxes
-                        })
+                        let checkboxes = [];
+                        if(item.defaultValue.includes(', ')){
+                            checkboxes = item.defaultValue.split(', ');
+                        } else {
+                            checkboxes = [item.defaultValue]
+                        }
+                        if(!this.state[item.name]){
+                            this.setState({
+                                [item.name]: checkboxes
+                            })
+                        }
                         break;
                     default:
-                        this.setState({
-                            [item.name]: item.defaultValue
-                        });
+                        if(!this.state[item.name]){
+                            this.setState({
+                                [item.name]: item.defaultValue
+                            });
+                        }
                 }
                 
             }
