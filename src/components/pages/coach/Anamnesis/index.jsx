@@ -101,7 +101,13 @@ class Anamnesis extends React.Component{
         });
     }
 
-    _handleCheckBoxChange = (e, name, label) => {
+    _handleCheckBoxChange = (e) => {
+        this.setState({
+            [e.target.name]: e.target.checked 
+        });
+    }
+
+    _handleCheckBoxesChange = (e, name, label) => {
         // Get current active checkboxes
         let current = this.state[name];
         // Check if there currently are active checkboxes
@@ -210,7 +216,7 @@ class Anamnesis extends React.Component{
                     key={key}
                     checked={this.state[item.name] && this.state[item.name].includes(display) ? (true) : (false)}
                     name={n}
-                    onChange={(e) => this._handleCheckBoxChange(e, item.name, display)}
+                    onChange={(e) => this._handleCheckBoxesChange(e, item.name, display)}
                     label={display}
                     filled
                     type="checkbox"
