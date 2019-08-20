@@ -36,16 +36,19 @@ const GET_TEMPLATE = gql`
 `;
 // Get user anamnsesis data
 const GET_USERDATA = gql`
-    query getTemplate($token: String!) {
-        pages(token: $token) {
-            ... on ReportsReportsPage {
+    query getUserData(
+        $token: String!,
+        $uid: String!
+    ) {
+        usersan (
+            token: $token,
+            uid: $uid
+        ) {
+            ... on AnamneseType {
                 id
-                articles {
-                    ... on Reports_S_ArticleBlock {
-                        articleHeader
-                        paragraphs
-                    }
-                }
+                uid
+                anid
+                formData
             }
         }
     }
@@ -82,8 +85,24 @@ class ReportList extends React.Component{
         })
     }
 
+    fetchUserData = () => {
+        this.props.client.query({
+            query: GET_USERDATA,
+            variables: { "token": localStorage.getItem("wca"), "uid": "simon" }
+        }).then(({data}) => {
+            
+            if(data.usersan !== undefined){
+                console.log(data.usersan);
+            }
+        })
+        .catch(error => {
+            console.error("Mutation error:",error);
+        })
+    }
+
     createReport = () => {
-        this.fetchTemplate();
+        let template = this.fetchTemplate();
+        let userdata = this.fetchUserData();
     }
 
     render() {
