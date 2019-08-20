@@ -67,7 +67,8 @@ class ReportList extends React.Component{
 
         this.state = {
             template: undefined,
-            userdata: undefined
+            userdata: undefined,
+            loading: false,
         }
     }
 
@@ -118,12 +119,23 @@ class ReportList extends React.Component{
     }
 
     fetchReportData = () => {
+        // Start loading animation
+        this.setState({
+            loading: true
+        });
         // Fetch data required for creating a report
         this.fetchTemplate();
         this.fetchUserData();
     }
 
     createReport = () => {
+        // Stop loading animation if active
+        if(!this.state.loading){
+            this.setState({
+                loading: false
+            });
+        }
+        // Set variables
         let template = this.state.template;
         let userdata = this.state.userdata;
 
