@@ -68,6 +68,7 @@ class ReportList extends React.Component{
         this.state = {
             template: undefined,
             userdata: undefined,
+            report: undefined,
             loading: false,
         }
     }
@@ -97,7 +98,7 @@ class ReportList extends React.Component{
     fetchUserData = async () => {
         await this.props.client.query({
             query: GET_USERDATA,
-            variables: { "token": localStorage.getItem("wca"), "uid": "simon" }
+            variables: { "token": localStorage.getItem("wca"), "uid": "Yeeeeeeeee" }
         }).then(({data}) => {
             if(data.usersan !== undefined){
                 if(data.usersan.length > 1){
@@ -128,6 +129,54 @@ class ReportList extends React.Component{
         this.fetchUserData();
     }
 
+    _normalizeStatement = (condition, key) => {
+        // Set variables
+        let userdata = this.state.userdata;
+
+        if(userdata !== undefined){
+            let formData = userdata.formData;
+            if(formData !== undefined){
+                // Parse user data to JS Object
+                let data = JSON.parse(formData);
+                // Replace the first word with the value of the corresponding word ( age > 50 => 3 > 50 )
+                let condNew = condition.replace(/^\S+/g, data[condition.replace(/ .*/,'')]);
+                // Get the three parts of the condition
+                let compareParts = condNew.split(' ');
+                // Solve condition
+                if(this.__convertType(compareParts[0]) === null || this.__convertType(compareParts[0]) === undefined){
+                    return false;
+                } else {
+                    return this.__compare(this.__convertType(compareParts[0]), compareParts[1], compareParts[2]);
+                }
+            }
+        }
+
+        
+    }
+    
+    // convertType('null'); => null
+    __convertType = (value) => {
+        try {
+            return (new Function("return " + value + ";"))();
+        } catch(e) {
+            return value;
+        }
+    }
+
+    // compare(5, '<', 10); // true
+    __compare = (post, operator, value) => {
+        switch (operator) {
+            case '>':   return post > parseInt(value);
+            case '<':   return post < parseInt(value);
+            case '>=':  return post >= parseInt(value);
+            case '<=':  return post <= parseInt(value);
+            case '==':  return post == value;
+            case '!=':  return post != value;
+            case '===': return post === value;
+            case '!==': return post !== value;
+        }
+    }
+
     createReport = () => {
         // Stop loading animation if active
         if(!this.state.loading){
@@ -137,12 +186,50 @@ class ReportList extends React.Component{
         }
         // Set variables
         let template = this.state.template;
-        let userdata = this.state.userdata;
 
-        console.log(template, userdata);
+        // For each article
+        template.articles.map((article, key) => {
+            article.paragraphs.map((paragraph, i) => {
+                let statement = paragraph.value.statement;
+                let text = paragraph.value.paragraph;
+
+                let showParagraph = false;
+                if(statement.includes(', ')){
+                    let conditions = statement.split(', ')
+                    let normalizeResults = conditions.map((condition, i) => {
+                        return this._normalizeStatement(condition, i);
+                    })
+                    if(!normalizeResults.includes(false)){
+                        showParagraph = true;
+                    }
+                } else {
+                    let condition = statement.trim();
+                    showParagraph = this._normalizeStatement(condition, i);
+                }
+
+                if(showParagraph){
+                    if(!this.state["report_article_"+key]){
+                        this.setState({
+                            ["report_article_"+key]: text
+                        })
+                    } else if(!this.state["report_article_"+key].includes(text)){
+                        this.setState({
+                            ["report_article_"+key]: text + this.state["report_article_"+key]
+                        })
+                    }
+                    
+                }
+                
+                console.log("Visible",showParagraph,":");
+                console.log("Text",text);
+            })
+        })
+
+        
     }
 
     render() {
+        console.log(this.state);
         // Check if the data has been set
         if(this.state.template !== undefined && this.state.userdata !== undefined){
             this.createReport();
