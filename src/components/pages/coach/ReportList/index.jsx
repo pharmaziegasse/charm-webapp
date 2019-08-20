@@ -49,6 +49,7 @@ const GET_USERDATA = gql`
                 uid
                 anid
                 formData
+                date
             }
         }
     }
@@ -63,6 +64,11 @@ const reports = [
 class ReportList extends React.Component{
     constructor(props){
         super(props);
+
+        this.state = {
+            template: undefined,
+            userdata: undefined
+        }
     }
 
     fetchTemplate = () => {
@@ -77,7 +83,9 @@ class ReportList extends React.Component{
                         template = data.pages[i];
                     }
                 });
-                return template;
+                this.setState({
+                    template: template
+                });
             }
         })
         .catch(error => {
@@ -85,14 +93,23 @@ class ReportList extends React.Component{
         })
     }
 
-    fetchUserData = () => {
-        this.props.client.query({
+    fetchUserData = async () => {
+        await this.props.client.query({
             query: GET_USERDATA,
             variables: { "token": localStorage.getItem("wca"), "uid": "simon" }
         }).then(({data}) => {
-            
             if(data.usersan !== undefined){
-                console.log(data.usersan);
+                if(data.usersan.length > 1){
+                    let date_sort_desc = function (item1, item2) {
+                        // DESCENDING order
+                        if (item1.date > item2.date) return -1;
+                        if (item1.date < item2.date) return 1;
+                        return 0;
+                    };
+                }
+                this.setState({
+                    userdata: data.usersan[0]
+                });
             }
         })
         .catch(error => {
@@ -100,14 +117,25 @@ class ReportList extends React.Component{
         })
     }
 
+    fetchReportData = () => {
+        // Fetch data required for creating a report
+        this.fetchTemplate();
+        this.fetchUserData();
+    }
+
     createReport = () => {
-        let template = this.fetchTemplate();
-        let userdata = this.fetchUserData();
+        let template = this.state.template;
+        let userdata = this.state.userdata;
+
+        console.log(template, userdata);
     }
 
     render() {
-        const { data } = this.props;
-        
+        // Check if the data has been set
+        if(this.state.template !== undefined && this.state.userdata !== undefined){
+            this.createReport();
+        }
+
         return (
             <MDBContainer className="text-center">
                 <h2 className="mb-5">Beautyreports von Erika Mustermann</h2>
@@ -124,7 +152,7 @@ class ReportList extends React.Component{
                         );
                     })}
                 </MDBListGroup>
-                <MDBBtn onClick={this.createReport} color="secondary" rounded><MDBIcon icon="plus" className="pr-2" />Neuen Report generieren</MDBBtn>
+                <MDBBtn onClick={this.fetchReportData} color="secondary" rounded><MDBIcon icon="plus" className="pr-2" />Neuen Report generieren</MDBBtn>
             </MDBContainer>
         );
     }
