@@ -1,6 +1,8 @@
 //> React
 // Contains all the functionality necessary to define React components
 import React from 'react';
+// Redirect
+import { Redirect } from 'react-router-dom';
 
 //> MDB
 // "Material Design for Bootstrap" is a great UI design framework
@@ -70,6 +72,7 @@ class ReportList extends React.Component{
             userdata: undefined,
             report: undefined,
             loading: false,
+            redirect: false,
         }
     }
 
@@ -210,11 +213,13 @@ class ReportList extends React.Component{
                 if(showParagraph){
                     if(!this.state["report_article_"+key]){
                         this.setState({
-                            ["report_article_"+key]: text
+                            ["report_article_"+key]: text,
+                            redirect: true
                         })
                     } else if(!this.state["report_article_"+key].includes(text)){
                         this.setState({
-                            ["report_article_"+key]: text + this.state["report_article_"+key]
+                            ["report_article_"+key]: text + this.state["report_article_"+key],
+                            redirect: true
                         })
                     }
                     
@@ -233,6 +238,17 @@ class ReportList extends React.Component{
         // Check if the data has been set
         if(this.state.template !== undefined && this.state.userdata !== undefined){
             this.createReport();
+        }
+
+        // Redirect to edit page
+        if(this.state.redirect){
+            return(
+                <Redirect to={{
+                pathname: '/report/edit',
+                state: { ...this.state }
+                }}
+                />
+            )
         }
 
         return (
