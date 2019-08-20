@@ -169,10 +169,23 @@ class Anamnesis extends React.Component{
                         } else {
                             checkboxes = [item.defaultValue]
                         }
-                        if(!this.state[item.name]){
+                        if(this.state[item.name] === null || this.state[item.name] === undefined){
                             this.setState({
                                 [item.name]: checkboxes
                             })
+                        }
+                        break;
+                    case 'checkbox':
+                        if(!this.state[item.name]){
+                            if(item.defaultValue){
+                                this.setState({
+                                    [item.name]: true
+                                })
+                            } else {
+                                this.setState({
+                                    [item.name]: false
+                                })
+                            }
                         }
                         break;
                     default:
@@ -372,7 +385,7 @@ class Anamnesis extends React.Component{
                                                         </div>
                                                     );
                                                 case "checkboxes":
-                                                    // CHECKBOXS Input
+                                                    // CHECKBOXES Input
                                                     return (
                                                         <div key={i} >
                                                             <label htmlFor={"fromGroupInput"+i}>
