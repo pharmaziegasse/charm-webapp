@@ -153,7 +153,7 @@ class ReportRevision extends React.Component{
         // Secure this page - Make sure there is an active state
         if(this.props.location !== undefined){
             if(this.props.location.state !== undefined){
-
+                console.log(this.props.location.state.articles);
             } else {
                 return <Redirect to="/login"/> 
             }

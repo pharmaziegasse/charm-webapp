@@ -72,7 +72,6 @@ class ReportList extends React.Component{
             userdata: undefined,
             articles: undefined,
             loading: false,
-            redirect: false,
             operations: 0,
         }
     }
@@ -191,11 +190,12 @@ class ReportList extends React.Component{
         // Set variables
         let template = this.state.template;
         let operations = 0;
+        let result = {};
 
         // For each article
         template.articles.map((article, key) => {
             article.paragraphs.map((paragraph, i) => {
-                operations++;
+                operations = operations + 1;
                 let statement = paragraph.value.statement;
                 let text = paragraph.value.paragraph;
 
@@ -214,58 +214,49 @@ class ReportList extends React.Component{
                 }
                 // If the paragraph should be displayed
                 if(showParagraph){
-                    if(this.state.articles){
+                    if(result.length !== 0){
                         //There are already articles in state
-                        if(!this.state.articles["report_article_"+key]){
+                        if(!result["report_article_"+key]){
                             // There is no state for the article
-                            this.setState((prevState) => ({
-                                articles: { 
-                                    ...prevState.articles,
-                                    ["report_article_"+key]: {
-                                        heading: article.articleHeader,
-                                        text: text
-                                    }
-                                },
-                                operations: operations
-                            }));
-                        } else {
-                            // There is already a state for the article
-                            if(!this.state.articles["report_article_"+key].text.includes(text)){
-                                // If the text is not already included
-                                this.setState((prevState) => ({
-                                    articles: { 
-                                        ...prevState.articles,
-                                        ["report_article_"+key]: {
-                                            heading: article.articleHeader,
-                                            text: text + this.state.articles["report_article_"+key].text
-                                            
-                                        }
-                                    },
-                                    operations: operations
-                                }));
-                            }
-                        }
-                    } else {
-                        // Create the first article
-                        this.setState((prevState) => ({
-                            articles: { 
+                            result = {
+                                ...result,
                                 ["report_article_"+key]: {
                                     heading: article.articleHeader,
                                     text: text
                                 }
-                            },
-                            operations: operations
-                        }));
+                            }
+                            
+                        } else {
+                            // There is already a state for the article
+                            if(!result["report_article_"+key].text.includes(text)){
+                                // If the text is not already included
+                                result = { 
+                                    ...result,
+                                    ["report_article_"+key]: {
+                                        heading: article.articleHeader,
+                                        text: text + result["report_article_"+key].text
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        // Create the first article
+                        result = { 
+                            ["report_article_"+key]: {
+                                heading: article.articleHeader,
+                                text: text
+                            }
+                        }
                     }
-                }
-
-                // Can be used for debugging further functionality
-                /*
-                console.log("Visible",showParagraph,":");
-                console.log("Text",text);
-                */                
+                }         
+            });
+        });
+        if(this.state.operations === 0 && result.length !== 0){
+            this.setState({
+                articles: result,
+                operations: operations
             })
-        })
+        }
     }
 
     _redirect = () => {
