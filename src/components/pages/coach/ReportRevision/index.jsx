@@ -1,6 +1,8 @@
 //> React
 // Contains all the functionality necessary to define React components
 import React from 'react';
+// Redirect from Router
+import { Redirect } from 'react-router-dom';
 
 //> Additional libraries
 // Rich-Text Editor
@@ -16,17 +18,17 @@ import * as compose from 'lodash.flowright';
 //> MDB
 // "Material Design for Bootstrap" is a great UI design framework
 import {
-  MDBContainer,
-  MDBCollapse,
-  MDBCard,
-  MDBCardBody,
-  MDBCollapseHeader,
-  MDBProgress,
-  MDBRow,
-  MDBCol,
-  MDBInput,
-  MDBBtn,
-  MDBIcon,
+    MDBContainer,
+    MDBCollapse,
+    MDBCard,
+    MDBCardBody,
+    MDBCollapseHeader,
+    MDBProgress,
+    MDBRow,
+    MDBCol,
+    MDBInput,
+    MDBBtn,
+    MDBIcon,
 } from 'mdbreact';
 
 //> Mutations
@@ -94,7 +96,7 @@ const report = {
 class ReportRevision extends React.Component{
 
     componentWillMount = () => {
-       report.sections.map((name, i) => {
+        report.sections.map((name, i) => {
             // Generate states for every section
             this.setState({ ["collapse"+i]: true })
             // Text Editor
@@ -148,6 +150,16 @@ class ReportRevision extends React.Component{
     }
 
     render() {
+        // Secure this page - Make sure there is an active state
+        if(this.props.location !== undefined){
+            if(this.props.location.state !== undefined){
+
+            } else {
+                return <Redirect to="/login"/> 
+            }
+        } else {
+            return <Redirect to="/login"/> 
+        }
         const toolbarConfig = {
             display: ['INLINE_STYLE_BUTTONS', 'BLOCK_TYPE_BUTTONS', 'LINK_BUTTONS', 'BLOCK_TYPE_DROPDOWN', 'HISTORY_BUTTONS'],
             INLINE_STYLE_BUTTONS: [

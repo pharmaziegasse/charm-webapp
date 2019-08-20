@@ -70,9 +70,10 @@ class ReportList extends React.Component{
         this.state = {
             template: undefined,
             userdata: undefined,
-            report: undefined,
+            articles: undefined,
             loading: false,
             redirect: false,
+            operations: 0,
         }
     }
 
@@ -189,10 +190,12 @@ class ReportList extends React.Component{
         }
         // Set variables
         let template = this.state.template;
+        let operations = 0;
 
         // For each article
         template.articles.map((article, key) => {
             article.paragraphs.map((paragraph, i) => {
+                operations++;
                 let statement = paragraph.value.statement;
                 let text = paragraph.value.paragraph;
 
@@ -209,28 +212,104 @@ class ReportList extends React.Component{
                     let condition = statement.trim();
                     showParagraph = this._normalizeStatement(condition, i);
                 }
-
+                // If the paragraph should be displayed
                 if(showParagraph){
-                    if(!this.state["report_article_"+key]){
-                        this.setState({
-                            ["report_article_"+key]: text,
-                            redirect: true
-                        })
-                    } else if(!this.state["report_article_"+key].includes(text)){
-                        this.setState({
-                            ["report_article_"+key]: text + this.state["report_article_"+key],
-                            redirect: true
-                        })
+                    if(this.state.articles){
+                        //There are already articles in state
+                        if(!this.state.articles["report_article_"+key]){
+                            // There is no state for the article
+                            this.setState((prevState) => ({
+                                articles: { 
+                                    ...prevState.articles,
+                                    ["report_article_"+key]: {
+                                        heading: article.articleHeader,
+                                        text: text
+                                    }
+                                },
+                                operations: operations
+                            }));
+                        } else {
+                            // There is already a state for the article
+                            if(!this.state.articles["report_article_"+key].text.includes(text)){
+                                // If the text is not already included
+                                this.setState((prevState) => ({
+                                    articles: { 
+                                        ...prevState.articles,
+                                        ["report_article_"+key]: {
+                                            heading: article.articleHeader,
+                                            text: text + this.state.articles["report_article_"+key].text
+                                            
+                                        }
+                                    },
+                                    operations: operations
+                                }));
+                            }
+                        }
+                    } else {
+                        // Create the first article
+                        this.setState((prevState) => ({
+                            articles: { 
+                                ["report_article_"+key]: {
+                                    heading: article.articleHeader,
+                                    text: text
+                                }
+                            },
+                            operations: operations
+                        }));
                     }
-                    
                 }
-                
+
+                // Can be used for debugging further functionality
+                /*
                 console.log("Visible",showParagraph,":");
                 console.log("Text",text);
+                */                
             })
         })
+    }
 
-        
+    _redirect = () => {
+        let sum = undefined;
+        // First time
+        if(sum === undefined){
+            // If template has loaded
+            if(this.state.template !== undefined){
+                // if articles in template have loaded
+                if(this.state.template.articles !== undefined){
+                    // Count items in each article
+                    let operations = this.state.template.articles.map((a, i) => {
+                        let items = 0;
+                        a.paragraphs.map(() => {
+                            items++;
+                        });
+                        return items;
+                    });
+                    // The the sum of all articles
+                    sum = operations.reduce((a,b) => a + b, 0);
+                    // Check if the sum of all articles is the same as the operation count
+                    return this._redirectPermission(sum);
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            // Check if the sum of all articles is the same as the operation count
+            return this._redirectPermission(sum);
+        }
+    }
+
+    _redirectPermission = (sum) => {
+        if(this.state.operations !== 0){
+            if(this.state.operations === sum){
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     render() {
@@ -241,7 +320,7 @@ class ReportList extends React.Component{
         }
 
         // Redirect to edit page
-        if(this.state.redirect){
+        if(this._redirect()){
             return(
                 <Redirect to={{
                 pathname: '/report/edit',
