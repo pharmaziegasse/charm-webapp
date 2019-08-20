@@ -147,7 +147,9 @@ class Anamnesis extends React.Component{
     _setDefaultValue = (item, i) => {
         if(item.defaultValue !== "" && item.defaultValue !== undefined){
             // CHeck if the state is currently empty - to prevent over writing
-            if(this.state[item.fieldType] === undefined || this.state[item.fieldType] === "" || this.state[item.fieldType] === null){
+            if(this.state[item.fieldType] === undefined
+            || this.state[item.fieldType] === "" 
+            || this.state[item.fieldType] === null){
                 switch(item.fieldType){
                     case 'multiselect':
                         let multiselect = [];
@@ -347,7 +349,14 @@ class Anamnesis extends React.Component{
                                                             <label htmlFor={"fromGroupInput"+i}>
                                                                 {item.helpText && item.helpText}
                                                             </label>
-                                                            <div className="def-number-input number-input ml-auto mr-auto mb-3">
+                                                            <div
+                                                            className="
+                                                            def-number-input
+                                                            number-input
+                                                            ml-auto
+                                                            mr-auto
+                                                            mb-3"
+                                                            >
                                                                 <button
                                                                 onClick={() => this._handleNumberClick(item.name,-1)}
                                                                 className="minus">
@@ -478,7 +487,11 @@ class Anamnesis extends React.Component{
                         }
                     </MDBCol>
                 </MDBRow>
-                <MDBBtn color="secondary" onClick={this.sendData}><MDBIcon icon="save" className="pr-2" />Speichern</MDBBtn>
+                <MDBBtn
+                color="secondary"
+                onClick={this.sendData}>
+                    <MDBIcon icon="save" className="pr-2" />Speichern
+                </MDBBtn>
             </MDBContainer>
         );
     }
