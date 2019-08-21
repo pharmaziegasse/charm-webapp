@@ -80,9 +80,14 @@ class ReportRevision extends React.Component{
             // Generate states for every section
             this.setState({ ["collapse"+i]: true })
             // Text Editor
-            if(this.props.location.state.articles[name].text !== "" && this.props.location.state.articles[name].text !== undefined){
+            if(this.props.location.state.articles[name].text !== "" &&
+            this.props.location.state.articles[name].text !== undefined){
                 // Save current section to text editor
-                this.setState({ ["value"+i]: RichTextEditor.createValueFromString(this.props.location.state.articles[name].text, 'html') })
+                this.setState({ 
+                    ["value"+i]: RichTextEditor.createValueFromString(
+                            this.props.location.state.articles[name].text, 'html'
+                        ) 
+                    })
                 return true;
             } else {
                 // Create empty value if the section has no text
@@ -141,7 +146,11 @@ class ReportRevision extends React.Component{
                             <h3>Review individual beauty report</h3>
                             <p>Von Max</p>
 
-                            <MDBProgress material color={this.getStatus() === 100 ? ("success") : ("secondary")} value={this.getStatus()} height="20px">
+                            <MDBProgress
+                            material
+                            color={this.getStatus() === 100 ? ("success") : ("secondary")}
+                            value={this.getStatus()}
+                            height="20px">
                             {this.getStatus() > 0 &&
                                 <>{Math.round(this.getStatus())}% abgeschlossen</>
                             }
@@ -157,7 +166,13 @@ class ReportRevision extends React.Component{
                                                     {article.heading}
                                                 </MDBCol>
                                                 <MDBCol md="6" className="text-right">
-                                                    <MDBInput label="Überprüft" filled type="checkbox" id={"checkbox"+i} onClick={this.toggleCollapse("collapse"+i)} />
+                                                    <MDBInput
+                                                    label="Überprüft"
+                                                    filled
+                                                    type="checkbox"
+                                                    id={"checkbox"+i}
+                                                    onClick={this.toggleCollapse("collapse"+i)}
+                                                    />
                                                 </MDBCol>
                                             </MDBRow>
                                         </MDBCollapseHeader>
@@ -181,8 +196,18 @@ class ReportRevision extends React.Component{
                                     <MDBBtn color="danger"><MDBIcon icon="times" className="pr-2" />Verwerfen</MDBBtn>
                                 </MDBCol>
                                 <MDBCol md="6" className="text-right">
-                                    <MDBBtn color="success" disabled={this.isFinished()}><MDBIcon icon="save" className="pr-2" />Speichern</MDBBtn>
-                                    <MDBBtn color="green" disabled={this.isFinished()}><MDBIcon far icon="file-pdf" className="pr-2" />Speichern + PDF</MDBBtn>
+                                    <MDBBtn
+                                    color="success"
+                                    disabled={this.isFinished()}
+                                    >
+                                    <MDBIcon icon="save" className="pr-2" />Speichern
+                                    </MDBBtn>
+                                    <MDBBtn
+                                    color="green"
+                                    disabled={this.isFinished()}
+                                    >
+                                    <MDBIcon far icon="file-pdf" className="pr-2" />Speichern + PDF
+                                    </MDBBtn>
                                 </MDBCol>
                             </MDBRow>
                         </MDBContainer>
