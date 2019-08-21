@@ -47,10 +47,10 @@ const GET_FORMS = gql`
 `;
 // Update data
 const UPDATE_FORMS = gql`
-    mutation createAn ($token: String!, $values: GenericScalar!) {
+    mutation createAn ($token: String!, $values: GenericScalar!, $urlpath: String!) {
         anamneseAnFormPage(
             token: $token,
-            url: "/newanamnese",
+            url: $urlpath,
             values: $values
         ) {
             result
@@ -66,7 +66,7 @@ class Anamnesis extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-
+            urlPath: undefined
         }
     }
 
@@ -78,12 +78,13 @@ class Anamnesis extends React.Component{
             ...this.state
         };
         // Check if the form values have been set
-        if(formvalues !== null || formvalues !== undefined){
+        if(formvalues !== null && formvalues !== undefined && this.state.urlPath !== undefined){
             // Call graphQL mutation
             await this.props.update({
                 variables: {
                     "token": localStorage.getItem('wca'),
-                    "values": formvalues
+                    "values": formvalues,
+                    "urlpath": this.state.urlPath
                 }
             })
             .then(({data}) => {
@@ -288,7 +289,8 @@ class Anamnesis extends React.Component{
     }
 
     render() {
-        console.log(this.state);
+        //console.log(this.state);
+
         // Route protection
         if(isAuthed() === false) return <Redirect to="/login"/>
 
@@ -299,7 +301,7 @@ class Anamnesis extends React.Component{
                     <MDBCol md="6">
                         {
                         <Query query={GET_FORMS} variables={{ "token": localStorage.getItem('wca') }}>
-                        {({ loading, error, data, client}) => {
+                        {({ loading, error, data }) => {
                             if (loading) {
                             return (<div>Loading...</div>);
                             }
@@ -319,6 +321,13 @@ class Anamnesis extends React.Component{
                                     });
                                     // Check if the FormPage exists
                                     if(key !== undefined){
+                                        // Set urlpath (where to send data)
+                                        if(this.state.urlPath === undefined){
+                                            this.setState({
+                                                urlPath: data.pages[key].urlPath
+                                            });
+                                        }
+
                                         let formfields = data.pages[key].formFields;
                                         return formfields.map((item, i) => {
                                             //console.log(item);

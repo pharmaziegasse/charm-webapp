@@ -234,7 +234,7 @@ class ReportList extends React.Component{
                                     ...result,
                                     ["report_article_"+key]: {
                                         heading: article.articleHeader,
-                                        text: text + result["report_article_"+key].text
+                                        text: result["report_article_"+key].text + text
                                     }
                                 }
                             }
