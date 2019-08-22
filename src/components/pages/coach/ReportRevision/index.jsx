@@ -134,6 +134,11 @@ class ReportRevision extends React.Component{
         this.setState({["value"+i]: e});
     }
 
+    goBack = () => {
+        let path = `../report`;
+        this.props.history.push(path);
+    }
+
     render() {
         console.log(this.state);
         // Secure this page - Make sure there is an active state
@@ -193,7 +198,10 @@ class ReportRevision extends React.Component{
                             }
                             <MDBRow className="my-4">
                                 <MDBCol md="6" className="text-left">
-                                    <MDBBtn color="danger"><MDBIcon icon="times" className="pr-2" />Verwerfen</MDBBtn>
+                                    <MDBBtn
+                                    color="danger"
+                                    onClick={this.goBack}
+                                    ><MDBIcon icon="times" className="pr-2" />Verwerfen</MDBBtn>
                                 </MDBCol>
                                 <MDBCol md="6" className="text-right">
                                     <MDBBtn

@@ -38,20 +38,14 @@ const GET_TEMPLATE = gql`
 `;
 // Get user anamnsesis data
 const GET_USERDATA = gql`
-    query getUserData(
-        $token: String!,
-        $uid: String!
-    ) {
-        usersan (
-            token: $token,
-            uid: $uid
-        ) {
-            ... on AnamneseType {
-                id
-                uid
-                anid
-                formData
-                date
+    query getAnamneseData_byUid($token: String!, $id: Int!) {
+        anByUid(token: $token, uid: $id) {
+            id
+            date
+            formData
+            user {
+            id
+            username
             }
         }
     }
@@ -101,20 +95,15 @@ class ReportList extends React.Component{
     fetchUserData = async () => {
         await this.props.client.query({
             query: GET_USERDATA,
-            variables: { "token": localStorage.getItem("wca"), "uid": "Yeeeeeeeee" }
+            variables: { "token": localStorage.getItem("wca"), "id": "1" }
         }).then(({data}) => {
-            if(data.usersan !== undefined){
-                if(data.usersan.length > 1){
-                    let date_sort_desc = function (item1, item2) {
-                        // DESCENDING order
-                        if (item1.date > item2.date) return -1;
-                        if (item1.date < item2.date) return 1;
-                        return 0;
-                    };
+            console.log(data);
+            if(data.anByUid !== undefined){
+                if(data.anByUid.length > 1){
+                    this.setState({
+                        userdata: data.anByUid[data.anByUid.length -1]
+                    });
                 }
-                this.setState({
-                    userdata: data.usersan[0]
-                });
             }
         })
         .catch(error => {
