@@ -50,6 +50,10 @@ const APILink = APIHost+"/api/graphiql";
 
 const LINK:HttpLink = new HttpLink({
   uri: APILink,
+  headers: {
+    authorization:
+      localStorage.getItem('wca')
+  }
 });
 
 // Apollo Client setup
