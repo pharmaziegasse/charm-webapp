@@ -15,9 +15,8 @@ import {
 } from 'mdbreact';
 
 //> Connection
-import { graphql, withApollo } from "react-apollo";
+import { withApollo } from "react-apollo";
 import gql from "graphql-tag";
-import * as compose from 'lodash.flowright';
 
 //> Queries
 // Get template
@@ -26,10 +25,11 @@ const GET_TEMPLATE = gql`
         pages(token: $token) {
             ... on ReportsReportsPage {
                 id
-                articles {
-                    ... on Reports_S_ArticleBlock {
-                        articleHeader
-                        paragraphs
+                chapters{
+                    __typename
+                    ... on Reports_S_ChapterBlock{
+                    chapterHeader
+                    subChapters
                     }
                 }
             }
@@ -81,6 +81,7 @@ class ReportList extends React.Component{
                     if(page.__typename === "ReportsReportsPage"){
                         template = data.pages[i];
                     }
+                    return true;
                 });
                 this.setState({
                     template: template
@@ -181,64 +182,73 @@ class ReportList extends React.Component{
         let operations = 0;
         let result = {};
 
-        // For each article
-        template.articles.map((article, key) => {
-            article.paragraphs.map((paragraph, i) => {
-                operations = operations + 1;
-                let statement = paragraph.value.statement;
-                let text = paragraph.value.paragraph;
+        console.log(template);
 
-                let showParagraph = false;
-                if(statement.includes(', ')){
-                    let conditions = statement.split(', ')
-                    let normalizeResults = conditions.map((condition, i) => {
-                        return this._normalizeStatement(condition, i);
-                    })
-                    if(!normalizeResults.includes(false)){
-                        showParagraph = true;
+        // For each article
+        template.chapters.map((chapter, key) => {
+            chapter.subChapters.map((article, k) => {
+                console.log("chapter",chapter);
+                console.log("article",article.value);
+                article.value.paragraphs.map((paragraph, i) => {
+                    console.log("paragraph",paragraph.value);
+                    operations = operations + 1;
+                    let statement = paragraph.value.statement;
+                    let text = (key+1)+"."+(k+1)+". "+article.value.sub_chapter_header + paragraph.value.paragraph;
+
+                    let showParagraph = false;
+                    if(statement.includes(', ')){
+                        let conditions = statement.split(', ')
+                        let normalizeResults = conditions.map((condition, i) => {
+                            return this._normalizeStatement(condition, i);
+                        })
+                        if(!normalizeResults.includes(false)){
+                            showParagraph = true;
+                        }
+                    } else {
+                        let condition = statement.trim();
+                        showParagraph = this._normalizeStatement(condition, i);
                     }
-                } else {
-                    let condition = statement.trim();
-                    showParagraph = this._normalizeStatement(condition, i);
-                }
-                // If the paragraph should be displayed
-                if(showParagraph){
-                    if(result.length !== 0){
-                        //There are already articles in state
-                        if(!result["report_article_"+key]){
-                            // There is no state for the article
-                            result = {
-                                ...result,
-                                ["report_article_"+key]: {
-                                    heading: article.articleHeader,
-                                    text: text
-                                }
-                            }
-                            
-                        } else {
-                            // There is already a state for the article
-                            if(!result["report_article_"+key].text.includes(text)){
-                                // If the text is not already included
-                                result = { 
+                    // If the paragraph should be displayed
+                    if(showParagraph){
+                        if(result.length !== 0){
+                            //There are already articles in state
+                            if(!result["report_article_"+key]){
+                                // There is no state for the article
+                                result = {
                                     ...result,
                                     ["report_article_"+key]: {
-                                        heading: article.articleHeader,
-                                        text: result["report_article_"+key].text + text
+                                        heading: (key+1)+". "+chapter.chapterHeader,
+                                        text: text
+                                    }
+                                }
+                                
+                            } else {
+                                // There is already a state for the article
+                                if(!result["report_article_"+key].text.includes(text)){
+                                    // If the text is not already included
+                                    result = { 
+                                        ...result,
+                                        ["report_article_"+key]: {
+                                            heading: (key+1)+". "+chapter.chapterHeader,
+                                            text: result["report_article_"+key].text + text
+                                        }
                                     }
                                 }
                             }
-                        }
-                    } else {
-                        // Create the first article
-                        result = { 
-                            ["report_article_"+key]: {
-                                heading: article.articleHeader,
-                                text: text
+                        } else {
+                            // Create the first article
+                            result = { 
+                                ["report_article_"+key]: {
+                                    heading: (key+1)+". "+chapter.chapterHeader,
+                                    text: text
+                                }
                             }
                         }
                     }
-                }         
-            });
+                    return true; 
+                });
+            })
+            return true;
         });
         if(this.state.operations === 0 && result.length !== 0){
             this.setState({
@@ -255,17 +265,22 @@ class ReportList extends React.Component{
             // If template has loaded
             if(this.state.template !== undefined){
                 // if articles in template have loaded
-                if(this.state.template.articles !== undefined){
+                if(this.state.template.chapters !== undefined){
+                    
                     // Count items in each article
-                    let operations = this.state.template.articles.map((a, i) => {
+                    let operations = this.state.template.chapters.map((a, i) => {
                         let items = 0;
-                        a.paragraphs.map(() => {
-                            items++;
+                        a.subChapters.map((chapter, key) => {
+                            chapter.value.paragraphs.map(() => {
+                                items++;
+                                return true;
+                            })
                         });
                         return items;
                     });
                     // The the sum of all articles
                     sum = operations.reduce((a,b) => a + b, 0);
+                    console.log(sum);
                     // Check if the sum of all articles is the same as the operation count
                     return this._redirectPermission(sum);
                 } else {
@@ -293,6 +308,15 @@ class ReportList extends React.Component{
     }
 
     render() {
+        // Get global state with login information
+        const { globalState } = this.props;
+        console.log(globalState);
+        //> Route protection
+        // Only logged in uses can access this page
+        if(!globalState.logged) return <Redirect to="/login"/>
+        // If logged in but not coach
+        if(globalState.logged && !globalState.coach) return <Redirect to="/dashboard"/> 
+        
         console.log(this.state);
         // Check if the data has been set
         if(this.state.template !== undefined && this.state.userdata !== undefined){
