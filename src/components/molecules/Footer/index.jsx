@@ -5,74 +5,36 @@ import React from 'react';
 //> MDB
 // "Material Design for Bootstrap" is a great UI design framework
 import {
-  MDBFooter,
-  MDBRow,
-  MDBCol,
-  MDBContainer,
+    MDBFooter,
+    MDBContainer,
+    MDBRow,
+    MDBCol,
+    MDBIcon,
 } from 'mdbreact';
 
 class Footer extends React.Component{
     render(){
         return(
-            <MDBFooter color="unique-darkblue" className="font-small pt-4 mt-4">
-                <MDBContainer className="text-center text-md-left">
-                    <MDBRow>
-                    <MDBCol md="6">
-                        <h5 className="title">Footer Content</h5>
-                        <p>
-                        Here you can use rows and columns here to organize your footer
-                        content.
-                        </p>
-                    </MDBCol>
-                    <MDBCol md="3">
-                        <h5 className="title">Links</h5>
-                        <ul>
-                        <li className="list-unstyled">
-                            <a href="#!">Link 1</a>
-                        </li>
-                        <li className="list-unstyled">
-                            <a href="#!">Link 2</a>
-                        </li>
-                        <li className="list-unstyled">
-                            <a href="#!">Link 3</a>
-                        </li>
-                        <li className="list-unstyled">
-                            <a href="#!">Link 4</a>
-                        </li>
-                        </ul>
-                    </MDBCol>
-                    <MDBCol md="3">
-                        <h5 className="title">Links</h5>
-                        <ul>
-                        <li className="list-unstyled">
-                            <a href="#!">Link 1</a>
-                        </li>
-                        <li className="list-unstyled">
-                            <a href="#!">Link 2</a>
-                        </li>
-                        <li className="list-unstyled">
-                            <a href="#!">Link 3</a>
-                        </li>
-                        <li className="list-unstyled">
-                            <a href="#!">Link 4</a>
-                        </li>
-                        </ul>
-                    </MDBCol>
-                    </MDBRow>
-                </MDBContainer>
+            <MDBFooter color="unique-darkblue" className="mt-4">
+                <div className="py-4">
+                    <MDBContainer>
+                        <MDBRow className="text-center">
+                            <MDBCol md="4">
+                                <a href="#">Referral Programm</a>
+                            </MDBCol>
+                            <MDBCol md="4">
+                                <a href="#"><MDBIcon fab icon="facebook-f" className="pr-2" /></a>
+                                <a href="#"><MDBIcon fab icon="instagram" className="pl-2" /></a>
+                            </MDBCol>
+                            <MDBCol md="4">
+                                <a href="#">Fragen? Wir sind für Sie da!</a>
+                            </MDBCol>
+                        </MDBRow>
+                    </MDBContainer>
+                </div>
                 <div className="footer-copyright text-center py-3">
                     <MDBContainer fluid>
                         &copy; 2018 - {new Date().getFullYear()} Copyright: Pharmaziegasse<sup>®</sup>
-                        <br />
-                        <p className="text-center my-2">
-                            Made with <i className="fas fa-heart pulse red-text" aria-hidden="true"></i> by
-                            <a
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            href="https://www.aichner-christian.com?refer=charm"
-                            > Werbeagentur Christian Aichner
-                            </a>
-                        </p>
                     </MDBContainer>
                 </div>
             </MDBFooter>
