@@ -1,0 +1,19 @@
+#coach{
+    h2{
+        /**
+         * For span to receive the ::first-letter attribute, it must be block
+         * Ref: https://stackoverflow.com/questions/7631722/css-first-letter-not-working
+         */ 
+        span{
+            display: inline-block;
+        }
+        span::first-letter{
+            text-transform: uppercase;
+        }
+    }
+}
+
+/** 
+ * SPDX-License-Identifier: (EUPL-1.2)
+ * Copyright © 2019 Werbeagentur Christian Aichner
+ */
