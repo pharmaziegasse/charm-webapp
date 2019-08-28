@@ -46,18 +46,25 @@ class App extends React.Component {
     logged: false,
     username: undefined,
     coach: true,
+    loaded: false,
   }
 
   componentWillMount = () => {
-    try {
-      // Verify Token on first load
-      this._verifyToken();
-      // Refresh token every 4 minutes
-      setInterval(async () => {
+    if(localStorage.getItem('wca') !== null){
+      try {
+        // Verify Token on first load
         this._verifyToken();
-      }, 240000);
-    } catch(e) {
-      console.log(e);
+        // Refresh token every 4 minutes
+        setInterval(async () => {
+          this._verifyToken();
+        }, 240000);
+      } catch(e) {
+        console.log(e);
+      }
+    } else {
+      this.setState({
+        loaded: true
+      });
     }
   }
 
@@ -89,13 +96,15 @@ class App extends React.Component {
     this.setState({
       logged: false,
       username: undefined,
+      loaded: true
     });
   }
 
   _setLogged = (uname) => {
     this.setState({
       logged: true,
-      username: uname
+      username: uname,
+      loaded: true
     });
   }
 
@@ -134,12 +143,20 @@ class App extends React.Component {
     })
   }
 
+  handler = (logged) => {
+    if(logged){
+      this._verifyToken();
+    }
+  }
+
   render() {
     return (
       <Router>
         <div className="flyout">
           <main className="mt-5">
-            <Routes globalState={this.state} />
+            {this.state.loaded &&
+            <Routes handler={this.handler} globalState={this.state} />
+            }
           </main>
           <Footer globalState={this.state} />
         </div>
@@ -153,7 +170,7 @@ export default compose(
   graphql(REFRESH_TOKEN, { name: 'refresh' }),
   )(App);
 
-/** 
+/**
  * SPDX-License-Identifier: (EUPL-1.2)
  * Copyright © 2019 Werbeagentur Christian Aichner
  */

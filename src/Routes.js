@@ -28,7 +28,13 @@ import {
 } from './components/pages';
 
 class Routes extends React.Component {
-  
+
+  // Handle login
+  handleLogin = (status) => {
+    // Call root component handler
+    this.props.handler(status);
+  }
+
   render() {
     return (
       <Switch>
@@ -40,7 +46,7 @@ class Routes extends React.Component {
         <Route
         exact
         path='/login'
-        component={(props) => <Login globalState={this.props.globalState} {...props} />}
+        component={(props) => <Login handler = {this.handleLogin} globalState={this.props.globalState} {...props} />}
         />
         <Route
         exact

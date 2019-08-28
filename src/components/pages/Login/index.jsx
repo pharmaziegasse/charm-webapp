@@ -36,7 +36,6 @@ class Login extends React.Component {
         this.state = {
             email: "",
             password: "",
-            isLogged: false
         }
     }
 
@@ -60,12 +59,13 @@ class Login extends React.Component {
                 if(data.tokenAuth !== undefined){
                     if(data.tokenAuth.token !== undefined){
                         localStorage.setItem('wca',data.tokenAuth.token);
-                        this.setState({isLogged: true});
+                        this.props.handler(true);
                     }
                 }
             }
         }).catch((loading, error) => {
-            console.warn('there was an error sending the query', error);
+            // Username or password is wrong
+            this.props.handler(false);
         });
     };
 
@@ -78,7 +78,10 @@ class Login extends React.Component {
          * If user is already logged in, redirect to Dashboard
          * This doubles as a neat way to redirect the user directly after login
          */
-        if(globalState.logged) return <Redirect to="/dashboard"/> 
+        if(globalState.logged){
+            console.log("reached");
+            return <Redirect to="/dashboard"/> 
+        } 
 
         return (
         <div>
