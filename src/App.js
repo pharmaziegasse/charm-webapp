@@ -18,7 +18,7 @@ import Routes from './Routes';
 
 //> Backend Connection
 // Apollo
-import { graphql } from "react-apollo";
+import { graphql, withApollo } from "react-apollo";
 import { ApolloClient, HttpLink, InMemoryCache, gql } from "apollo-boost";
 import * as compose from 'lodash.flowright';
 
@@ -39,6 +39,32 @@ const REFRESH_TOKEN = gql`
   }
 `;
 
+const GET_DATA = gql`
+  query ($token: String!) {
+    userById(token: $token, id: 1) {
+      id
+      lastLogin
+      email
+      isActive
+      isStaff
+      isCoach
+      isCustomer
+      coach
+      title    
+      firstName
+      lastName
+      birthdate
+      telephone
+      address
+      city
+      postalCode
+      country
+      newsletter
+      verified
+    }
+  }
+`;
+
 
 class App extends React.Component {
 
@@ -47,6 +73,7 @@ class App extends React.Component {
     username: undefined,
     coach: true,
     loaded: false,
+    userdata: {}
   }
 
   componentWillMount = () => {
@@ -68,28 +95,43 @@ class App extends React.Component {
     }
   }
 
+  _getUserData = () => {
+    this.props.client.query({
+        query: GET_DATA,
+        variables: { "token": localStorage.getItem("wca") }
+    }).then(({data}) => {
+        this.setState({
+          userdata: data.userById,
+          loaded: true
+        });
+    })
+    .catch(error => {
+        console.log("Error",error);
+    })
+  }
+
   _verifyToken = () => {
     this.props.verify({
       variables: { "token": localStorage.getItem('wca') }
     })
-      .then(({data}) => {
-          if(data !== undefined){
-            if(data.verifyToken !== null){
-              this._isLogged(
-                data.verifyToken.payload.exp,
-                data.verifyToken.payload.origIat,
-                data.verifyToken.payload.username
-              );
-            } else {
-              this._notLogged();
-            }
+    .then(({data}) => {
+        if(data !== undefined){
+          if(data.verifyToken !== null){
+            this._isLogged(
+              data.verifyToken.payload.exp,
+              data.verifyToken.payload.origIat,
+              data.verifyToken.payload.username
+            );
           } else {
             this._notLogged();
           }
-      })
-      .catch(error => {
-          console.error("Mutation error:",error);
-      })
+        } else {
+          this._notLogged();
+        }
+    })
+    .catch(error => {
+        console.error("Mutation error:",error);
+    })
   }
 
   _notLogged = () => {
@@ -104,8 +146,7 @@ class App extends React.Component {
     this.setState({
       logged: true,
       username: uname,
-      loaded: true
-    });
+    }, () => this._getUserData());
   }
 
   _isLogged = (exp, orig, uname) => {
@@ -168,7 +209,7 @@ class App extends React.Component {
 export default compose(
   graphql(VERIFY_TOKEN, { name: 'verify' }),
   graphql(REFRESH_TOKEN, { name: 'refresh' }),
-  )(App);
+  )(withApollo(App));
 
 /**
  * SPDX-License-Identifier: (EUPL-1.2)
