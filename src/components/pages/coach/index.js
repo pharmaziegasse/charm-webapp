@@ -3,13 +3,15 @@
 import ReportRevision from './ReportRevision';
 import ReportList from './ReportList';
 import Anamnesis from './Anamnesis';
-import Coach from './CoachDashboard';
+import CoachDashboard from './CoachDashboard';
+import NewCustomer from './NewCustomer';
 
 export {
     ReportRevision,
     ReportList,
     Anamnesis,
-    Coach,
+    CoachDashboard,
+    NewCustomer,
 };
 
 /** 
