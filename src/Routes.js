@@ -18,7 +18,8 @@ import {
   ReportRevision,
   ReportList,
   Anamnesis,
-  Coach,
+  CoachDashboard,
+  NewCustomer,
 } from './components/pages/coach';
 /**
  * Login: Login page
@@ -56,7 +57,12 @@ class Routes extends React.Component {
         <Route
         exact
         path='/coach'
-        component={(props) => <Coach globalState={this.props.globalState} {...props} />}
+        component={(props) => <CoachDashboard globalState={this.props.globalState} {...props} />}
+        />
+        <Route
+        exact
+        path='/add'
+        component={(props) => <NewCustomer globalState={this.props.globalState} {...props} />}
         />
         <Route
         exact
