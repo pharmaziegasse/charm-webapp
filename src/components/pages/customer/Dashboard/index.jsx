@@ -1,6 +1,8 @@
 //> React
 // Contains all the functionality necessary to define React components
 import React, { Fragment } from 'react';
+// Link and Redirect from Router
+import { Link, Redirect } from 'react-router-dom';
 
 //> MDB
 // "Material Design for Bootstrap" is a great UI design framework
@@ -105,8 +107,16 @@ class HomePage extends React.Component {
     }]
   }
 
-  scrollToTop = () => window.scrollTo(0, 0);
   render() {
+
+    // Get global state with login information
+    const { globalState } = this.props;
+
+    // Secure page
+    if(!globalState.logged) { return (<Redirect to="/login"/>) }
+
+    if(globalState.logged && globalState.coach) { return (<Redirect to="/coach"/>) }
+
     return (
       <Fragment>
       <Navbar />

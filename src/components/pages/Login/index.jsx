@@ -16,10 +16,6 @@ import {
     MDBAlert,
 } from "mdbreact";
 
-//> Helpers
-// Authentication
-import { isAuthed } from '../../helpers/auth.js';
-
 //> Backend Connection
 // Apollo
 import { graphql, Query } from "react-apollo";
@@ -74,11 +70,15 @@ class Login extends React.Component {
     };
 
     render() {
+
+        // Get global state with login information
+        const { globalState } = this.props;
+
         /* Redirect to Dashboard
          * If user is already logged in, redirect to Dashboard
          * This doubles as a neat way to redirect the user directly after login
          */
-        if(isAuthed() === true) return <Redirect to="/dashboard"/> 
+        if(globalState.logged) return <Redirect to="/dashboard"/> 
 
         return (
         <div>

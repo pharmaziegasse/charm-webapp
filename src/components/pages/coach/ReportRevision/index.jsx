@@ -24,28 +24,6 @@ import {
     MDBIcon,
 } from 'mdbreact';
 
-// Dummy data
-/*
-const report = {
-    customer: "Erika Mustermann",
-    coach: "Monika Mustermann",
-    sections: [
-        {
-            title: "Intro",
-            text: "ABER…! In diesem Thema müssen wir etwas ausholen, da es essentiell für deine Haut ist:<br/>Es gibt oft Verwirrung darüber, ob neben Produkten wie einer Feuchtigkeitscreme oder Grundierung mit Lichtschutzfaktor zusätzlich ein Sonnenschutzmittel verwendet werden sollte. Die Wahrheit ist, dass die meisten von uns nicht genug von unserem Kosmetikprodukt verwenden, um den gleichen Lichtschutzfaktor zu erzielen wie ein Sonnenschutzmittel allein. Im Frühjahr und Sommer lohnt es sich, ein separates Sonnenschutzmittel zu verwenden.<br/>Es ist jedoch nicht so, dass ein einheitliches Modell für alle gilt. Es muss bei der Auswahl eines Sonnenschutzes vielmehr auch ein gesunder Menschenverstand eingesetzt werden. Wenn du beispielsweise im Winter regelmäßig Peeling-Produkte wie Alpha-Hydroxy-Säuren (AHAs)  und Beta-Hydroxysäuren (BHAs)  verwendest, ist ein separater Sonnenschutz besser geeignet. Wenn du an Outdoor-Aktivitäten teilnimmst oder beruflich länger als zwanzig Minuten im Freien bist, solltest du einen täglichen Sonnenschutz verwenden. Gleiches gilt, wenn du dich in einem sonnigen Klima oder in der Nähe des Äquators befindest: Das Tragen eines regelmäßigen täglichen "
-        },
-        {
-            title: "Hautzustand",
-            text: "die Verwendung eines LSF 30 keinen doppelt so hohen Schutz bietet, wie die Verwendung von LSF 15? Ebenso ist ein Faktor 20 nicht doppelt so gut wie ein Faktor 10. Ein LSF 15 blockiert etwa 93% der UVB Strahlung. Ein LSF 30 blockiert etwa 97% und LSF 50 blockiert etwa 98% der UVB Strahlung. Du siehst also, dass zwischen einem LSF von 30 und 50 tatsächlich kaum Unterschiede bestehen. Es gibt keinen Sonnenschutz, der 100% igen Schutz vor der Sonne bietet."
-        },
-        {
-            title: "Ending",
-            text: "Das sagen unsere Experten<br/>Das natürliche Altern der Haut steht in direkter Verbindung mit der Sauerstoffversorgung. Schon ab dem 20. Lebensjahr beginnen die Kapillaren dem Gewebe immer weniger Sauerstoff zuzuführen, wofür eine altersbedingte Verengung der Gefäße verantwortlich ist (der Aufenthalt in geschlossenen Räumen kann diese Tendenz verstärken). Durch die verminderte Sauerstoffzufuhr werden nicht genügend Nährstoffe zu den Zellen transportiert, so dass diese allmählich „verhungern“. Wer sich regelmäßig an der frischen Luft aufhält, pumpt jede Menge Sauerstoff in seine Lungen: 95 Prozent über die Atmung und fünf Prozent über die Haut. In den Zellen bewirkt der Sauerstoff einen Teilungsimpuls, der die Haut jünger und frischer aussehen lässt."
-        }
-    ]
-}
-*/
-
 // Rich Text Box editor config
 const toolbarConfig = {
     display: ['INLINE_STYLE_BUTTONS', 'BLOCK_TYPE_BUTTONS', 'LINK_BUTTONS', 'BLOCK_TYPE_DROPDOWN', 'HISTORY_BUTTONS'],
@@ -134,7 +112,21 @@ class ReportRevision extends React.Component{
         this.setState({["value"+i]: e});
     }
 
+    goBack = () => {
+        let path = `../report`;
+        this.props.history.push(path);
+    }
+
     render() {
+        // Get global state with login information
+        const { globalState } = this.props;
+
+        //> Route protection
+        // Only logged in uses can access this page
+        if(!globalState.logged) return <Redirect to="/login"/>
+        // If logged in but not coach
+        if(globalState.logged && !globalState.coach) return <Redirect to="/dashboard"/> 
+        
         console.log(this.state);
         // Secure this page - Make sure there is an active state
         const { location } = this.props; 
@@ -193,7 +185,10 @@ class ReportRevision extends React.Component{
                             }
                             <MDBRow className="my-4">
                                 <MDBCol md="6" className="text-left">
-                                    <MDBBtn color="danger"><MDBIcon icon="times" className="pr-2" />Verwerfen</MDBBtn>
+                                    <MDBBtn
+                                    color="danger"
+                                    onClick={this.goBack}
+                                    ><MDBIcon icon="times" className="pr-2" />Verwerfen</MDBBtn>
                                 </MDBCol>
                                 <MDBCol md="6" className="text-right">
                                     <MDBBtn

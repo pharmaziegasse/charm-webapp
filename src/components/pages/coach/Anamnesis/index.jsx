@@ -21,10 +21,6 @@ import {
 import { graphql, Query } from "react-apollo";
 import gql from 'graphql-tag';
 
-//> Helpers
-// Authentication
-import { isAuthed } from '../../../helpers/auth.js';
-
 //> Queries
 // Get forms
 const GET_FORMS = gql`
@@ -291,8 +287,14 @@ class Anamnesis extends React.Component{
     render() {
         //console.log(this.state);
 
-        // Route protection
-        if(isAuthed() === false) return <Redirect to="/login"/>
+        // Get global state with login information
+        const { globalState } = this.props;
+
+        //> Route protection
+        // Only logged in uses can access this page
+        if(!globalState.logged) return <Redirect to="/login"/>
+        // If logged in but not coach
+        if(globalState.logged && !globalState.coach) return <Redirect to="/dashboard"/> 
 
         return (
             <MDBContainer className="text-center">

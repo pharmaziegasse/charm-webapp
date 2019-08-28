@@ -18,6 +18,7 @@ import {
   ReportRevision,
   ReportList,
   Anamnesis,
+  Coach,
 } from './components/pages/coach';
 /**
  * Login: Login page
@@ -27,14 +28,40 @@ import {
 } from './components/pages';
 
 class Routes extends React.Component {
+  
   render() {
     return (
       <Switch>
-        <Route exact path='/dashboard' component={Dashboard} />
-        <Route exact path='/login' component={Login} />
-        <Route exact path='/anamnesis' component={Anamnesis} />
-        <Route exact path='/report' component={ReportList} />
-        <Route exact path='/report/edit' component={ReportRevision} />
+        <Route
+        exact
+        path='/dashboard'
+        component={(props) => <Dashboard globalState={this.props.globalState} {...props} />}
+        />
+        <Route
+        exact
+        path='/login'
+        component={(props) => <Login globalState={this.props.globalState} {...props} />}
+        />
+        <Route
+        exact
+        path='/anamnesis'
+        component={(props) => <Anamnesis globalState={this.props.globalState} {...props} />}
+        />
+        <Route
+        exact
+        path='/coach'
+        component={(props) => <Coach globalState={this.props.globalState} {...props} />}
+        />
+        <Route
+        exact
+        path='/report'
+        component={(props) => <ReportList globalState={this.props.globalState} {...props} />}
+        />
+        <Route
+        exact
+        path='/report/edit'
+        component={(props) => <ReportRevision globalState={this.props.globalState} {...props} />}
+        />
         <Route
           render={function () {
             return <h1>Not Found</h1>;
