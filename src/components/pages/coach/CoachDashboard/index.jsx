@@ -108,7 +108,10 @@ class CoachDashboard extends React.Component{
         return(
             <MDBContainer id="coach">
                 <h2 className="text-center font-weight-bold">Willkommen zurück, <span>{globalState.username}</span>!</h2>
-                <MDBRow className="text-center mt-5">
+                <div className="mt-5 mb-3 text-right">
+                    <MDBBtn color="green"><MDBIcon icon="plus-circle" className="pr-2" />Add customer</MDBBtn>
+                </div>
+                <MDBRow className="text-center">
                     <MDBCol md="12">
                         <h3>Deine KundInnen</h3>
                         <MDBDataTable
