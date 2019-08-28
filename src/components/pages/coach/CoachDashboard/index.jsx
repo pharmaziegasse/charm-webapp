@@ -43,9 +43,19 @@ const TableData = {
             sort: 'asc'
         },
         {
-            label: 'Aktionen',
-            field: 'actions',
+            label: 'E-Mail',
+            field: 'email',
             sort: 'asc'
+        },
+        {
+            label: 'Phone',
+            field: 'phone',
+            sort: 'disabled'
+        },
+        {
+            label: 'Quick actions',
+            field: 'actions',
+            sort: 'disabled'
         }
     ],
     rows: [
@@ -53,10 +63,19 @@ const TableData = {
             'id': 1,
             'first': 'Mathea',
             'last': 'Kuttnig',
+            'email': 'm.kuttnig@pharmaziegasse.at',
+            'phone': '+43 666 666 666 66',
             'actions':
             <div>
-            <Link to="/report"><MDBBtn outline color="purple" size="md">Beauty Reports</MDBBtn></Link>
-            <MDBBtn color="purple" size="md"><MDBIcon icon="user" className="pr-2" />Profil anzeigen</MDBBtn>
+            <Link to="/report">
+                <MDBBtn outline color="purple" size="md">
+                Beauty Reports
+                </MDBBtn>
+            </Link>
+            <MDBBtn
+            color="purple"
+            size="md"
+            ><MDBIcon icon="user" className="pr-2" />Profil anzeigen</MDBBtn>
             </div>
         }/*,
         {
@@ -107,9 +126,15 @@ class CoachDashboard extends React.Component{
 
         return(
             <MDBContainer id="coach">
-                <h2 className="text-center font-weight-bold">Willkommen zurück, <span>{globalState.username}</span>!</h2>
-                <div className="mt-5 mb-3 text-right">
-                    <MDBBtn color="green"><MDBIcon icon="plus-circle" className="pr-2" />Add customer</MDBBtn>
+                <h2 className="text-center font-weight-bold">
+                Willkommen zurück, <span>{globalState.userdata.firstName}</span>!
+                </h2>
+                <div className="mt-4 mb-3 text-right">
+                    <Link to="/add">
+                        <MDBBtn color="green">
+                            <MDBIcon icon="plus-circle" className="pr-2" />Add customer
+                        </MDBBtn>
+                    </Link>
                 </div>
                 <MDBRow className="text-center">
                     <MDBCol md="12">
