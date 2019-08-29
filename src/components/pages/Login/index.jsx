@@ -16,6 +16,11 @@ import {
     MDBAlert,
 } from "mdbreact";
 
+//> Additional libraries
+// Phone input
+import ReactPhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/dist/style.css';
+
 //> Backend Connection
 // Apollo
 import { graphql, Query } from "react-apollo";
@@ -74,7 +79,8 @@ class Login extends React.Component {
         // Get global state with login information
         const { globalState } = this.props;
 
-        /* Redirect to Dashboard
+        /**
+         * Redirect to Dashboard
          * If user is already logged in, redirect to Dashboard
          * This doubles as a neat way to redirect the user directly after login
          */
