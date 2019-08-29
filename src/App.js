@@ -39,6 +39,30 @@ const REFRESH_TOKEN = gql`
   }
 `;
 
+const USER_BY_EMAIL = gql`
+    query(
+      $token: String!
+      $email: String!
+    ) {
+        usernameByEmail(
+            token: $token,
+            email: $email
+        )
+    }
+`;
+
+const USER_BY_PHONE = gql`
+    query(
+      $token: String!
+      $phone: String!
+    ) {
+      usernameByPhone(
+        token: $token,
+        phone: $phone
+      )
+    }
+`;
+
 const GET_DATA = gql`
   query ($token: String!) {
     userById(token: $token, id: 1) {
@@ -191,6 +215,7 @@ class App extends React.Component {
   }
 
   render() {
+    console.log(this.state);
     return (
       <Router>
         <div className="flyout">
