@@ -28,8 +28,8 @@ import { gql } from "apollo-boost";
 
 //> Queries and Mutations
 const LOGIN_USER = gql`
-    mutation tokenAuth($username: String!, $password: String!){
-        tokenAuth(username: $username, password: $password) {
+    mutation tokenAuth($telephone: String!, $password: String!){
+        tokenAuth(telephone: $telephone, password: $password) {
             token
         }
     }
@@ -54,12 +54,14 @@ class Login extends React.Component {
         // Validation
         e.target.className = "needs-validation was-validated";
 
-        this._login("simon", "admin");
+        this._login("+436643409980", "admin");
     }
 
-    _login = async (email, password) => {
-        await this.props.mutate({ variables: { "username": email, "password": password } })
+    _login = async (phone, password) => {
+
+        await this.props.mutate({ variables: { "telephone": phone, "password": password } })
         .then(({ loading, data }) => {
+            console.log(data);
             if(data !== undefined){
                 if(data.tokenAuth !== undefined){
                     if(data.tokenAuth.token !== undefined){
