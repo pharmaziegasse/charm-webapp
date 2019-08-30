@@ -40,7 +40,13 @@ class Footer extends React.Component{
                                     ) : (
                                         <MDBRow className="text-center flex-center">
                                             <MDBCol md="4">
-                                                <a href="https://kisy.aichner-christian.com/?goto=Charm&token=asdf" target="_blank" rel="noopener noreferrer"><MDBIcon icon="medkit" className="pr-2" />Technischer Support</a>
+                                                <a 
+                                                href="https://kisy.aichner-christian.com/?goto=Charm&token=asdf" 
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                >
+                                                <MDBIcon icon="medkit" className="pr-2" />Technischer Support
+                                                </a>
                                             </MDBCol>
                                         </MDBRow>
                                     )
