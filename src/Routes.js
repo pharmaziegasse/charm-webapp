@@ -18,7 +18,8 @@ import {
   ReportRevision,
   ReportList,
   Anamnesis,
-  Coach,
+  CoachDashboard,
+  NewCustomer,
 } from './components/pages/coach';
 /**
  * Login: Login page
@@ -28,7 +29,13 @@ import {
 } from './components/pages';
 
 class Routes extends React.Component {
-  
+
+  // Handle login
+  handleLogin = (status) => {
+    // Call root component handler
+    this.props.handler(status);
+  }
+
   render() {
     return (
       <Switch>
@@ -40,7 +47,7 @@ class Routes extends React.Component {
         <Route
         exact
         path='/login'
-        component={(props) => <Login globalState={this.props.globalState} {...props} />}
+        component={(props) => <Login handler = {this.handleLogin} globalState={this.props.globalState} {...props} />}
         />
         <Route
         exact
@@ -50,7 +57,12 @@ class Routes extends React.Component {
         <Route
         exact
         path='/coach'
-        component={(props) => <Coach globalState={this.props.globalState} {...props} />}
+        component={(props) => <CoachDashboard globalState={this.props.globalState} {...props} />}
+        />
+        <Route
+        exact
+        path='/add'
+        component={(props) => <NewCustomer globalState={this.props.globalState} {...props} />}
         />
         <Route
         exact

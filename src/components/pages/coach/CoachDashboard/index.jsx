@@ -24,75 +24,90 @@ import {
 //> CSS
 import './coachdashboard.scss';
 
-//> Dummy table data
-const TableData = {
-    columns: [
-        {
-            label: '#',
-            field: 'id',
-            sort: 'asc'
-        },
-        {
-            label: 'First',
-            field: 'first',
-            sort: 'asc'
-        },
-        {
-            label: 'Last',
-            field: 'last',
-            sort: 'asc'
-        },
-        {
-            label: 'Aktionen',
-            field: 'actions',
-            sort: 'asc'
-        }
-    ],
-    rows: [
-        {
-            'id': 1,
-            'first': 'Mathea',
-            'last': 'Kuttnig',
-            'actions':
-            <div>
-            <Link to="/report"><MDBBtn outline color="purple" size="md">Beauty Reports</MDBBtn></Link>
-            <MDBBtn color="purple" size="md"><MDBIcon icon="user" className="pr-2" />Profil anzeigen</MDBBtn>
-            </div>
-        }/*,
-        {
-            'id': 2,
-            'first': 'Stefan',
-            'last': 'Santer',
-            'actions':
-            <div>
-            <MDBBtn color="purple" size="sm">Beauty Reports</MDBBtn>
-            <MDBBtn color="purple" size="sm"><MDBIcon icon="user" className="pr-2" />Profil anzeigen</MDBBtn>
-            </div>
-        },
-        {
-            'id': 3,
-            'first': 'Kurt',
-            'last': 'Gasser',
-            'actions':
-            <div>
-            <MDBBtn color="purple" size="sm">Beauty Reports</MDBBtn>
-            <MDBBtn color="purple" size="sm"><MDBIcon icon="user" className="pr-2" />Profil anzeigen</MDBBtn>
-            </div>
-        }*/
-    ]
-};
-
 class CoachDashboard extends React.Component{
     constructor(props){
         super(props);
+    }
 
-        this.state = {
-            
+    _getCoachUsers = () => {
+        if(this.props.globalState){
+            if(this.props.globalState.userdata){
+                let userSet = this.props.globalState.userdata.userSet;
+                if(userSet.length >= 1){
+                    let users = userSet.map((user, i) => {
+                        return({
+                            'id': i+1,
+                            'first': user.firstName,
+                            'last': user.lastName,
+                            'email': <a href={"mailto:"+user.email} className="blue-text">{user.email}</a>,
+                            'phone': user.telephone,
+                            'actions':
+                            <div>
+                                <Link 
+                                to={{
+                                pathname: '/report',
+                                state: {
+                                    userId: user.id
+                                }
+                                }}
+                                >
+                                    <MDBBtn outline color="purple" size="md">
+                                    Beauty Reports
+                                    </MDBBtn>
+                                </Link>
+                                <MDBBtn
+                                color="purple"
+                                size="md"
+                                >
+                                <MDBIcon icon="user" className="pr-2" />Profil anzeigen
+                                </MDBBtn>
+                            </div>
+                        })
+                    });
+                    return users;
+                } else {
+                    console.log("No users for this coach");
+                }
+            }
         }
     }
 
-    componentWillMount = () => {
-        
+    _getTable = () => {
+        return({
+                columns: [
+            {
+                label: '#',
+                field: 'id',
+                sort: 'asc'
+            },
+            {
+                label: 'First',
+                field: 'first',
+                sort: 'asc'
+            },
+            {
+                label: 'Last',
+                field: 'last',
+                sort: 'asc'
+            },
+            {
+                label: 'E-Mail',
+                field: 'email',
+                sort: 'disabled'
+            },
+            {
+                label: 'Phone',
+                field: 'phone',
+                sort: 'disabled'
+            },
+            {
+                label: 'Quick actions',
+                field: 'actions',
+                sort: 'disabled'
+            }
+        ],
+        rows: this._getCoachUsers()
+        })
     }
 
     render() {
@@ -107,15 +122,29 @@ class CoachDashboard extends React.Component{
 
         return(
             <MDBContainer id="coach">
-                <h2 className="text-center font-weight-bold">Willkommen zurück, <span>{globalState.username}</span>!</h2>
-                <MDBRow className="text-center mt-5">
+                <h2 className="text-center font-weight-bold">
+                Willkommen zurück, <span>{globalState.userdata.firstName}</span>!
+                </h2>
+                <div className="mt-4 mb-3 text-right">
+                    <Link to="/add">
+                        <MDBBtn color="green">
+                            <MDBIcon icon="plus-circle" className="pr-2" />Add customer
+                        </MDBBtn>
+                    </Link>
+                </div>
+                <MDBRow className="text-center">
                     <MDBCol md="12">
                         <h3>Deine KundInnen</h3>
                         <MDBDataTable
                         striped
                         bordered
                         small
-                        data={TableData}
+                        exportToCSV
+                        data={this._getTable()}
+                        paginationLabel={[
+                            <MDBIcon icon="angle-left" size="lg" className="pl-3 pr-3" />,
+                            <MDBIcon icon="angle-right" size="lg" className="pl-3 pr-3" />
+                        ]}
                         />
                     </MDBCol>
                     <MDBCol md="6">

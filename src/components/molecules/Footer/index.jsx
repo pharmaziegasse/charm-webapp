@@ -21,27 +21,42 @@ class Footer extends React.Component{
             <MDBFooter color="unique-darkblue" className="mt-4">
                 <div className="py-4">
                     <MDBContainer>
-                        {!globalState.coach ? (
-                                <MDBRow className="text-center flex-center">
-                                    <MDBCol md="4">
-                                        <a href="#!">Referral Programm</a>
-                                    </MDBCol>
-                                    <MDBCol md="4">
-                                        <a href="#!"><MDBIcon fab icon="facebook-f" className="pr-2" /></a>
-                                        <a href="#!"><MDBIcon fab icon="instagram" className="pl-2" /></a>
-                                    </MDBCol>
-                                    <MDBCol md="4">
-                                        <a href="#!">Fragen? Wir sind für Sie da!</a>
-                                    </MDBCol>
-                                </MDBRow>
-                            ) : (
-                                <MDBRow className="text-center flex-center">
-                                    <MDBCol md="4">
-                                        <a href="https://kisy.aichner-christian.com/?goto=Charm&token=asdf" target="_blank" rel="noopener noreferrer"><MDBIcon icon="medkit" className="pr-2" />Technischer Support</a>
-                                    </MDBCol>
-                                </MDBRow>
-                            )
-                        }
+                    {
+                        globalState.logged ? (
+                            <>
+                                {!globalState.coach ? (
+                                        <MDBRow className="text-center flex-center">
+                                            <MDBCol md="4">
+                                                <a href="#!">Referral Programm</a>
+                                            </MDBCol>
+                                            <MDBCol md="4">
+                                                <a href="#!"><MDBIcon fab icon="facebook-f" className="pr-2" /></a>
+                                                <a href="#!"><MDBIcon fab icon="instagram" className="pl-2" /></a>
+                                            </MDBCol>
+                                            <MDBCol md="4">
+                                                <a href="#!">Fragen? Wir sind für Sie da!</a>
+                                            </MDBCol>
+                                        </MDBRow>
+                                    ) : (
+                                        <MDBRow className="text-center flex-center">
+                                            <MDBCol md="4">
+                                                <a 
+                                                href="https://kisy.aichner-christian.com/?goto=Charm&token=asdf" 
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                >
+                                                <MDBIcon icon="medkit" className="pr-2" />Technischer Support
+                                                </a>
+                                            </MDBCol>
+                                        </MDBRow>
+                                    )
+                                }
+                            </>
+                        ) : (
+                            <p>Noch nicht eingeloggt content</p>
+                        )
+                    }
+                        
                     </MDBContainer>
                 </div>
                 <div className="footer-copyright text-center py-3">

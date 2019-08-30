@@ -2,7 +2,7 @@
 // Contains all the functionality necessary to define React components
 import React from 'react';
 // Redirect
-import { Redirect } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 
 //> MDB
 // "Material Design for Bootstrap" is a great UI design framework
@@ -12,6 +12,8 @@ import {
     MDBListGroupItem,
     MDBBtn,
     MDBIcon,
+    MDBRow,
+    MDBCol,
 } from 'mdbreact';
 
 //> Connection
@@ -67,6 +69,19 @@ class ReportList extends React.Component{
             articles: undefined,
             loading: false,
             operations: 0,
+            userId: undefined,
+        }
+    }
+
+    componentWillMount = () => {
+        if(this.props.location){
+            if(this.props.location.state){
+                if(this.props.location.state.userId){
+                    this.setState({
+                        userId: this.props.location.state.userId
+                    });
+                }
+            }
         }
     }
 
@@ -89,7 +104,7 @@ class ReportList extends React.Component{
             }
         })
         .catch(error => {
-            console.error("Mutation error:",error);
+            console.error("Query error:",error);
         })
     }
 
@@ -108,7 +123,7 @@ class ReportList extends React.Component{
             }
         })
         .catch(error => {
-            console.error("Mutation error:",error);
+            console.error("Query error:",error);
         })
     }
 
@@ -310,14 +325,16 @@ class ReportList extends React.Component{
     render() {
         // Get global state with login information
         const { globalState } = this.props;
-        console.log(globalState);
         //> Route protection
         // Only logged in uses can access this page
         if(!globalState.logged) return <Redirect to="/login"/>
         // If logged in but not coach
         if(globalState.logged && !globalState.coach) return <Redirect to="/dashboard"/> 
         
+        if(!this.state.userId) return <Redirect to="/coach"/>
+
         console.log(this.state);
+        
         // Check if the data has been set
         if(this.state.template !== undefined && this.state.userdata !== undefined){
             this.createReport();
@@ -336,7 +353,30 @@ class ReportList extends React.Component{
 
         return (
             <MDBContainer className="text-center">
-                <h2 className="mb-5">Beautyreports von Erika Mustermann</h2>
+                <h2 className="text-center font-weight-bold">
+                Beautyreports von Erika Mustermann
+                </h2>
+                <div className="mt-4">
+                <MDBRow>
+                    <MDBCol md="6" className="text-left">
+                        <Link to="/coach">
+                            <MDBBtn color="red">
+                                <MDBIcon icon="angle-left" className="pr-2" />Zurück
+                            </MDBBtn>
+                        </Link>
+                    </MDBCol>
+                    <MDBCol md="6" className="text-right">
+                        <MDBBtn
+                        onClick={this.fetchReportData}
+                        color="secondary"
+                        rounded
+                        >
+                        <MDBIcon icon="plus" className="pr-2" />Neuen Report generieren
+                        </MDBBtn>
+                    </MDBCol>
+                </MDBRow>
+                    
+                </div>
                 <MDBListGroup className="text-left ml-auto mr-auto mb-4" style={{ width: "22rem" }}>
                     {reports.map((value, i) => {
                         return(
@@ -350,7 +390,6 @@ class ReportList extends React.Component{
                         );
                     })}
                 </MDBListGroup>
-                <MDBBtn onClick={this.fetchReportData} color="secondary" rounded><MDBIcon icon="plus" className="pr-2" />Neuen Report generieren</MDBBtn>
             </MDBContainer>
         );
     }

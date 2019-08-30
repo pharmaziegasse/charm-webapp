@@ -2,7 +2,7 @@
 // Contains all the functionality necessary to define React components
 import React from 'react';
 // Redirect from Router
-import { Redirect } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 
 //> Additional libraries
 // Rich-Text Editor
@@ -134,78 +134,84 @@ class ReportRevision extends React.Component{
             if(location.state !== undefined){
                 return (
                     <MDBContainer>
-                        <MDBContainer className="mt-5">
-                            <h3>Review individual beauty report</h3>
-                            <p>Von Max</p>
+                        <h2 className="text-center font-weight-bold">
+                        Beautyreport überprüfen
+                        </h2>
+                        <div className="mt-4 mb-3 text-left">
+                            <Link to="/report">
+                                <MDBBtn color="red">
+                                    <MDBIcon icon="angle-left" className="pr-2" />Zurück
+                                </MDBBtn>
+                            </Link>
+                        </div>
 
-                            <MDBProgress
-                            material
-                            color={this.getStatus() === 100 ? ("success") : ("secondary")}
-                            value={this.getStatus()}
-                            height="20px">
-                            {this.getStatus() > 0 &&
-                                <>{Math.round(this.getStatus())}% abgeschlossen</>
-                            }
-                                
-                            </MDBProgress>
-                            {Object.keys(location.state.articles).map((name, i) => {
-                                let article = location.state.articles[name];
-                                return(
-                                    <MDBCard key={i} className="mt-3">
-                                        <MDBCollapseHeader>
-                                            <MDBRow className="justify-content-center">
-                                                <MDBCol md="6" className="align-self-center section-title">
-                                                    {article.heading}
-                                                </MDBCol>
-                                                <MDBCol md="6" className="text-right">
-                                                    <MDBInput
-                                                    label="Überprüft"
-                                                    filled
-                                                    type="checkbox"
-                                                    id={"checkbox"+i}
-                                                    onClick={this.toggleCollapse("collapse"+i)}
-                                                    />
-                                                </MDBCol>
-                                            </MDBRow>
-                                        </MDBCollapseHeader>
-                                        <MDBCollapse id="collapse1" isOpen={this.state["collapse"+i]}>
-                                            <MDBCardBody>
-                                                <RichTextEditor
-                                                    value={this.state["value"+i]}
-                                                    className="textfield"
-                                                    onChange={(e) => this.onChange(i, e)}
-                                                    readOnly={!this.state["collapse"+i]}
-                                                    toolbarConfig={toolbarConfig}
+                        <MDBProgress
+                        material
+                        color={this.getStatus() === 100 ? ("success") : ("secondary")}
+                        value={this.getStatus()}
+                        height="20px">
+                        {this.getStatus() > 0 &&
+                            <>{Math.round(this.getStatus())}% abgeschlossen</>
+                        }
+                            
+                        </MDBProgress>
+                        {Object.keys(location.state.articles).map((name, i) => {
+                            let article = location.state.articles[name];
+                            return(
+                                <MDBCard key={i} className="mt-3">
+                                    <MDBCollapseHeader>
+                                        <MDBRow className="justify-content-center">
+                                            <MDBCol md="6" className="align-self-center section-title">
+                                                {article.heading}
+                                            </MDBCol>
+                                            <MDBCol md="6" className="text-right">
+                                                <MDBInput
+                                                label="Überprüft"
+                                                filled
+                                                type="checkbox"
+                                                id={"checkbox"+i}
+                                                onClick={this.toggleCollapse("collapse"+i)}
                                                 />
-                                            </MDBCardBody>
-                                        </MDBCollapse>
-                                    </MDBCard>
-                                )
-                            })
-                            }
-                            <MDBRow className="my-4">
-                                <MDBCol md="6" className="text-left">
-                                    <MDBBtn
-                                    color="danger"
-                                    onClick={this.goBack}
-                                    ><MDBIcon icon="times" className="pr-2" />Verwerfen</MDBBtn>
-                                </MDBCol>
-                                <MDBCol md="6" className="text-right">
-                                    <MDBBtn
-                                    color="success"
-                                    disabled={this.isFinished()}
-                                    >
-                                    <MDBIcon icon="save" className="pr-2" />Speichern
-                                    </MDBBtn>
-                                    <MDBBtn
-                                    color="green"
-                                    disabled={this.isFinished()}
-                                    >
-                                    <MDBIcon far icon="file-pdf" className="pr-2" />Speichern + PDF
-                                    </MDBBtn>
-                                </MDBCol>
-                            </MDBRow>
-                        </MDBContainer>
+                                            </MDBCol>
+                                        </MDBRow>
+                                    </MDBCollapseHeader>
+                                    <MDBCollapse id="collapse1" isOpen={this.state["collapse"+i]}>
+                                        <MDBCardBody>
+                                            <RichTextEditor
+                                                value={this.state["value"+i]}
+                                                className="textfield"
+                                                onChange={(e) => this.onChange(i, e)}
+                                                readOnly={!this.state["collapse"+i]}
+                                                toolbarConfig={toolbarConfig}
+                                            />
+                                        </MDBCardBody>
+                                    </MDBCollapse>
+                                </MDBCard>
+                            )
+                        })
+                        }
+                        <MDBRow className="my-4">
+                            <MDBCol md="6" className="text-left">
+                                <MDBBtn
+                                color="danger"
+                                onClick={this.goBack}
+                                ><MDBIcon icon="times" className="pr-2" />Verwerfen</MDBBtn>
+                            </MDBCol>
+                            <MDBCol md="6" className="text-right">
+                                <MDBBtn
+                                color="success"
+                                disabled={this.isFinished()}
+                                >
+                                <MDBIcon icon="save" className="pr-2" />Speichern
+                                </MDBBtn>
+                                <MDBBtn
+                                color="green"
+                                disabled={this.isFinished()}
+                                >
+                                <MDBIcon far icon="file-pdf" className="pr-2" />Speichern + PDF
+                                </MDBBtn>
+                            </MDBCol>
+                        </MDBRow>
                     </MDBContainer>
                 );
             } else {

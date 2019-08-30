@@ -105,10 +105,9 @@ class HomePage extends React.Component {
         })
         }
     }]
-  }
+  } 
 
   render() {
-
     // Get global state with login information
     const { globalState } = this.props;
 
