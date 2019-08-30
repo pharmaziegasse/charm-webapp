@@ -9,6 +9,12 @@ import { Link, Redirect } from 'react-router-dom';
 import ReactPhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/dist/style.css';
 
+//> Backend Connection
+// Apollo
+import { graphql, withApollo } from "react-apollo";
+import { ApolloClient, HttpLink, InMemoryCache, gql } from "apollo-boost";
+import * as compose from 'lodash.flowright';
+
 //> MDB
 // "Material Design for Bootstrap" is a great UI design framework
 import {
@@ -28,11 +34,6 @@ import {
     MDBSelect,
 } from 'mdbreact';
 
-//> Backend Connection
-// Apollo
-import { graphql } from "react-apollo";
-import gql from 'graphql-tag';
-
 //> CSS
 import './newcustomer.scss';
 
@@ -49,6 +50,16 @@ const UPDATE_FORMS = gql`
                 name
                 errors
             }
+        }
+    }
+`;
+
+const GET_COACHES = gql`
+    query ($token: String!) {
+        coachAll(token: $token) {
+            id
+            firstName
+            lastName
         }
     }
 `;
@@ -90,6 +101,11 @@ class NewCustomer extends React.Component{
         }
     }
 
+    componentWillMount() {
+        this._fetchAllCoaches();
+    }
+    
+
     handleTextChange = (e) => {
         this.setState({
             [e.target.name]: e.target.value
@@ -97,8 +113,10 @@ class NewCustomer extends React.Component{
     }
 
     handlePhoneChange = (value) => {
+        // Remove spaces from phone number
+        value = value.replace(/\s/g,'');
         this.setState({
-            phone: value
+            phone: value.trim()
         });
     }
 
@@ -112,6 +130,18 @@ class NewCustomer extends React.Component{
         this.setState({
             coach: value
         });
+    }
+
+    _fetchAllCoaches = async () => {
+        this.props.client.query({
+        query: GET_COACHES,
+        variables: { "token": localStorage.getItem("wca") }
+        }).then(({data}) => {
+            console.log(data);
+        })
+        .catch(error => {
+            console.log("Error",error);
+        })
     }
 
     render() {
@@ -248,7 +278,10 @@ class NewCustomer extends React.Component{
     }
 }
 
-export default NewCustomer;
+export default compose(
+    graphql(UPDATE_FORMS, { name: 'update' }),
+)(withApollo(NewCustomer));
+
 
 /** 
  * SPDX-License-Identifier: (EUPL-1.2)

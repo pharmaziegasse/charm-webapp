@@ -225,7 +225,7 @@ class App extends React.Component {
 export default compose(
   graphql(VERIFY_TOKEN, { name: 'verify' }),
   graphql(REFRESH_TOKEN, { name: 'refresh' }),
-  )(withApollo(App));
+)(withApollo(App));
 
 /**
  * SPDX-License-Identifier: (EUPL-1.2)

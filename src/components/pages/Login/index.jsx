@@ -182,13 +182,14 @@ class Login extends React.Component {
 
     handlePhoneChange = (value) => {
         if(this.state.method === 'phone'){
+            value = value.replace(/\s/g,'');
             if(this.state.email === ""){
                 this.setState({
-                    phone: value
+                    phone: value.trim()
                 })
             } else {
                 this.setState({
-                    phone: value,
+                    phone: value.trim(),
                     email: ""
                 });
             }
