@@ -93,7 +93,7 @@ class CoachDashboard extends React.Component{
             {
                 label: 'E-Mail',
                 field: 'email',
-                sort: 'asc'
+                sort: 'disabled'
             },
             {
                 label: 'Phone',

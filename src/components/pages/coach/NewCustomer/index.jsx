@@ -98,6 +98,7 @@ class NewCustomer extends React.Component{
             zip: "",
             country: "",
             newsletter: "",
+            Coaches: []
         }
     }
 
@@ -137,7 +138,17 @@ class NewCustomer extends React.Component{
         query: GET_COACHES,
         variables: { "token": localStorage.getItem("wca") }
         }).then(({data}) => {
-            console.log(data);
+            if(data.coachAll){
+                let coaches = data.coachAll.map((coach, i) => {
+                    return({
+                        text: coach.firstName + " " + coach.lastName,
+                        value: coach.id
+                    });
+                });
+                this.setState({
+                    Coaches: coaches
+                });
+            }
         })
         .catch(error => {
             console.log("Error",error);
@@ -209,7 +220,7 @@ class NewCustomer extends React.Component{
                     <MDBCol md="12" className="flex-center text-center my-4">
                         <MDBCol md="4">
                             <MDBSelect
-                            options={coaches}
+                            options={this.state.Coaches}
                             className="select-coach"
                             label="Coach"
                             getValue={this.handleSelectChange}
@@ -269,7 +280,6 @@ class NewCustomer extends React.Component{
                         </MDBCol>
                     </MDBCol>
                     <MDBCol md="12">
-
                     </MDBCol>
                 </MDBRow>
                 
