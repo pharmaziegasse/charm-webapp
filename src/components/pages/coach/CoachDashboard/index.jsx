@@ -139,7 +139,12 @@ class CoachDashboard extends React.Component{
                         striped
                         bordered
                         small
+                        exportToCSV
                         data={this._getTable()}
+                        paginationLabel={[
+                            <MDBIcon icon="angle-left" size="lg" className="pl-3 pr-3" />,
+                            <MDBIcon icon="angle-right" size="lg" className="pl-3 pr-3" />
+                        ]}
                         />
                     </MDBCol>
                     <MDBCol md="6">
