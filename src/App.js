@@ -39,33 +39,9 @@ const REFRESH_TOKEN = gql`
   }
 `;
 
-const USER_BY_EMAIL = gql`
-    query(
-      $token: String!
-      $email: String!
-    ) {
-        usernameByEmail(
-            token: $token,
-            email: $email
-        )
-    }
-`;
-
-const USER_BY_PHONE = gql`
-    query(
-      $token: String!
-      $phone: String!
-    ) {
-      usernameByPhone(
-        token: $token,
-        phone: $phone
-      )
-    }
-`;
-
 const GET_DATA = gql`
   query ($token: String!) {
-    userById(token: $token, id: 1) {
+    userSelf(token: $token) {
       id
       lastLogin
       email
@@ -73,7 +49,12 @@ const GET_DATA = gql`
       isStaff
       isCoach
       isCustomer
-      coach
+      coach {
+        id
+        firstName
+        lastName
+        email
+      }
       title    
       firstName
       lastName
@@ -124,10 +105,12 @@ class App extends React.Component {
         query: GET_DATA,
         variables: { "token": localStorage.getItem("wca") }
     }).then(({data}) => {
-        this.setState({
-          userdata: data.userById,
-          loaded: true
-        });
+        if(data.userSelf !== undefined){
+          this.setState({
+            userdata: data.userSelf,
+            loaded: true
+          });
+        }
     })
     .catch(error => {
         console.log("Error",error);

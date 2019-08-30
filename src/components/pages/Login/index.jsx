@@ -24,18 +24,42 @@ import 'react-phone-input-2/dist/style.css';
 
 //> Backend Connection
 // Apollo
-import { graphql, Query } from "react-apollo";
-import { gql } from "apollo-boost";
+import { graphql, withApollo } from 'react-apollo';
+import { gql } from 'apollo-boost';
 
 //> CSS
 import './login.scss';
 
 //> Queries and Mutations
 const LOGIN_USER = gql`
-    mutation tokenAuth($telephone: String!, $password: String!){
-        tokenAuth(telephone: $telephone, password: $password) {
+    mutation tokenAuth($username: String!, $password: String!){
+        tokenAuth(username: $username, password: $password) {
             token
         }
+    }
+`;
+
+const USER_BY_EMAIL = gql`
+    query(
+        $token: String!
+        $email: String!
+    ) {
+        usernameByEmail(
+            token: $token,
+            email: $email
+        )
+    }
+`;
+
+const USER_BY_PHONE = gql`
+    query(
+        $token: String!
+        $phone: String!
+    ) {
+        usernameByPhone(
+        token: $token,
+        phone: $phone
+        )
     }
 `;
 
@@ -69,12 +93,77 @@ class Login extends React.Component {
         // Validation
         e.target.className = "needs-validation was-validated";
 
-        this._login("+436643409980", "admin");
+        this._loginAnonymous("+436643409980", "admin");
     }
 
-    _login = async (phone, password) => {
+    _loginAnonymous = async (phone, password) => {
 
-        await this.props.mutate({ variables: { "telephone": phone, "password": password } })
+        await this.props.mutate({ variables: { "username": "simon", "password": "admin" } })
+        .then(({ loading, data }) => {
+            console.log(data);
+            if(data !== undefined){
+                if(data.tokenAuth !== undefined){
+                    if(data.tokenAuth.token !== undefined){
+                        
+                        if(this.state.method === 'phone'){
+                            this._getUsernameByMethod(data.tokenAuth.token, 'phone');
+                        } else {
+                            this._getUsernameByMethod(data.tokenAuth.token, 'email');
+                        }
+                        
+                        //localStorage.setItem('wca',data.tokenAuth.token);
+                        //this.props.handler(true);
+                    }
+                }
+            }
+        }).catch((loading, error) => {
+            // Username or password is wrong
+            this.props.handler(false);
+        });
+    };
+
+    _getUsernameByMethod = async (token, method) => {
+        let variables = {};
+        let query = undefined;
+
+        if(method === 'phone'){
+            variables = { 
+                "token": token,
+                "phone": this.state.phone
+            }
+            query = USER_BY_PHONE;
+        } else {
+            variables = {
+                "token": token,
+                "email": this.state.email
+            }
+            query = USER_BY_EMAIL;
+        }
+
+        await this.props.client.query({
+            query: query,
+            variables: variables
+        }).then(({data}) => {
+            console.log(data);
+            if(method === 'phone'){
+                if(data.usernameByPhone !== undefined){
+                    this._login(data.usernameByPhone);
+                }
+            } else {
+                if(data.usernameByEmail !== undefined){
+                    this._login(data.usernameByEmail);
+                }
+            }
+            
+        })
+        .catch(error => {
+            this.props.handler(false);
+        })
+    }
+
+    _login = async (username) => {
+        console.log(username);
+        await this.props.mutate({ variables: { "username": username, "password": this.state.password } })
         .then(({ loading, data }) => {
             console.log(data);
             if(data !== undefined){
@@ -89,7 +178,7 @@ class Login extends React.Component {
             // Username or password is wrong
             this.props.handler(false);
         });
-    };
+    }
 
     handlePhoneChange = (value) => {
         if(this.state.method === 'phone'){
@@ -245,7 +334,7 @@ class Login extends React.Component {
     }
 }
 
-const AuthWithMutation = graphql(LOGIN_USER)(Login);
+const AuthWithMutation = graphql(LOGIN_USER)(withApollo(Login));
 
 export default AuthWithMutation;
 
