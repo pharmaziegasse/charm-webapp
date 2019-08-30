@@ -84,8 +84,7 @@ class NewCustomer extends React.Component{
         super(props);
 
         this.state = {
-            isCustomer: true,
-            coach: "",
+            coach: [],
             verified: false,
             title: "",
             firstName: "",
@@ -97,7 +96,6 @@ class NewCustomer extends React.Component{
             city: "",
             zip: "",
             country: "",
-            newsletter: "",
             Coaches: []
         }
     }
@@ -153,6 +151,34 @@ class NewCustomer extends React.Component{
         .catch(error => {
             console.log("Error",error);
         })
+    }
+
+    _createUser = () => {
+        if(this.state.email.trim() !== "" && this.state.phone.trim() !== "" && this.state.coach.length >= 1 ){
+            let email = this.state.email.trim();
+            // The phone input has already been trimmed on input
+            let phone = this.state.phone;
+            let coachId = this.state.coach[0];
+
+            // Get all values and prepare them for API handling
+
+            const values = {
+                "coach": this.state.coach[0],
+                "verified": this.state.verified,
+                "firstName": this.state.firstName,
+                "lastName": this.state.lastName,
+                "email": this.state.email,
+                "birthdate": this.state.birthdate,
+                "telephone": this.state.phone,
+                "address": this.state.address,
+                "city": this.state.city,
+                "zip": this.state.zip,
+                "country": this.state.country,
+            }
+
+        } else {
+            console.log("Required fields not filled in");
+        }
     }
 
     render() {
@@ -222,27 +248,27 @@ class NewCustomer extends React.Component{
                             <MDBSelect
                             options={this.state.Coaches}
                             className="select-coach"
-                            label="Coach"
+                            label={<>Coach<span>*</span></>}
                             getValue={this.handleSelectChange}
                             search
+                            required
                             />
                         </MDBCol>
                     </MDBCol>
                     <MDBCol md="4">
-                        
-                            <label htmlFor="pho">Telefon Nummer</label>
-                            <ReactPhoneInput
-                            defaultCountry={'at'}
-                            preferredCountries={['at','de','ch']}
-                            value={this.state.phone}
-                            onChange={this.handlePhoneChange}
-                            enableSearchField={true}
-                            />
-                        
+                        <label htmlFor="pho">Telefon Nummer<span>*</span></label>
+                        <ReactPhoneInput
+                        defaultCountry={'at'}
+                        preferredCountries={['at','de','ch']}
+                        value={this.state.phone}
+                        onChange={this.handlePhoneChange}
+                        enableSearchField={true}
+                        required
+                        />
                     </MDBCol>
                     <MDBCol md="4">
                         <div className="form-group">
-                            <label htmlFor="ema">E-Mail</label>
+                            <label htmlFor="ema">E-Mail<span>*</span></label>
                             <input
                                 type="email"
                                 name="email"
@@ -250,6 +276,7 @@ class NewCustomer extends React.Component{
                                 onChange={this.handleTextChange}
                                 className="form-control"
                                 id="ema"
+                                required
                             />
                         </div>
                     </MDBCol>
@@ -282,7 +309,14 @@ class NewCustomer extends React.Component{
                     <MDBCol md="12">
                     </MDBCol>
                 </MDBRow>
-                
+                <div className="text-center">
+                    <MDBBtn
+                    color="green"
+                    onClick={() => this._createUser()}
+                    >
+                    <MDBIcon icon="check" className="pr-2" />Erstellen
+                    </MDBBtn>
+                </div>
             </MDBContainer>
         )
     }
