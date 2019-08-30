@@ -24,94 +24,90 @@ import {
 //> CSS
 import './coachdashboard.scss';
 
-//> Dummy table data
-const TableData = {
-    columns: [
-        {
-            label: '#',
-            field: 'id',
-            sort: 'asc'
-        },
-        {
-            label: 'First',
-            field: 'first',
-            sort: 'asc'
-        },
-        {
-            label: 'Last',
-            field: 'last',
-            sort: 'asc'
-        },
-        {
-            label: 'E-Mail',
-            field: 'email',
-            sort: 'asc'
-        },
-        {
-            label: 'Phone',
-            field: 'phone',
-            sort: 'disabled'
-        },
-        {
-            label: 'Quick actions',
-            field: 'actions',
-            sort: 'disabled'
-        }
-    ],
-    rows: [
-        {
-            'id': 1,
-            'first': 'Mathea',
-            'last': 'Kuttnig',
-            'email': 'm.kuttnig@pharmaziegasse.at',
-            'phone': '+43 666 666 666 66',
-            'actions':
-            <div>
-            <Link to="/report">
-                <MDBBtn outline color="purple" size="md">
-                Beauty Reports
-                </MDBBtn>
-            </Link>
-            <MDBBtn
-            color="purple"
-            size="md"
-            ><MDBIcon icon="user" className="pr-2" />Profil anzeigen</MDBBtn>
-            </div>
-        }/*,
-        {
-            'id': 2,
-            'first': 'Stefan',
-            'last': 'Santer',
-            'actions':
-            <div>
-            <MDBBtn color="purple" size="sm">Beauty Reports</MDBBtn>
-            <MDBBtn color="purple" size="sm"><MDBIcon icon="user" className="pr-2" />Profil anzeigen</MDBBtn>
-            </div>
-        },
-        {
-            'id': 3,
-            'first': 'Kurt',
-            'last': 'Gasser',
-            'actions':
-            <div>
-            <MDBBtn color="purple" size="sm">Beauty Reports</MDBBtn>
-            <MDBBtn color="purple" size="sm"><MDBIcon icon="user" className="pr-2" />Profil anzeigen</MDBBtn>
-            </div>
-        }*/
-    ]
-};
-
 class CoachDashboard extends React.Component{
     constructor(props){
         super(props);
+    }
 
-        this.state = {
-            
+    _getCoachUsers = () => {
+        if(this.props.globalState){
+            if(this.props.globalState.userdata){
+                let userSet = this.props.globalState.userdata.userSet;
+                if(userSet.length >= 1){
+                    let users = userSet.map((user, i) => {
+                        return({
+                            'id': i+1,
+                            'first': user.firstName,
+                            'last': user.lastName,
+                            'email': <a href={"mailto:"+user.email} className="blue-text">{user.email}</a>,
+                            'phone': user.telephone,
+                            'actions':
+                            <div>
+                                <Link 
+                                to={{
+                                pathname: '/report',
+                                state: {
+                                    userId: user.id
+                                }
+                                }}
+                                >
+                                    <MDBBtn outline color="purple" size="md">
+                                    Beauty Reports
+                                    </MDBBtn>
+                                </Link>
+                                <MDBBtn
+                                color="purple"
+                                size="md"
+                                >
+                                <MDBIcon icon="user" className="pr-2" />Profil anzeigen
+                                </MDBBtn>
+                            </div>
+                        })
+                    });
+                    return users;
+                } else {
+                    console.log("No users for this coach");
+                }
+            }
         }
     }
 
-    componentWillMount = () => {
-        
+    _getTable = () => {
+        return({
+                columns: [
+            {
+                label: '#',
+                field: 'id',
+                sort: 'asc'
+            },
+            {
+                label: 'First',
+                field: 'first',
+                sort: 'asc'
+            },
+            {
+                label: 'Last',
+                field: 'last',
+                sort: 'asc'
+            },
+            {
+                label: 'E-Mail',
+                field: 'email',
+                sort: 'asc'
+            },
+            {
+                label: 'Phone',
+                field: 'phone',
+                sort: 'disabled'
+            },
+            {
+                label: 'Quick actions',
+                field: 'actions',
+                sort: 'disabled'
+            }
+        ],
+        rows: this._getCoachUsers()
+        })
     }
 
     render() {
@@ -143,7 +139,7 @@ class CoachDashboard extends React.Component{
                         striped
                         bordered
                         small
-                        data={TableData}
+                        data={this._getTable()}
                         />
                     </MDBCol>
                     <MDBCol md="6">

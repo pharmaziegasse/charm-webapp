@@ -63,6 +63,13 @@ const GET_DATA = gql`
       address
       city
       postalCode
+      userSet{
+        id
+        firstName
+        lastName
+        email
+        telephone
+      }
       country
       newsletter
       verified
@@ -76,7 +83,7 @@ class App extends React.Component {
   state = {
     logged: false,
     username: undefined,
-    coach: true,
+    coach: false,
     loaded: false,
     userdata: {}
   }
@@ -108,6 +115,7 @@ class App extends React.Component {
         if(data.userSelf !== undefined){
           this.setState({
             userdata: data.userSelf,
+            coach: data.userSelf.isCoach,
             loaded: true
           });
         }

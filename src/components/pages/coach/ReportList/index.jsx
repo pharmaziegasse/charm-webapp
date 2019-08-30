@@ -69,6 +69,19 @@ class ReportList extends React.Component{
             articles: undefined,
             loading: false,
             operations: 0,
+            userId: undefined,
+        }
+    }
+
+    componentWillMount = () => {
+        if(this.props.location){
+            if(this.props.location.state){
+                if(this.props.location.state.userId){
+                    this.setState({
+                        userId: this.props.location.state.userId
+                    });
+                }
+            }
         }
     }
 
@@ -312,14 +325,16 @@ class ReportList extends React.Component{
     render() {
         // Get global state with login information
         const { globalState } = this.props;
-        console.log(globalState);
         //> Route protection
         // Only logged in uses can access this page
         if(!globalState.logged) return <Redirect to="/login"/>
         // If logged in but not coach
         if(globalState.logged && !globalState.coach) return <Redirect to="/dashboard"/> 
         
+        if(!this.state.userId) return <Redirect to="/coach"/>
+
         console.log(this.state);
+        
         // Check if the data has been set
         if(this.state.template !== undefined && this.state.userdata !== undefined){
             this.createReport();
