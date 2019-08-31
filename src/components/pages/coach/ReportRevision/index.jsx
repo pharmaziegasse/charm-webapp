@@ -75,6 +75,26 @@ class ReportRevision extends React.Component{
         });
     }
 
+    _generateWord = () => {
+        const officegen = require('officegen');
+        const fs = require('fs');
+
+        // Create an empty Word object:
+        let docx = officegen('docx');
+
+        // Officegen calling this function after finishing to generate the docx document:
+        docx.on('finalize', function(written) {
+        console.log(
+            'Finish to create a Microsoft Word document.'
+        )
+        });
+
+        // Officegen calling this function to report errors:
+        docx.on('error', function(err) {
+        console.log(err)
+        });
+    }
+
     // Toggle the visibility of the sections
     toggleCollapse = collapseID => () =>
     this.setState({
@@ -207,8 +227,9 @@ class ReportRevision extends React.Component{
                                 <MDBBtn
                                 color="green"
                                 disabled={this.isFinished()}
+                                onClick={() => this._generateWord()}
                                 >
-                                <MDBIcon far icon="file-pdf" className="pr-2" />Speichern + PDF
+                                <MDBIcon far icon="file-word" className="pr-2" />Speichern + Word
                                 </MDBBtn>
                             </MDBCol>
                         </MDBRow>

@@ -12,6 +12,7 @@
     "lodash.flowright": "^3.5.0",
     "mdbreact": "./mdbreact-4.19.1.tgz",
     "node-sass": "^4.12.0",
+    "officegen": "^0.6.3",
     "react": "^16.8.6",
     "react-apollo": "^3.0.0",
     "react-apollo-hooks": "^0.5.0",
