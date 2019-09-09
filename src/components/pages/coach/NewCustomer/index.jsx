@@ -8,6 +8,8 @@ import { Link, Redirect } from 'react-router-dom';
 // Phone input
 import ReactPhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/dist/style.css';
+// Country list
+import countryList from 'react-select-country-list';
 
 //> Backend Connection
 // Apollo
@@ -37,18 +39,21 @@ import {
 //> CSS
 import './newcustomer.scss';
 
+// Country list
+const countries = countryList().getData();
+
 // Update data
 const UPDATE_FORMS = gql`
-    mutation createAn ($token: String!, $values: GenericScalar!, $urlpath: String!) {
-        anamneseAnFormPage(
+    mutation createUser ($token: String!, $urlPath: String!, $values: GenericScalar!) {
+        userUserFormPage(
             token: $token,
-            url: $urlpath,
+            url: $urlPath,
             values: $values
         ) {
             result
             errors {
-                name
-                errors
+            name
+            errors
             }
         }
     }
@@ -63,21 +68,6 @@ const GET_COACHES = gql`
         }
     }
 `;
-
-const coaches = [
-    {
-    text: "Option 1",
-    value: "1"
-    },
-    {
-    text: "Option 2",
-    value: "2"
-    },
-    {
-    text: "Option 3",
-    value: "3"
-    }
-]
 
 class NewCustomer extends React.Component{
     constructor(props){
@@ -96,12 +86,16 @@ class NewCustomer extends React.Component{
             city: "",
             zip: "",
             country: "",
-            Coaches: []
+            Coaches: [],
+            Countries: [],
+            usePhoneAsCountry: true,
+            phoneCountry: [],
         }
     }
 
     componentWillMount() {
         this._fetchAllCoaches();
+        this._fetchAllCountries();
     }
     
 
@@ -111,12 +105,45 @@ class NewCustomer extends React.Component{
         });
     }
 
-    handlePhoneChange = (value) => {
+    handlePhoneChange = (value, country) => {
         // Remove spaces from phone number
         value = value.replace(/\s/g,'');
-        this.setState({
-            phone: value.trim()
-        });
+        if(this.state.usePhoneAsCountry){
+            this.setState({
+                phone: value.trim(),
+                country: {
+                    name: country.name,
+                    countryCode: country.countryCode.toUpperCase()
+                },
+                phoneCountry: {
+                    name: country.name,
+                    countryCode: country.countryCode.toUpperCase()
+                }
+            });
+        } else {
+            this.setState({
+                phone: value.trim(),
+                phoneCountry: {
+                    name: country.name,
+                    countryCode: country.countryCode.toUpperCase()
+                }
+            });
+        }
+    }
+
+    handlePhoneByCountry = (e) => {
+        if(e.target.checked){
+            this.setState({ 
+                usePhoneAsCountry: e.target.checked,
+                country: this.state.phoneCountry
+            });
+        } else {
+            this.setState({ 
+                usePhoneAsCountry: e.target.checked,
+                country: []
+            });
+        }
+        
     }
 
     getPickerValue = (value) => {
@@ -128,6 +155,27 @@ class NewCustomer extends React.Component{
     handleSelectChange = (value) => {
         this.setState({
             coach: value
+        });
+    }
+
+    handleCountrySelectChange = (value) => {
+        this.setState({
+            country: {
+                name: "",
+                countryCode: value[0]
+            }
+        });
+    }
+
+    _fetchAllCountries = () => {
+        let allCountries = countries.map((c, i) => {
+            return({
+                text: c.label,
+                value: c.value
+            });
+        });
+        this.setState({
+            Countries: allCountries
         });
     }
 
@@ -163,6 +211,7 @@ class NewCustomer extends React.Component{
             // Get all values and prepare them for API handling
 
             const values = {
+                "title": this.state.title,
                 "coach_id": this.state.coach[0],
                 "first_name": this.state.firstName,
                 "last_name": this.state.lastName,
@@ -172,8 +221,10 @@ class NewCustomer extends React.Component{
                 "address": this.state.address,
                 "city": this.state.city,
                 "postal_code": this.state.zip,
-                "country": this.state.country,
+                "country": this.state.country.countryCode,
             }
+
+            console.log(values);
 
         } else {
             console.log("Required fields not filled in");
@@ -202,7 +253,10 @@ class NewCustomer extends React.Component{
                         </MDBBtn>
                     </Link>
                 </div>
-                <MDBRow className="flex-center mt-4">
+                <MDBRow className="flex-center mt-4 text-center">
+                    <MDBCol md="12" className="mt-4" className="mt-4">
+                        <h4 className="text-center font-weight-bold">Name</h4>
+                    </MDBCol>
                     <MDBCol md="1">
                         <div className="form-group">
                             <label htmlFor="tit">Titel</label>
@@ -242,28 +296,21 @@ class NewCustomer extends React.Component{
                             />
                         </div>
                     </MDBCol>
-                    <MDBCol md="12" className="flex-center text-center my-4">
-                        <MDBCol md="4">
-                            <MDBSelect
-                            options={this.state.Coaches}
-                            className="select-coach"
-                            label={<>Coach<span>*</span></>}
-                            getValue={this.handleSelectChange}
-                            search
-                            required
-                            />
-                        </MDBCol>
+                    <MDBCol md="12" className="mt-4">
+                        <h4 className="text-center font-weight-bold">Coach</h4>
                     </MDBCol>
                     <MDBCol md="4">
-                        <label htmlFor="pho">Telefon Nummer<span>*</span></label>
-                        <ReactPhoneInput
-                        defaultCountry={'at'}
-                        preferredCountries={['at','de','ch']}
-                        value={this.state.phone}
-                        onChange={this.handlePhoneChange}
-                        enableSearchField={true}
+                        <MDBSelect
+                        options={this.state.Coaches}
+                        className="select-coach"
+                        label={<>Coach<span>*</span></>}
+                        getValue={this.handleSelectChange}
+                        search
                         required
                         />
+                    </MDBCol>
+                    <MDBCol md="12" className="mt-4">
+                        <h4 className="text-center font-weight-bold">Kontaktdaten</h4>
                     </MDBCol>
                     <MDBCol md="4">
                         <div className="form-group">
@@ -279,21 +326,96 @@ class NewCustomer extends React.Component{
                             />
                         </div>
                     </MDBCol>
-                    <MDBCol md="12" className="my-4 flex-center text-center">
-                        <MDBCol md="4">
+                    <MDBCol md="4">
+                        <label htmlFor="pho">Telefon Nummer<span>*</span></label>
+                        <ReactPhoneInput
+                        defaultCountry={'at'}
+                        preferredCountries={['at','de','ch']}
+                        value={this.state.phone}
+                        onChange={this.handlePhoneChange}
+                        enableSearchField={true}
+                        containerClass="mb-3 react-tel-input"
+                        required
+                        />
+                        <MDBInput
+                        label="Land aus Telefon Nummer"
+                        filled
+                        onChange={(e => this.handlePhoneByCountry(e))}
+                        checked={this.state.usePhoneAsCountry}
+                        type="checkbox"
+                        id="checkbox-country-in-phone"
+                        />
+                    </MDBCol>
+                    <MDBCol md="12" className="mt-4">
+                        <h4 className="text-center font-weight-bold">Wohnort</h4>
+                    </MDBCol>
+                    { !this.state.usePhoneAsCountry &&
+                        <MDBCol md="3">
+                            <MDBSelect
+                            options={this.state.Countries}
+                            className="select-countries"
+                            label="Land"
+                            getValue={this.handleCountrySelectChange}
+                            search
+                            required
+                            />
+                        </MDBCol>
+                    }
+                        <MDBCol md="2">
                             <div className="form-group">
-                                <label htmlFor="pho">Geburtsdatum</label>
-                                <MDBDatePicker 
-                                value={this.state.birthdate}
-                                className="date-picker"
-                                getValue={this.getPickerValue}
-                                disableFuture={true}
-                                format='DD.MM.YYYY'
-                                initialFocusedDate="01.01.1980"
-                                keyboard
+                                <label htmlFor="ema">Postleitzahl (PLZ)</label>
+                                <input
+                                    type="text"
+                                    name="zip"
+                                    value={this.state.zip}
+                                    onChange={this.handleTextChange}
+                                    className="form-control"
+                                    id="plz"
                                 />
                             </div>
                         </MDBCol>
+                        <MDBCol md="3">
+                            <div className="form-group">
+                                <label htmlFor="ema">Stadt</label>
+                                <input
+                                    type="text"
+                                    name="city"
+                                    value={this.state.city}
+                                    onChange={this.handleTextChange}
+                                    className="form-control"
+                                    id="cit"
+                                />
+                            </div>
+                        </MDBCol>
+                        <MDBCol md="4">
+                            <div className="form-group">
+                                <label htmlFor="ema">Adresse</label>
+                                <input
+                                    type="text"
+                                    name="address"
+                                    value={this.state.address}
+                                    onChange={this.handleTextChange}
+                                    className="form-control"
+                                    id="adr"
+                                />
+                            </div>
+                        </MDBCol>
+                    <MDBCol md="12" className="mt-4">
+                        <h4 className="text-center font-weight-bold">Weitere daten</h4>
+                    </MDBCol>
+                    <MDBCol md="4">
+                        <div className="form-group">
+                            <label htmlFor="pho">Geburtsdatum</label>
+                            <MDBDatePicker 
+                            value={this.state.birthdate}
+                            className="date-picker"
+                            getValue={this.getPickerValue}
+                            disableFuture={true}
+                            format='DD.MM.YYYY'
+                            initialFocusedDate="01.01.1980"
+                            keyboard
+                            />
+                        </div>
                     </MDBCol>
                 </MDBRow>
                 <div className="text-center">
