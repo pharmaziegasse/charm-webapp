@@ -83,7 +83,7 @@ class App extends React.Component {
   state = {
     logged: false,
     username: undefined,
-    coach: false,
+    coach: undefined,
     loaded: false,
     userdata: {}
   }
