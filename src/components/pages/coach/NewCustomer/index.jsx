@@ -163,16 +163,15 @@ class NewCustomer extends React.Component{
             // Get all values and prepare them for API handling
 
             const values = {
-                "coach": this.state.coach[0],
-                "verified": this.state.verified,
-                "firstName": this.state.firstName,
-                "lastName": this.state.lastName,
+                "coach_id": this.state.coach[0],
+                "first_name": this.state.firstName,
+                "last_name": this.state.lastName,
                 "email": this.state.email,
                 "birthdate": this.state.birthdate,
                 "telephone": this.state.phone,
                 "address": this.state.address,
                 "city": this.state.city,
-                "zip": this.state.zip,
+                "postal_code": this.state.zip,
                 "country": this.state.country,
             }
 
@@ -295,18 +294,6 @@ class NewCustomer extends React.Component{
                                 />
                             </div>
                         </MDBCol>
-                    </MDBCol>
-                    <MDBCol md="12" className="flex-center text-center my-4">
-                        <MDBCol md="4">
-                            <div className="form-group">
-                                <MDBInput label="Verifiziert" filled type="checkbox" id="checkbox1" />
-                                <small><strong>Handelt es sich um eine echte Person?</strong><br/>
-                                Für gewöhnlich werden KundInnen erst nach einem Erstgespräch oder Bilder-Upload 
-                                verifiziert.</small>
-                            </div>
-                        </MDBCol>
-                    </MDBCol>
-                    <MDBCol md="12">
                     </MDBCol>
                 </MDBRow>
                 <div className="text-center">
