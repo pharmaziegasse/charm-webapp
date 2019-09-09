@@ -71,6 +71,7 @@ class Login extends React.Component {
             phone: "",
             password: "",
             method: 'email',
+            error: false
         }
     }
 
@@ -157,7 +158,9 @@ class Login extends React.Component {
             
         })
         .catch(error => {
-            this.props.handler(false);
+            this.setState({
+                error: true
+            }, () => this.props.handler(false));
         })
     }
 
@@ -170,13 +173,17 @@ class Login extends React.Component {
                 if(data.tokenAuth !== undefined){
                     if(data.tokenAuth.token !== undefined){
                         localStorage.setItem('wca',data.tokenAuth.token);
-                        this.props.handler(true);
+                        this.setState({
+                            error: false
+                        }, () => this.props.handler(true));
                     }
                 }
             }
         }).catch((loading, error) => {
             // Username or password is wrong
-            this.props.handler(false);
+            this.setState({
+                error: true
+            }, () => this.props.handler(false));
         });
     }
 
@@ -247,6 +254,12 @@ class Login extends React.Component {
                         <MDBCardBody>
                             <MDBRow className="flex-center">
                                 <MDBCol md="6">
+                                    {this.state.error &&
+                                        <MDBAlert color="danger">
+                                            Die eingegebene Username / Passwort Kombination existiert nicht.
+                                        </MDBAlert>
+                                    }
+                                    
                                     <form onSubmit={this.handleSubmit} className="needs-validation" noValidate>
                                         <p className="h4 text-center mb-4">Einloggen</p>
                                         {this.state.method === 'email' ? (
