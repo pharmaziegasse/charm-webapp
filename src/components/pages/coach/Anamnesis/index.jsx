@@ -14,12 +14,16 @@ import {
     MDBFormInline,
     MDBBtn,
     MDBIcon,
+    MDBSpinner,
 } from 'mdbreact';
 
 //> Backend Connection
 // Apollo
 import { graphql, Query } from "react-apollo";
 import gql from 'graphql-tag';
+
+//> CSS
+import './anamnesis.scss';
 
 //> Queries
 // Get forms
@@ -58,11 +62,13 @@ const UPDATE_FORMS = gql`
     }
 `;
 
-class Anamnesis extends React.Component{
+class Anamnesis extends React.PureComponent{
     constructor(props){
         super(props);
         this.state = {
-            urlPath: undefined
+            urlPath: undefined,
+            errors: [],
+            refNames: []
         }
     }
 
@@ -85,12 +91,51 @@ class Anamnesis extends React.Component{
             })
             .then(({data}) => {
                 console.log(data);
+                if(data){
+                    if(data.anamneseAnFormPage){
+                        let page = data.anamneseAnFormPage;
+                        if(page.result === "OK"){
+                            console.log("Sent");
+                        } else if(page.result === "FAIL"){
+                            console.log("Error");
+                            // Write error messages
+                            this.handleError(page.errors);
+                        }
+                    }
+                }
             })
             .catch(error => {
                 console.error("Mutation error:",error);
             })
         }
     };
+
+    handleError = (errors) => {
+        // Clear all previous errors
+        this.state.refNames.map((item, i) => {
+            const refNode = this[`${item}_ref`].current;
+            //refNode.parentNode.removeChild(refNode);
+            let refAlert = refNode.querySelector('.alert');
+            if(refAlert !== null){
+                refNode.removeChild(refAlert);
+            }
+        });
+
+        if(errors !== undefined){
+            if(errors.length >= 1){
+                this[`${errors[0].name}_ref`].current.scrollIntoView();
+                errors.map((error, i) => {
+                    if(error.__typename === "FormError"){
+                        const node = this[`${error.name}_ref`].current;
+                        let elChild = document.createElement('div');
+                        elChild.className = 'alert alert-danger alert-error mt-2';
+                        elChild.innerHTML = `<i class="fa fa-angle-up pr-2"></i>${error.errors[0]}`;
+                        node.appendChild(elChild);
+                    }
+                });
+            }
+        }
+    }
 
     _handleChange = (e) => {
         this.setState({
@@ -254,7 +299,7 @@ class Anamnesis extends React.Component{
         });
     }
 
-    printRadio = (choices, container, i) => {
+    printRadio = (choices, container, required, i) => {
         let arr = choices.split(',');
         return arr.map((name, key) => {
             let n = name.trim().toLowerCase().replace(/ /g,'');
@@ -267,7 +312,8 @@ class Anamnesis extends React.Component{
                 key={key}
                 name={n}
                 type="radio"
-                id={"radio"+key}
+                id={"radio"+i+""+key}
+                required={required}
                 />
             );
         });
@@ -285,10 +331,10 @@ class Anamnesis extends React.Component{
     }
 
     render() {
-        //console.log(this.state);
+        console.log(this.state);
 
         // Get global state with login information
-        const { globalState } = this.props;
+        const { globalState, location } = this.props;
 
         //> Route protection
         // Only logged in uses can access this page
@@ -296,21 +342,40 @@ class Anamnesis extends React.Component{
         // If logged in but not coach
         if(globalState.logged && !globalState.coach) return <Redirect to="/dashboard"/> 
 
+        // Check if the state has been set in the parent component
+        if(location.state === undefined){
+            return <Redirect to="/coach"/> 
+        } else {
+            if(location.state.user === undefined){
+                return <Redirect to="/coach"/> 
+            }
+        }
+
+        // Set user variable
+        const user = location.state.user;
+
+        if(!this.state.uid){
+            this.setState({
+                uid: user.id
+            });
+        }
+
         return (
-            <MDBContainer className="text-center">
-                <h2 className="mb-5">Anamnese für Erika Mustermann</h2>
-                <MDBRow className="flex-center mb-4">
-                    <MDBCol md="6">
+            <MDBContainer id="anamnesis" className="text-left">
+                <h2 className="mb-5">Anamnese für {user.firstName+" "+user.lastName}</h2>
+                <MDBRow className="mb-4">
+                    <MDBCol md="8">
                         {
                         <Query query={GET_FORMS} variables={{ "token": localStorage.getItem('wca') }}>
                         {({ loading, error, data }) => {
                             if (loading) {
-                            return (<div>Loading...</div>);
+                            return (<div><MDBSpinner /></div>);
                             }
                             if (error) {
                             console.error(error);
                             return (<div>Error!</div>);
                             }
+
                             if(data !== undefined){
                                 if(data.pages !== undefined){
                                     // Get key
@@ -321,6 +386,7 @@ class Anamnesis extends React.Component{
                                         }
                                         return true;
                                     });
+                                    
                                     // Check if the FormPage exists
                                     if(key !== undefined){
                                         // Set urlpath (where to send data)
@@ -331,15 +397,25 @@ class Anamnesis extends React.Component{
                                         }
 
                                         let formfields = data.pages[key].formFields;
+                                        
                                         return formfields.map((item, i) => {
+                                            this[`${item.name}_ref`] = React.createRef();
                                             //console.log(item);
+
+                                            // Store the names of all items for refs
+                                            if(!this.state.refNames.includes(item.name)){
+                                                this.setState(previousState => ({
+                                                    refNames: [...previousState.refNames, item.name]
+                                                }));
+                                            }
+
                                             this._setDefaultValue(item, i);
                                             switch(item.fieldType.toLowerCase()){
                                                 case "singleline":
                                                     // TEXT Input
                                                     return(
-                                                        <div key={i} className="form-group">
-                                                            <label htmlFor={"fromGroupInput"+i}>
+                                                        <div ref={this[`${item.name}_ref`]} key={i} className="form-group my-3">
+                                                            <label className="heading" htmlFor={"fromGroupInput"+i}>
                                                             {item.helpText && item.helpText}
                                                             </label>
                                                             <input
@@ -353,19 +429,34 @@ class Anamnesis extends React.Component{
                                                             />
                                                         </div>
                                                     );
+                                                case "hidden":
+                                                    // HIDDEN Input
+                                                    return(
+                                                        <div ref={this[`${item.name}_ref`]} key={i} className="form-group my-3 d-none">
+                                                            <label className="heading" htmlFor={"fromGroupInput"+i}>
+                                                            {item.helpText && item.helpText}
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                value={this.state[item.name]}
+                                                                name={item.name}
+                                                                className="form-control"
+                                                                id={"fromGroupInput"+i}
+                                                                disabled
+                                                            />
+                                                        </div>
+                                                    );
                                                 case "number":
                                                     // NUMBER Input
                                                     return(
-                                                        <div key={i} >
-                                                            <label htmlFor={"fromGroupInput"+i}>
+                                                        <div ref={this[`${item.name}_ref`]} key={i} className="my-3">
+                                                            <label className="heading" htmlFor={"fromGroupInput"+i}>
                                                                 {item.helpText && item.helpText}
                                                             </label>
                                                             <div
                                                             className="
                                                             def-number-input
                                                             number-input
-                                                            ml-auto
-                                                            mr-auto
                                                             mb-3"
                                                             >
                                                                 <button
@@ -389,8 +480,8 @@ class Anamnesis extends React.Component{
                                                 case "checkbox":
                                                     // CHECKBOX Input
                                                     return(
-                                                        <div key={i} >
-                                                            <label htmlFor={"fromGroupInput"+i}>
+                                                        <div ref={this[`${item.name}_ref`]} key={i} className="my-3">
+                                                            <label className="heading" htmlFor={"fromGroupInput"+i}>
                                                                 {item.helpText && item.helpText}
                                                             </label>
                                                             <MDBInput
@@ -407,11 +498,11 @@ class Anamnesis extends React.Component{
                                                 case "checkboxes":
                                                     // CHECKBOXES Input
                                                     return (
-                                                        <div key={i} >
-                                                            <label htmlFor={"fromGroupInput"+i}>
+                                                        <div ref={this[`${item.name}_ref`]} key={i} className="my-3">
+                                                            <label className="heading" htmlFor={"fromGroupInput"+i}>
                                                                 {item.helpText && item.helpText}
                                                             </label>
-                                                                <MDBFormInline className="justify-content-center">
+                                                                <MDBFormInline>
                                                                 {this.printCheckboxes(item, i)}
                                                                 </MDBFormInline>
                                                         </div>
@@ -419,8 +510,8 @@ class Anamnesis extends React.Component{
                                                 case "dropdown":
                                                     // SELECT Input
                                                     return (
-                                                        <div key={i} >
-                                                            <label htmlFor={"fromGroupInput"+i}>
+                                                        <div ref={this[`${item.name}_ref`]} key={i} className="my-3">
+                                                            <label className="heading" htmlFor={"fromGroupInput"+i}>
                                                                 {item.helpText && item.helpText}
                                                             </label>
                                                             <div>
@@ -438,8 +529,8 @@ class Anamnesis extends React.Component{
                                                 case "multiselect":
                                                     // MULTI SELECT Input
                                                     return (
-                                                        <div key={i} >
-                                                            <label htmlFor={"fromGroupInput"+i}>
+                                                        <div ref={this[`${item.name}_ref`]} key={i} className="my-3">
+                                                            <label className="heading" htmlFor={"fromGroupInput"+i}>
                                                                 {item.helpText && item.helpText}
                                                             </label>
                                                             <div>
@@ -458,23 +549,43 @@ class Anamnesis extends React.Component{
                                                 case "radio":
                                                     // RADIO Input
                                                     return (
-                                                        <div key={i} >
-                                                            <label htmlFor={"fromGroupInput"+i}>
+                                                        <div ref={this[`${item.name}_ref`]} key={i} className="my-3">
+                                                            <label className="heading" htmlFor={"fromGroupInput"+i}>
                                                                 {item.helpText && item.helpText}
                                                             </label>
                                                             <MDBFormInline>
-                                                                {this.printRadio(item.choices, item.name, i)}
+                                                                {this.printRadio(item.choices, item.name, item.required, i)}
                                                             </MDBFormInline>
+                                                        </div>
+                                                    );
+                                                case "multiline":
+                                                    // MULTILINE TEXT Input
+                                                    return (
+                                                        <div ref={this[`${item.name}_ref`]} className="form-group">
+                                                            <label className="heading" htmlFor={"fromGroupInput"+i}>
+                                                                {item.helpText && item.helpText}
+                                                            </label>
+                                                            <textarea
+                                                            className="form-control"
+                                                            value={this.state[item.name]}
+                                                            onChange={this._handleChange}
+                                                            name={item.name}
+                                                            id={"fromGroupInput"+i}
+                                                            rows="5"
+                                                            required={item.required}
+                                                            />
                                                         </div>
                                                     );
                                                 default:
                                                     return(
-                                                        <div key={i} className="form-group">
-                                                            <label htmlFor={"fromGroupInput"+i}>
+                                                        <div ref={this[`${item.name}_ref`]} key={i} className="form-group">
+                                                            <label className="heading" htmlFor={"fromGroupInput"+i}>
                                                             {item.helpText && item.helpText}
                                                             </label>
                                                             <input
                                                                 type="text"
+                                                                value={this.state[item.name]}
+                                                                onChange={this._handleChange}
                                                                 name={item.name}
                                                                 className="form-control"
                                                                 id={"fromGroupInput"+i}
@@ -487,6 +598,7 @@ class Anamnesis extends React.Component{
                                     }else {
                                         return null;
                                     }
+                                    
                                 }else {
                                     return null;  
                                 }
@@ -496,8 +608,10 @@ class Anamnesis extends React.Component{
                         }}
                         </Query>
                         }
+                        
                     </MDBCol>
                 </MDBRow>
+                
                 <MDBBtn
                 color="secondary"
                 onClick={this.sendData}>
