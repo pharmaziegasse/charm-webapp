@@ -15,6 +15,7 @@ import {
     MDBBtn,
     MDBAlert,
     MDBIcon,
+    MDBSpinner,
 } from "mdbreact";
 
 //> Additional libraries
@@ -89,6 +90,9 @@ class Login extends React.Component {
     }
 
     handleSubmit = (e) => {
+        this.setState({
+            loading: true
+        });
         // Prevent page from reloading
         e.preventDefault();
         // Validation
@@ -159,7 +163,8 @@ class Login extends React.Component {
         })
         .catch(error => {
             this.setState({
-                error: true
+                error: true,
+                loading: false
             }, () => this.props.handler(false));
         })
     }
@@ -173,8 +178,9 @@ class Login extends React.Component {
                 if(data.tokenAuth !== undefined){
                     if(data.tokenAuth.token !== undefined){
                         localStorage.setItem('wca',data.tokenAuth.token);
+                        // Remove error message, but keep it loading
                         this.setState({
-                            error: false
+                            error: false,
                         }, () => this.props.handler(true));
                     }
                 }
@@ -182,7 +188,8 @@ class Login extends React.Component {
         }).catch((loading, error) => {
             // Username or password is wrong
             this.setState({
-                error: true
+                error: true,
+                loading: false
             }, () => this.props.handler(false));
         });
     }
@@ -253,10 +260,15 @@ class Login extends React.Component {
                     >
                         <MDBCardBody>
                             <MDBRow className="flex-center">
+                            {this.state.loading ? (
+                                <MDBCol md="12" className="py-5 text-center">
+                                    <MDBSpinner big />
+                                </MDBCol>
+                            ) : (
                                 <MDBCol md="6">
                                     {this.state.error &&
-                                        <MDBAlert color="danger">
-                                            Die eingegebene Username / Passwort Kombination existiert nicht.
+                                        <MDBAlert color="danger" className="text-center">
+                                            Die eingegebene Kombination existiert nicht.
                                         </MDBAlert>
                                     }
                                     
@@ -338,6 +350,8 @@ class Login extends React.Component {
                                         </p>
                                     </form>
                                 </MDBCol>
+                            )}
+                                
                             </MDBRow>
                         </MDBCardBody>
                     </MDBCol>
