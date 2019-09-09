@@ -1,6 +1,8 @@
 //> React
 // Contains all the functionality necessary to define React components
 import React from 'react';
+// Redirect from Router
+import { Link } from 'react-router-dom';
 
 //> MDB
 // "Material Design for Bootstrap" is a great UI design framework
@@ -10,9 +12,17 @@ import {
     MDBRow,
     MDBCol,
     MDBIcon,
+    MDBBtn,
 } from 'mdbreact';
 
-class Footer extends React.Component{
+class Footer extends React.PureComponent{
+    logout = () => {
+        // Remove the token
+        localStorage.removeItem('wca');
+        // Redirect to login
+        window.location.href = '/login'; 
+    }
+
     render(){
         // Get global state with login information
         const { globalState } = this.props;
@@ -47,6 +57,16 @@ class Footer extends React.Component{
                                                 >
                                                 <MDBIcon icon="medkit" className="pr-2" />Technischer Support
                                                 </a>
+                                            </MDBCol>
+                                            <MDBCol md="4">
+                                                <MDBBtn
+                                                color="white"
+                                                rounded
+                                                size="md"
+                                                onClick={() => this.logout()}
+                                                >
+                                                <MDBIcon icon="sign-out-alt" className="pr-2" />Logout
+                                                </MDBBtn>
                                             </MDBCol>
                                         </MDBRow>
                                     )

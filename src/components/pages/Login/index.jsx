@@ -170,10 +170,8 @@ class Login extends React.Component {
     }
 
     _login = async (username) => {
-        console.log(username);
         await this.props.mutate({ variables: { "username": username, "password": this.state.password } })
         .then(({ loading, data }) => {
-            console.log(data);
             if(data !== undefined){
                 if(data.tokenAuth !== undefined){
                     if(data.tokenAuth.token !== undefined){
@@ -245,7 +243,6 @@ class Login extends React.Component {
          * This doubles as a neat way to redirect the user directly after login
          */
         if(globalState.logged){
-            console.log("reached");
             return <Redirect to="/dashboard"/> 
         } 
 
