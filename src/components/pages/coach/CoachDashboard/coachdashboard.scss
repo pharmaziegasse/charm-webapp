@@ -1,4 +1,7 @@
 #coach{
+    a[role="button"]{
+        box-shadow: none;
+    }
     h2{
         /**
          * For span to receive the ::first-letter attribute, it must be block
@@ -14,6 +17,22 @@
     .table{
         td, th{
             vertical-align: middle;
+        }
+    }
+    .user-action{
+        button{
+            text-transform: inherit;
+            box-shadow: none;
+        }
+        .btn-danger{
+            &:hover{
+                background-color: darken(#ff3547, 15%) !important;
+            }
+        }
+        .btn-outline-purple{
+            &:hover{
+                background-color: lighten(purple, 73%) !important;
+            }
         }
     }
 }

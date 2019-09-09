@@ -35,6 +35,7 @@ class CoachDashboard extends React.Component{
                 let userSet = this.props.globalState.userdata.userSet;
                 if(userSet.length >= 1){
                     let users = userSet.map((user, i) => {
+                        console.log(user);
                         return({
                             'id': i+1,
                             'first': user.firstName,
@@ -42,7 +43,7 @@ class CoachDashboard extends React.Component{
                             'email': <a href={"mailto:"+user.email} className="blue-text">{user.email}</a>,
                             'phone': user.telephone,
                             'actions':
-                            <div>
+                            <div className="user-action">
                                 <Link 
                                 to={{
                                 pathname: '/report',
@@ -51,16 +52,30 @@ class CoachDashboard extends React.Component{
                                 }
                                 }}
                                 >
-                                    <MDBBtn outline color="purple" size="md">
+                                    <MDBBtn rounded outline color="purple">
                                     Beauty Reports
                                     </MDBBtn>
                                 </Link>
-                                <MDBBtn
-                                color="purple"
-                                size="md"
+                                <Link 
+                                to={{
+                                pathname: '/anamnesis',
+                                state: {
+                                    user: user
+                                }
+                                }}
                                 >
-                                <MDBIcon icon="user" className="pr-2" />Profil anzeigen
-                                </MDBBtn>
+                                {
+                                    user.anamneseSet.length >= 1 ? (
+                                        <MDBBtn outline rounded color="purple">
+                                        Anamnesebogen
+                                        </MDBBtn>
+                                    ) : (
+                                        <MDBBtn rounded color="danger">
+                                        Anamnesebogen
+                                        </MDBBtn>
+                                    )
+                                }
+                                </Link>
                             </div>
                         })
                     });

@@ -64,6 +64,9 @@ const GET_DATA = gql`
       city
       postalCode
       userSet{
+        anamneseSet{
+          id
+        }
         id
         firstName
         lastName
