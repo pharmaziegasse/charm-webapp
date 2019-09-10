@@ -21,8 +21,9 @@ import {
 } from 'mdbreact';
 
 //> Connection
-import { withApollo } from "react-apollo";
+import { graphql, withApollo } from "react-apollo";
 import gql from "graphql-tag";
+import * as compose from 'lodash.flowright';
 
 //> Queries
 // Get template
@@ -37,6 +38,15 @@ const GET_TEMPLATE = gql`
                         chapterHeader
                         subChapters
                     }
+                }
+            }
+        }
+        pages(token: $token) {
+            ... on BeautyreportBrFormPage {
+                urlPath
+                formFields {
+                    name
+                    fieldType        
                 }
             }
         }
@@ -56,6 +66,26 @@ const GET_USERDATA = gql`
         }
     }
 `;
+// Send
+const SEND_DATA = gql`
+    mutation sendbr (
+        $token: String!
+        $urlPath: String!
+        $values: GenericScalar!
+    ){
+        beautyreportBrFormPage(
+            token: $token
+            url: $urlPath
+            values: $values
+        ) {
+            result
+            errors {
+                errors
+                name
+            }
+        }
+    }
+`;
 
 class GenerateReport extends React.Component{
     constructor(props){
@@ -68,6 +98,7 @@ class GenerateReport extends React.Component{
             loading: false,
             operations: 0,
             userId: undefined,
+            error: undefined,
         }
     }
 
@@ -91,14 +122,19 @@ class GenerateReport extends React.Component{
         }).then(({data}) => {
             if(data.pages !== undefined){
                 let template = undefined;
+                let urlPath = undefined;
                 data.pages.map((page, i) => {
                     if(page.__typename === "ReportsReportsPage"){
                         template = data.pages[i];
                     }
+                    if(page.__typename === "BeautyreportBrFormPage"){
+                        urlPath = data.pages[i].urlPath
+                    }
                     return true;
                 });
                 this.setState({
-                    template: template
+                    template: template,
+                    urlPath: urlPath
                 });
             }
         })
@@ -219,6 +255,38 @@ class GenerateReport extends React.Component{
         }
     }
 
+    sendData = (result) => {
+        let values = {
+            "uid": this.state.user.id,
+            "data": result
+        }
+        this.props.send({
+            variables: { 
+                "token": localStorage.getItem("wca"),
+                "urlPath": this.state.urlPath,
+                "values": values
+            }
+        }).then(({data}) => {
+            if(data.beautyreportBrFormPage.result === "OK"){
+                this.setState({
+                    loading: false,
+                    error: undefined
+                });
+            } else if(data.beautyreportBrFormPage.result === "FAIL") {
+                this.setState({
+                    loading: false,
+                    error: data.beautyreportBrFormPage.errors
+                });
+            }
+        })
+        .catch(error => {
+            this.setState({
+                loading: false,
+                error: error
+            });
+        })
+    }
+
     createReport = () => {
         // Set variables
         let template = this.state.template;
@@ -305,64 +373,12 @@ class GenerateReport extends React.Component{
                         skey + 1 === chapter.subChapters.length && 
                         pkey + 1 === subChapter.value.paragraphs.length 
                     ){
-                        console.log("Finished");
-                        this.setState({
-                            loading: false,
-                            result: result
-                        });
+                        // Finished
+                        this.sendData(result);
                     }
                 });
             });
         });
-    }
-
-    _redirect = () => {
-        let sum = undefined;
-        // First time
-        if(sum === undefined){
-            // If template has loaded
-            if(this.state.template !== undefined){
-                // if articles in template have loaded
-                if(this.state.template.chapters !== undefined){
-                    
-                    // Count items in each article
-                    let operations = this.state.template.chapters.map((a, i) => {
-                        let items = 0;
-                        a.subChapters.map((chapter, key) => {
-                            chapter.value.paragraphs.map(() => {
-                                items++;
-                                return true;
-                            })
-                        });
-                        return items;
-                    });
-                    // The the sum of all articles
-                    sum = operations.reduce((a,b) => a + b, 0);
-                    console.log(sum);
-                    // Check if the sum of all articles is the same as the operation count
-                    return this._redirectPermission(sum);
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        } else {
-            // Check if the sum of all articles is the same as the operation count
-            return this._redirectPermission(sum);
-        }
-    }
-
-    _redirectPermission = (sum) => {
-        if(this.state.operations !== 0){
-            if(this.state.operations === sum){
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
     }
 
     render() {
@@ -375,8 +391,6 @@ class GenerateReport extends React.Component{
         if(globalState.logged && !globalState.coach) return <Redirect to="/dashboard"/> 
         
         if(!location.state) return <Redirect to="/coach"/>
-
-        console.log(this.state);
         
         // Check if the data has been set
         if(
@@ -386,17 +400,6 @@ class GenerateReport extends React.Component{
         ){
             this.createReport();
         }
-
-        // Redirect to edit page
-        /*if(this._redirect()){
-            return(
-                <Redirect to={{
-                pathname: '/report/edit',
-                state: { ...this.state }
-                }}
-                />
-            )
-        }*/
         return (
             <MDBContainer className="text-center">
                 <h2 className="text-center font-weight-bold">
@@ -422,6 +425,7 @@ class GenerateReport extends React.Component{
                 </div>
                 <MDBRow className="flex-center mt-4">
                         <MDBCol md="6">
+                        { !this.state.error ? (
                             <MDBCard>
                             { this.state.user && this.state.user.anamneseSet.length >= 1 ? (
                                 <MDBCardBody>
@@ -433,17 +437,30 @@ class GenerateReport extends React.Component{
                                         </>
                                     ) : (
                                         <>
-                                            <MDBAlert color="danger">
-                                                <p>Qualitäts-Kontrolle ausstehend!</p>
-                                                <MDBBtn color="danger" size="md" rounded>
-                                                    Jetzt kontrollieren
-                                                </MDBBtn>
+                                            { true === false &&
+                                            <>
+                                                <MDBAlert color="danger">
+                                                    <p>Qualitäts-Kontrolle ausstehend!</p>
+                                                    <MDBBtn color="danger" size="md" rounded>
+                                                        Jetzt kontrollieren
+                                                    </MDBBtn>
+                                                </MDBAlert>
+                                                <MDBAlert color="success">
+                                                    <p><MDBIcon icon="check" className="pr-2"/>Von Christian 
+                                                    Aichner kontrolliert</p>
+                                                </MDBAlert>
+                                            </>
+                                            }
+                                            <MDBAlert color="success" className="mb-4">
+                                                <p>
+                                                <MDBIcon
+                                                icon="check"
+                                                className="pr-2"
+                                                />
+                                                Beautyreport erstellt und gespeichert!
+                                                </p>
                                             </MDBAlert>
-                                            <MDBAlert color="success">
-                                                <p><MDBIcon icon="check" className="pr-2"/>Von Christian 
-                                                Aichner kontrolliert</p>
-                                            </MDBAlert>
-                                            <p className="lead mt-4">Download als</p>
+                                            <p className="lead">Download als</p>
                                             <MDBBtn color="primary">
                                                 <MDBIcon icon="file-word" className="pr-2"/>Word
                                             </MDBBtn>
@@ -457,8 +474,8 @@ class GenerateReport extends React.Component{
                                 <MDBCardBody>
                                     <MDBAlert color="info" className="mb-0">
                                         <p className="lead">Es wurden keine Anamnesedaten gefunden!</p>
-                                        <p className="mb-3">Möglicherweiße wurden die Daten des Anamnese-Gesprächs noch 
-                                        nicht in Charm übertragen.</p>
+                                        <p className="mb-3">Möglicherweiße wurden die Daten des Anamnese-Gesprächs 
+                                        noch nicht in Charm übertragen.</p>
                                         <Link 
                                         to={{
                                         pathname: '/anamnesis',
@@ -475,14 +492,39 @@ class GenerateReport extends React.Component{
                                 </MDBCardBody>
                             )}
                             </MDBCard>
-                        </MDBCol>
+                        ) : (
+                            <MDBCard>
+                                <MDBCardBody>
+                                    {this.state.error.length >= 1 ? (
+                                        <>
+                                        {this.state.error.map((error, i) => {
+                                            return(
+                                                <MDBAlert key={i} color="danger">
+                                                    {error.errors[0]}
+                                                </MDBAlert>
+                                            )
+                                        })}
+                                        </>
+                                    ) : (
+                                        <MDBAlert color="danger">
+                                            Ein unerwarteter Fehler ist aufgetreten. Bitte kontaktieren Sie den 
+                                            Support der Werbeagentur Christian Aichner.
+                                        </MDBAlert>
+                                    )
+                                    }
+                                </MDBCardBody>
+                            </MDBCard>
+                        )}
+                    </MDBCol>
                 </MDBRow>
             </MDBContainer>
         );
     }
 }
 
-export default withApollo(GenerateReport);
+export default compose(
+    graphql(SEND_DATA, { name: 'send' }),
+)(withApollo(GenerateReport));
 
 /** 
  * SPDX-License-Identifier: (EUPL-1.2)
