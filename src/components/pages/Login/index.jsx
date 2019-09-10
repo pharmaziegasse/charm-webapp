@@ -288,13 +288,12 @@ class Login extends React.Component {
                                                     Bitte gib deine E-Mail Adresse an.
                                                 </div>
                                                 <div className="text-right">
-                                                    <a
-                                                    role="button"
+                                                    <span
                                                     className="blue-text"
                                                     onClick={() => this.switchMethod('phone')}
                                                     >
                                                     Über Telefonnummer einloggen
-                                                    </a>
+                                                    </span>
                                                 </div>
                                                 
                                             </>
@@ -311,13 +310,12 @@ class Login extends React.Component {
                                                 }}
                                                 />
                                                 <div className="text-right">
-                                                    <a
-                                                    role="button"
+                                                    <span
                                                     className="blue-text"
                                                     onClick={() => this.switchMethod('email')}
                                                     >
                                                     Über E-Mail einloggen
-                                                    </a>
+                                                    </span>
                                                 </div>
                                             </>
                                         ) }

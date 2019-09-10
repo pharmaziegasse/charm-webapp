@@ -2,7 +2,7 @@
 // Contains all the functionality necessary to define React components
 import React, { Fragment } from 'react';
 // Link and Redirect from Router
-import { Link, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 
 //> MDB
 // "Material Design for Bootstrap" is a great UI design framework

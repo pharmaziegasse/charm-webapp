@@ -14,24 +14,18 @@ import countryList from 'react-select-country-list';
 //> Backend Connection
 // Apollo
 import { graphql, withApollo } from "react-apollo";
-import { ApolloClient, HttpLink, InMemoryCache, gql } from "apollo-boost";
+import { gql } from "apollo-boost";
 import * as compose from 'lodash.flowright';
 
 //> MDB
 // "Material Design for Bootstrap" is a great UI design framework
 import {
     MDBContainer,
-    MDBCollapse,
-    MDBCard,
-    MDBCardBody,
-    MDBCollapseHeader,
-    MDBProgress,
     MDBRow,
     MDBCol,
     MDBInput,
     MDBBtn,
     MDBIcon,
-    MDBSwitch,
     MDBDatePicker,
     MDBSelect,
     MDBSpinner,
@@ -224,7 +218,8 @@ class NewCustomer extends React.Component{
                             return page.urlPath;
                         }
                     }
-                })
+                    return true;
+                });
                 this.setState({
                     Coaches: coaches,
                     urlPath: urlPaths.filter(function(el) { return el; })
@@ -238,13 +233,8 @@ class NewCustomer extends React.Component{
 
     _createUser = () => {
         if(this.state.email.trim() !== "" && this.state.phone.trim() !== "" && this.state.coach.length >= 1 ){
-            let email = this.state.email.trim();
-            // The phone input has already been trimmed on input
-            let phone = this.state.phone;
-            let coachId = this.state.coach[0];
-
+            
             // Get all values and prepare them for API handling
-
             const values = {
                 "title": this.state.title,
                 "coach_id": this.state.coach[0],
@@ -261,7 +251,7 @@ class NewCustomer extends React.Component{
 
             let urlPath = this.state.urlPath[0];
 
-            if(urlPath !== undefined && coachId !== undefined){
+            if(urlPath !== undefined && this.state.coach[0] !== undefined){
                 this.setState({
                     loading: true
                 });

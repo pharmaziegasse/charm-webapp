@@ -119,6 +119,7 @@ class Anamnesis extends React.Component{
             if(refAlert !== null){
                 refNode.removeChild(refAlert);
             }
+            return true;
         });
 
         if(errors !== undefined){
@@ -132,6 +133,7 @@ class Anamnesis extends React.Component{
                         elChild.innerHTML = `<i class="fa fa-angle-up pr-2"></i>${error.errors[0]}`;
                         node.appendChild(elChild);
                     }
+                    return true;
                 });
             }
         }
@@ -158,6 +160,7 @@ class Anamnesis extends React.Component{
             if(current.includes(label)){
                 // Remove
                 let filtered = current.filter(function(ele){
+                    // eslint-disable-next-line
                     return ele != label;
                 });
                 // Update state
@@ -323,7 +326,7 @@ class Anamnesis extends React.Component{
     printOptions = (choices, i) => {
         let arr = choices.split(',');
         return arr.map((name, key) => {
-            let n = name.trim().toLowerCase().replace(/ /g,'');
+            //let n = name.trim().toLowerCase().replace(/ /g,'');
             let display = name.trim();
             return(
                 <option key={key} value={display}>{display}</option>

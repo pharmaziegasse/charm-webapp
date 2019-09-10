@@ -8,14 +8,8 @@ import { Link, Redirect } from 'react-router-dom';
 // "Material Design for Bootstrap" is a great UI design framework
 import {
     MDBContainer,
-    MDBCollapse,
-    MDBCard,
-    MDBCardBody,
-    MDBCollapseHeader,
-    MDBProgress,
     MDBRow,
     MDBCol,
-    MDBInput,
     MDBBtn,
     MDBIcon,
     MDBDataTable
@@ -25,17 +19,12 @@ import {
 import './coachdashboard.scss';
 
 class CoachDashboard extends React.Component{
-    constructor(props){
-        super(props);
-    }
-
     _getCoachUsers = () => {
         if(this.props.globalState){
             if(this.props.globalState.userdata){
                 let userSet = this.props.globalState.userdata.userSet;
                 if(userSet.length >= 1){
                     let users = userSet.map((user, i) => {
-                        console.log(user);
                         return({
                             'id': i+1,
                             'first': user.firstName,

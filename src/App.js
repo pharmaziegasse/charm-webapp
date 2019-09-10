@@ -11,7 +11,6 @@ import { BrowserRouter as Router } from 'react-router-dom';
  */
 import {
   Footer,
-  Navbar,
 } from './components/molecules';
 // Routes
 import Routes from './Routes';
@@ -19,7 +18,7 @@ import Routes from './Routes';
 //> Backend Connection
 // Apollo
 import { graphql, withApollo } from "react-apollo";
-import { ApolloClient, HttpLink, InMemoryCache, gql } from "apollo-boost";
+import { gql } from "apollo-boost";
 import * as compose from 'lodash.flowright';
 
 const VERIFY_TOKEN = gql`
@@ -99,7 +98,7 @@ class App extends React.Component {
         // Refresh token every 4 minutes
         setInterval(async () => {
           this._verifyToken();
-        }, 240000);
+        }, 10000);
       } catch(e) {
         console.log(e);
       }
