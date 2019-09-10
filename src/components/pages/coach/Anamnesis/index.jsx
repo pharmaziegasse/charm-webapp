@@ -2,7 +2,7 @@
 // Contains all the functionality necessary to define React components
 import React from 'react';
 // Redirect from Router
-import { Redirect } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 
 //> MDB
 // "Material Design for Bootstrap" is a great UI design framework
@@ -62,7 +62,7 @@ const UPDATE_FORMS = gql`
     }
 `;
 
-class Anamnesis extends React.PureComponent{
+class Anamnesis extends React.Component{
     constructor(props){
         super(props);
         this.state = {
@@ -150,11 +150,13 @@ class Anamnesis extends React.PureComponent{
     }
 
     _handleCheckBoxesChange = (e, name, label) => {
+        console.log(e, name, label);
         // Get current active checkboxes
         let current = this.state[name];
         // Check if there currently are active checkboxes
         if(current !== undefined){
             if(current.includes(label)){
+                console.log("Is checked");
                 // Remove
                 let filtered = current.filter(function(ele){
                     return ele != label;
@@ -164,6 +166,7 @@ class Anamnesis extends React.PureComponent{
                     [name]: filtered
                 });
             } else {
+                console.log("Is not checked");
                 // Add to array
                 current.push(label);
                 // Update state
@@ -216,7 +219,7 @@ class Anamnesis extends React.PureComponent{
                         if(this.state[item.name] === null || this.state[item.name] === undefined){
                             this.setState({
                                 [item.name]: checkboxes
-                            })
+                            });
                         }
                         break;
                     case 'checkbox':
@@ -224,11 +227,11 @@ class Anamnesis extends React.PureComponent{
                             if(item.defaultValue){
                                 this.setState({
                                     [item.name]: true
-                                })
+                                });
                             } else {
                                 this.setState({
                                     [item.name]: false
-                                })
+                                });
                             }
                         }
                         break;
@@ -362,14 +365,21 @@ class Anamnesis extends React.PureComponent{
 
         return (
             <MDBContainer id="anamnesis" className="text-left">
-                <h2 className="mb-5">Anamnese für {user.firstName+" "+user.lastName}</h2>
+                <h2 className="mb-5 text-center">Anamnese für {user.firstName+" "+user.lastName}</h2>
+                <div className="text-left mt-4">
+                    <Link to="/coach">
+                        <MDBBtn color="red">
+                            <MDBIcon icon="angle-left" className="pr-2" />Zurück
+                        </MDBBtn>
+                    </Link>
+                </div>
                 <MDBRow className="mb-4">
                     <MDBCol md="8">
                         {
                         <Query query={GET_FORMS} variables={{ "token": localStorage.getItem('wca') }}>
                         {({ loading, error, data }) => {
                             if (loading) {
-                            return (<div><MDBSpinner /></div>);
+                            return (<div className="text-center"><MDBSpinner /></div>);
                             }
                             if (error) {
                             console.error(error);
