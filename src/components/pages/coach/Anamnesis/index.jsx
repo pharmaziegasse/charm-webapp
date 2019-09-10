@@ -570,7 +570,7 @@ class Anamnesis extends React.Component{
                                                 case "multiline":
                                                     // MULTILINE TEXT Input
                                                     return (
-                                                        <div ref={this[`${item.name}_ref`]} className="form-group">
+                                                        <div ref={this[`${item.name}_ref`]} key={i} className="form-group">
                                                             <label className="heading" htmlFor={"fromGroupInput"+i}>
                                                                 {item.helpText && item.helpText}
                                                             </label>
