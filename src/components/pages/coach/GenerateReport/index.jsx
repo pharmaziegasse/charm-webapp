@@ -183,40 +183,13 @@ class GenerateReport extends React.Component{
             // Check if there are multiple conditions
             if(!condition.includes(', ')){
                 // There is only one condition
-
-                // Replace the first word with the value of the corresponding word ( age > 50 => 3 > 50 )
-                let condNew = condition.replace(/^\S+/g, data[condition.replace(/ .*/,'').toLowerCase()]);
-
-                let condNewPure = condNew.replace(/"/g,'');
-                
-                let compareParts = condNewPure.split(' ');
-                
-                //console.log(compareParts);
-
-                if(this.__convertType(compareParts[0]) === null || this.__convertType(compareParts[0]) === undefined){
-                    return false;
-                } else {
-                    return this.__compare(this.__convertType(compareParts[0]), compareParts[1], compareParts[2]);
-                }
+                return this._normalizeCondition(condition, data);
             } else {
                 // There are multiple conditions
                 let conditions = condition.split(', ');
                 // For each condition
                 let results = conditions.map((condition, i) => {
-                    // Replace the first word with the value of the corresponding word ( age > 50 => 3 > 50 )
-                    let condNew = condition.replace(/^\S+/g, data[condition.replace(/ .*/,'').toLowerCase()]);
-
-                    let condNewPure = condNew.replace(/"/g,'');
-                    
-                    let compareParts = condNewPure.split(' ');
-                    
-                    //console.log(compareParts);
-
-                    if(this.__convertType(compareParts[0]) === null || this.__convertType(compareParts[0]) === undefined){
-                        return false;
-                    } else {
-                        return this.__compare(this.__convertType(compareParts[0]), compareParts[1], compareParts[2]);
-                    }
+                    return this._normalizeCondition(condition, data);
                 });
                 // Check if one of the conditions returned false
                 if(results.includes(false)){
@@ -229,6 +202,46 @@ class GenerateReport extends React.Component{
             }
         } else {
             return true;
+        }
+    }
+
+    _normalizeCondition = (condition, data) => {
+        // Get the string between quotes
+        let preEscapedCondition = condition.match(/"(.*?)"/g);
+        // If it's not empty
+        if(preEscapedCondition !== null){
+            // Replace all blanks with an underscore
+            let escapedCondition = preEscapedCondition[0].replace(/\s/g, '_');
+            // Replace the string between quotes with the escaped string (with underscores)
+            condition = condition.replace(/"(.*?)"/g,escapedCondition);
+        }
+
+        // Replace the first word with the value of the corresponding word ( age > 50 => 3 > 50 )
+        let replacement = this.__convertType(data[condition.replace(/ .*/,'').toLowerCase()]);
+        
+        if(replacement){
+            // If its a string
+            if(typeof replacement == "string"){
+                replacement = replacement.replace(/\s/g, '_');
+            }
+            // If it's an object
+            if(typeof replacement == "object"){
+                replacement = replacement[0].replace(/\s/g, '_');
+            }
+
+            let condNew = condition.replace(/^\S+/g, replacement);
+
+            let condNewPure = condNew.replace(/"/g,'');
+            
+            let compareParts = condNewPure.split(' ');
+
+            if(this.__convertType(compareParts[0]) === null || this.__convertType(compareParts[0]) === undefined){
+                return false;
+            } else {
+                return this.__compare(this.__convertType(compareParts[0]), compareParts[1], compareParts[2]);
+            }
+        } else {
+            return false;
         }
     }
     
@@ -364,7 +377,6 @@ class GenerateReport extends React.Component{
                             }
                         }
                     }
-                    
 
                     //console.log(text);
                     // Check if finished
@@ -400,6 +412,7 @@ class GenerateReport extends React.Component{
         ){
             this.createReport();
         }
+
         return (
             <MDBContainer className="text-center">
                 <h2 className="text-center font-weight-bold">
