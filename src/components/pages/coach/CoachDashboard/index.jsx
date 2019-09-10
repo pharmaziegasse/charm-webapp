@@ -37,7 +37,7 @@ class CoachDashboard extends React.Component{
                                 to={{
                                 pathname: '/report',
                                 state: {
-                                    userId: user.id
+                                    user: user
                                 }
                                 }}
                                 >
