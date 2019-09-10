@@ -98,7 +98,7 @@ class App extends React.Component {
         // Refresh token every 4 minutes
         setInterval(async () => {
           this._verifyToken();
-        }, 10000);
+        }, 180000);
       } catch(e) {
         console.log(e);
       }
