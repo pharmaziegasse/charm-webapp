@@ -17,7 +17,7 @@ import {
 } from 'mdbreact';
 
 //> Connection
-import { graphql } from "react-apollo";
+import { withApollo } from "react-apollo";
 import gql from "graphql-tag";
 
 //> Queries
@@ -31,61 +31,76 @@ const GET_REPORTS = gql`
     }
 `;
 
-// Dummy data
-const reports = [
-    { title: "Beautyreport", timestamp: "13.08.2019" },
-    { title: "Beautyreport", timestamp: "10.07.2019" },
-]
-
 class ReportList extends React.Component{
     constructor(props){
         super(props);
 
         this.state = {
             userId: undefined,
+            reports: [],
         }
     }
 
-    componentWillMount = () => {
+    componentDidMount = () => {
         if(this.props.location){
             if(this.props.location.state){
-                if(this.props.location.state.userId){
+                if(this.props.location.state.user.id){
                     this.setState({
-                        userId: this.props.location.state.userId
-                    });
+                        user: this.props.location.state.user
+                    }, () => this.fetchReports(this.props.location.state.user.id));
                 }
             }
         }
     }
 
-    fetchReports = () => {
+    fetchReports = (uid) => {
         // Start loading animation
         this.setState({
             loading: true
         });
         // Fetch data required for creating a report
-        this.fetchAllReports();
+        this.fetchAllReports(uid);
     }
 
-    fetchAllReports = () => {
-
+    fetchAllReports = (uid) => {
+        this.props.client.query({
+        query: GET_REPORTS,
+        variables: { "id": uid, "token": localStorage.getItem("wca") }
+        }).then(({data}) => {
+            if(data.brByUid){
+                console.log("Beautyreports exist for this user");
+                // If there are reports, set dummy data
+                let reports = [
+                    { timestamp: "13.08.2019" },
+                    { timestamp: "10.07.2019" }
+                ];
+                this.setState({
+                    reports: reports
+                })
+            } else {
+                console.log("There are no Beautyreports for this user");
+            }
+        })
+        .catch(error => {
+            console.log("Error",error);
+        })
     }
 
     render() {
         // Get global state with login information
-        const { globalState } = this.props;
+        const { globalState, location } = this.props;
         //> Route protection
         // Only logged in uses can access this page
         if(!globalState.logged) return <Redirect to="/login"/>
         // If logged in but not coach
         if(globalState.logged && !globalState.coach) return <Redirect to="/dashboard"/> 
         
-        if(!this.state.userId) return <Redirect to="/coach"/>
+        if(!location.state) return <Redirect to="/coach"/>
         
         return (
             <MDBContainer className="text-center">
                 <h2 className="text-center font-weight-bold">
-                Beautyreports von Erika Mustermann
+                Beautyreports von {location.state.user.firstName + " " + location.state.user.lastName}
                 </h2>
                 <div className="mt-4">
                 <MDBRow>
@@ -97,43 +112,53 @@ class ReportList extends React.Component{
                         </Link>
                     </MDBCol>
                     <MDBCol md="6" className="text-right">
-                        <MDBBtn
-                        onClick={this.fetchReportData}
-                        color="secondary"
-                        rounded
+                        <Link 
+                        to={{
+                        pathname: '/report/add',
+                        state: {
+                            user: this.props.location.state.user
+                        }
+                        }}
                         >
-                        <MDBIcon icon="plus" className="pr-2" />Neuen Report generieren
-                        </MDBBtn>
+                            <MDBBtn
+                            color="secondary"
+                            rounded
+                            >
+                            <MDBIcon icon="plus" className="pr-2" />Neuen Report generieren
+                            </MDBBtn>
+                        </Link>
                     </MDBCol>
                 </MDBRow>
                     
                 </div>
-                <MDBListGroup className="text-left ml-auto mr-auto mb-4" style={{ width: "22rem" }}>
-                    {reports.map((value, i) => {
-                        return(
-                            <MDBListGroupItem
-                            key={i}
-                            href="#"
-                            hover
-                            >
-                            {value.title}<span className="float-right">{value.timestamp}</span>
-                            </MDBListGroupItem>
-                        );
-                    })}
-                </MDBListGroup>
+                <div className="mt-4">
+                
+                    {this.state.reports.length >= 1 ? 
+                    (
+                        <MDBListGroup className="text-left ml-auto mr-auto mb-4" style={{ width: "22rem" }}>
+                            {this.state.reports.map((value, i) => {
+                                return(
+                                    <MDBListGroupItem
+                                    key={i}
+                                    href="#"
+                                    hover
+                                    >
+                                    Beauty Report<span className="float-right">{value.timestamp}</span>
+                                    </MDBListGroupItem>
+                                );
+                            })}
+                        </MDBListGroup>
+                    ) : (
+                        <h3>Noch kein Beauty-Report vorhanden</h3>
+                    )
+                    }
+                </div>
             </MDBContainer>
         );
     }
 }
 
-export default graphql(GET_REPORTS, {
-    options: (props) => ({ 
-        variables: { 
-            "id": props.location.state.userId,
-            "token": localStorage.getItem('wca')
-        } 
-    })
-})(ReportList);
+export default withApollo(ReportList);
 
 /** 
  * SPDX-License-Identifier: (EUPL-1.2)
