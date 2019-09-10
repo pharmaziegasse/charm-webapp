@@ -8,12 +8,16 @@ import { Link, Redirect } from 'react-router-dom';
 // "Material Design for Bootstrap" is a great UI design framework
 import {
     MDBContainer,
+    MDBRow,
+    MDBCol,
+    MDBCard,
+    MDBCardBody,
     MDBListGroup,
     MDBListGroupItem,
     MDBBtn,
     MDBIcon,
-    MDBRow,
-    MDBCol,
+    MDBAlert,
+    MDBProgress,
 } from 'mdbreact';
 
 //> Connection
@@ -30,8 +34,8 @@ const GET_TEMPLATE = gql`
                 chapters{
                     __typename
                     ... on Reports_S_ChapterBlock{
-                    chapterHeader
-                    subChapters
+                        chapterHeader
+                        subChapters
                     }
                 }
             }
@@ -46,20 +50,14 @@ const GET_USERDATA = gql`
             date
             formData
             user {
-            id
-            username
+                id
+                username
             }
         }
     }
 `;
 
-// Dummy data
-const reports = [
-    { title: "Beautyreport", timestamp: "13.08.2019" },
-    { title: "Beautyreport", timestamp: "10.07.2019" },
-]
-
-class ReportList extends React.Component{
+class GenerateReport extends React.Component{
     constructor(props){
         super(props);
 
@@ -73,12 +71,13 @@ class ReportList extends React.Component{
         }
     }
 
-    componentWillMount = () => {
+    componentDidMount = () => {
         if(this.props.location){
             if(this.props.location.state){
-                if(this.props.location.state.userId){
+                if(this.props.location.state.user.id){
                     this.setState({
-                        userId: this.props.location.state.userId
+                        user: this.props.location.state.user,
+                        loading: true
                     });
                 }
             }
@@ -324,14 +323,14 @@ class ReportList extends React.Component{
 
     render() {
         // Get global state with login information
-        const { globalState } = this.props;
+        const { globalState, location } = this.props;
         //> Route protection
         // Only logged in uses can access this page
         if(!globalState.logged) return <Redirect to="/login"/>
         // If logged in but not coach
         if(globalState.logged && !globalState.coach) return <Redirect to="/dashboard"/> 
         
-        if(!this.state.userId) return <Redirect to="/coach"/>
+        if(!location.state) return <Redirect to="/coach"/>
 
         console.log(this.state);
         
@@ -354,48 +353,66 @@ class ReportList extends React.Component{
         return (
             <MDBContainer className="text-center">
                 <h2 className="text-center font-weight-bold">
-                Beautyreports von Erika Mustermann
+                Beautyreport erstellen
                 </h2>
                 <div className="mt-4">
-                <MDBRow>
-                    <MDBCol md="6" className="text-left">
-                        <Link to="/coach">
-                            <MDBBtn color="red">
-                                <MDBIcon icon="angle-left" className="pr-2" />Zurück
-                            </MDBBtn>
-                        </Link>
-                    </MDBCol>
-                    <MDBCol md="6" className="text-right">
-                        <MDBBtn
-                        onClick={this.fetchReportData}
-                        color="secondary"
-                        rounded
-                        >
-                        <MDBIcon icon="plus" className="pr-2" />Neuen Report generieren
-                        </MDBBtn>
-                    </MDBCol>
-                </MDBRow>
-                    
-                </div>
-                <MDBListGroup className="text-left ml-auto mr-auto mb-4" style={{ width: "22rem" }}>
-                    {reports.map((value, i) => {
-                        return(
-                            <MDBListGroupItem
-                            key={i}
-                            href="#"
-                            hover
+                    <MDBRow>
+                        <MDBCol md="12" className="text-left">
+                            <Link 
+                            to={{
+                            pathname: '/report',
+                            state: {
+                                user: location.state.user
+                            }
+                            }}
                             >
-                            {value.title}<span className="float-right">{value.timestamp}</span>
-                            </MDBListGroupItem>
-                        );
-                    })}
-                </MDBListGroup>
+                                <MDBBtn color="red">
+                                    <MDBIcon icon="angle-left" className="pr-2" />Zurück
+                                </MDBBtn>
+                            </Link>
+                        </MDBCol>
+                    </MDBRow>
+                </div>
+                <MDBRow className="flex-center mt-4">
+                        <MDBCol md="6">
+                            <MDBCard>
+                                <MDBCardBody>
+                                    { this.state.loading ? (
+                                        <>
+                                            <MDBProgress material preloader />
+                                            
+                                            <p className="lead">Beautyreport wird erstellt...</p>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <MDBAlert color="danger">
+                                                <p>Qualitäts-Kontrolle ausstehend!</p>
+                                                <MDBBtn color="danger" size="md" rounded>
+                                                    Jetzt kontrollieren
+                                                </MDBBtn>
+                                            </MDBAlert>
+                                            <MDBAlert color="success">
+                                                <p><MDBIcon icon="check" className="pr-2"/>Von Christian Aichner kontrolliert</p>
+                                            </MDBAlert>
+                                            <p className="lead mt-4">Download als</p>
+                                            <MDBBtn color="primary">
+                                                <MDBIcon icon="file-word" className="pr-2"/>Word
+                                            </MDBBtn>
+                                            <MDBBtn color="red">
+                                                <MDBIcon icon="file-pdf" className="pr-2"/>PDF
+                                            </MDBBtn>
+                                        </>
+                                    ) }
+                                </MDBCardBody>
+                            </MDBCard>
+                        </MDBCol>
+                </MDBRow>
             </MDBContainer>
         );
     }
 }
 
-export default withApollo(ReportList);
+export default withApollo(GenerateReport);
 
 /** 
  * SPDX-License-Identifier: (EUPL-1.2)
