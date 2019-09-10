@@ -64,7 +64,7 @@ class GenerateReport extends React.Component{
         this.state = {
             template: undefined,
             userdata: undefined,
-            articles: undefined,
+            result: {},
             loading: false,
             operations: 0,
             userId: undefined,
@@ -137,7 +137,7 @@ class GenerateReport extends React.Component{
         // Get user anamnesis data
         let formData = this.state.userdata.formData;
 
-        console.log(condition);
+        //console.log(condition);
         
         // Check if there is a condition
         if(condition.trim() !== ""){
@@ -155,7 +155,7 @@ class GenerateReport extends React.Component{
                 
                 let compareParts = condNewPure.split(' ');
                 
-                console.log(compareParts);
+                //console.log(compareParts);
 
                 if(this.__convertType(compareParts[0]) === null || this.__convertType(compareParts[0]) === undefined){
                     return false;
@@ -174,7 +174,7 @@ class GenerateReport extends React.Component{
                     
                     let compareParts = condNewPure.split(' ');
                     
-                    console.log(compareParts);
+                    //console.log(compareParts);
 
                     if(this.__convertType(compareParts[0]) === null || this.__convertType(compareParts[0]) === undefined){
                         return false;
@@ -222,6 +222,7 @@ class GenerateReport extends React.Component{
     createReport = () => {
         // Set variables
         let template = this.state.template;
+        let result = undefined;
 
         //console.log(template);
 
@@ -230,6 +231,24 @@ class GenerateReport extends React.Component{
             //> Extract useful information from chapter
             // Header
             let chapterHeader = chapter.chapterHeader;
+
+            // Create header items in object
+            if(result){
+                result = {
+                    ...result,
+                    ["chapter"+ckey]: {
+                        ...result["chapter"+ckey],
+                        chapterHeader: chapterHeader
+                    }
+                }
+            } else {
+                result = {
+                    ["chapter"+ckey]: {
+                        chapterHeader: chapterHeader
+                    }
+                }
+            }
+            
             //console.log(chapterHeader);
 
             // For each subchapter
@@ -238,6 +257,18 @@ class GenerateReport extends React.Component{
                 //> Extract useful information from subchapter
                 // Header
                 let subChapterHeader = subChapter.value.sub_chapter_header;
+
+                // Create sub header items in object
+                result = {
+                    ...result,
+                    ["chapter"+ckey]: {
+                        ...result["chapter"+ckey],
+                        ["subchapter"+skey]: {
+                            ...result["chapter"+ckey]["subchapter"+skey],
+                            subChapterHeader: subChapterHeader
+                        }
+                    }
+                }
                 //console.log(subChapterHeader);
 
                 // For each paragraph
@@ -246,11 +277,40 @@ class GenerateReport extends React.Component{
                     //> Extract useful information from paragraph
                     // Statement
                     let statement = paragraph.value.statement;
-                    console.log(this._normalizeStatement(statement));
                     // Text
                     let text = paragraph.value.paragraph;
 
+                    if(this._normalizeStatement(statement)){
+                        // Create paragraph items in object
+                        result = {
+                            ...result,
+                            ["chapter"+ckey]: {
+                                ...result["chapter"+ckey],
+                                ["subchapter"+skey]: {
+                                    ...result["chapter"+ckey]["subchapter"+skey],
+                                    ["paragraph"+pkey]: {
+                                        ...result["chapter"+ckey]["subchapter"+skey]["paragraph"+pkey],
+                                        text: text
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+
                     //console.log(text);
+                    // Check if finished
+                    if(
+                        ckey + 1 === template.chapters.length  && 
+                        skey + 1 === chapter.subChapters.length && 
+                        pkey + 1 === subChapter.value.paragraphs.length 
+                    ){
+                        console.log("Finished");
+                        this.setState({
+                            loading: false,
+                            result: result
+                        });
+                    }
                 });
             });
         });
@@ -319,7 +379,11 @@ class GenerateReport extends React.Component{
         console.log(this.state);
         
         // Check if the data has been set
-        if(this.state.template !== undefined && this.state.userdata !== undefined){
+        if(
+            this.state.template !== undefined && 
+            this.state.userdata !== undefined && 
+            this.state.loading
+        ){
             this.createReport();
         }
 
