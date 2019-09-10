@@ -156,7 +156,6 @@ class Anamnesis extends React.Component{
         // Check if there currently are active checkboxes
         if(current !== undefined){
             if(current.includes(label)){
-                console.log("Is checked");
                 // Remove
                 let filtered = current.filter(function(ele){
                     return ele != label;
@@ -166,7 +165,6 @@ class Anamnesis extends React.Component{
                     [name]: filtered
                 });
             } else {
-                console.log("Is not checked");
                 // Add to array
                 current.push(label);
                 // Update state
@@ -334,8 +332,6 @@ class Anamnesis extends React.Component{
     }
 
     render() {
-        console.log(this.state);
-
         // Get global state with login information
         const { globalState, location } = this.props;
 
