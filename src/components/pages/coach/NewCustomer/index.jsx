@@ -495,6 +495,7 @@ class NewCustomer extends React.Component{
                                 disableFuture={true}
                                 format='DD.MM.YYYY'
                                 initialFocusedDate="01.01.1980"
+                                valueDefault={null}
                                 keyboard
                                 />
                             </div>
