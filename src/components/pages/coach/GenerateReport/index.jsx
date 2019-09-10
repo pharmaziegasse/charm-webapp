@@ -78,7 +78,7 @@ class GenerateReport extends React.Component{
                     this.setState({
                         user: this.props.location.state.user,
                         loading: true
-                    });
+                    }, () => this.fetchData());
                 }
             }
         }
@@ -110,15 +110,12 @@ class GenerateReport extends React.Component{
     fetchUserData = async () => {
         await this.props.client.query({
             query: GET_USERDATA,
-            variables: { "token": localStorage.getItem("wca"), "id": "1" }
+            variables: { "token": localStorage.getItem("wca"), "id": this.state.user.id }
         }).then(({data}) => {
-            console.log(data);
-            if(data.anByUid !== undefined){
-                if(data.anByUid.length > 1){
-                    this.setState({
-                        userdata: data.anByUid[data.anByUid.length -1]
-                    });
-                }
+            if(data.anLatestByUid !== undefined){
+                this.setState({
+                    userdata: data.anLatestByUid
+                });
             }
         })
         .catch(error => {
@@ -126,11 +123,7 @@ class GenerateReport extends React.Component{
         })
     }
 
-    fetchReportData = () => {
-        // Start loading animation
-        this.setState({
-            loading: true
-        });
+    fetchData = () => {
         // Fetch data required for creating a report
         this.fetchTemplate();
         this.fetchUserData();
@@ -185,91 +178,39 @@ class GenerateReport extends React.Component{
     }
 
     createReport = () => {
-        // Stop loading animation if active
-        if(!this.state.loading){
-            this.setState({
-                loading: false
-            });
-        }
         // Set variables
         let template = this.state.template;
-        let operations = 0;
-        let result = {};
 
         console.log(template);
 
-        // For each article
-        template.chapters.map((chapter, key) => {
-            chapter.subChapters.map((article, k) => {
-                console.log("chapter",chapter);
-                console.log("article",article.value);
-                article.value.paragraphs.map((paragraph, i) => {
-                    console.log("paragraph",paragraph.value);
-                    operations = operations + 1;
-                    let statement = paragraph.value.statement;
-                    let text = (key+1)+"."+(k+1)+". "+article.value.sub_chapter_header + paragraph.value.paragraph;
+        // For each chapter
+        template.chapters.map((chapter, ckey) => {
+            //> Extract useful information from chapter
+            // Header
+            let chapterHeader = chapter.chapterHeader;
+            console.log(chapterHeader);
 
-                    let showParagraph = false;
-                    if(statement.includes(', ')){
-                        let conditions = statement.split(', ')
-                        let normalizeResults = conditions.map((condition, i) => {
-                            return this._normalizeStatement(condition, i);
-                        })
-                        if(!normalizeResults.includes(false)){
-                            showParagraph = true;
-                        }
-                    } else {
-                        let condition = statement.trim();
-                        showParagraph = this._normalizeStatement(condition, i);
-                    }
-                    // If the paragraph should be displayed
-                    if(showParagraph){
-                        if(result.length !== 0){
-                            //There are already articles in state
-                            if(!result["report_article_"+key]){
-                                // There is no state for the article
-                                result = {
-                                    ...result,
-                                    ["report_article_"+key]: {
-                                        heading: (key+1)+". "+chapter.chapterHeader,
-                                        text: text
-                                    }
-                                }
-                                
-                            } else {
-                                // There is already a state for the article
-                                if(!result["report_article_"+key].text.includes(text)){
-                                    // If the text is not already included
-                                    result = { 
-                                        ...result,
-                                        ["report_article_"+key]: {
-                                            heading: (key+1)+". "+chapter.chapterHeader,
-                                            text: result["report_article_"+key].text + text
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            // Create the first article
-                            result = { 
-                                ["report_article_"+key]: {
-                                    heading: (key+1)+". "+chapter.chapterHeader,
-                                    text: text
-                                }
-                            }
-                        }
-                    }
-                    return true; 
+            // For each subchapter
+            chapter.subChapters.map((subChapter, skey) => {
+
+                //> Extract useful information from subchapter
+                // Header
+                let subChapterHeader = subChapter.value.sub_chapter_header;
+                console.log(subChapterHeader);
+
+                // For each paragraph
+                subChapter.value.paragraphs.map((paragraph, pkey) => {
+
+                    //> Extract useful information from paragraph
+                    // Statement
+                    let statement = paragraph.value.statement;
+                    // Text
+                    let text = paragraph.value.paragraph;
+
+                    console.log(text);
                 });
-            })
-            return true;
+            });
         });
-        if(this.state.operations === 0 && result.length !== 0){
-            this.setState({
-                articles: result,
-                operations: operations
-            })
-        }
     }
 
     _redirect = () => {
@@ -340,7 +281,7 @@ class GenerateReport extends React.Component{
         }
 
         // Redirect to edit page
-        if(this._redirect()){
+        /*if(this._redirect()){
             return(
                 <Redirect to={{
                 pathname: '/report/edit',
@@ -348,7 +289,7 @@ class GenerateReport extends React.Component{
                 }}
                 />
             )
-        }
+        }*/
 
         return (
             <MDBContainer className="text-center">
