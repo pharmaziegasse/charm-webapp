@@ -16,6 +16,7 @@ import {
  */
 import {
   ReportRevision,
+  GenerateReport,
   ReportList,
   Anamnesis,
   CoachDashboard,
@@ -68,6 +69,11 @@ class Routes extends React.Component {
         exact
         path='/report'
         component={(props) => <ReportList globalState={this.props.globalState} {...props} />}
+        />
+        <Route
+        exact
+        path='/report/add'
+        component={(props) => <GenerateReport globalState={this.props.globalState} {...props} />}
         />
         <Route
         exact
