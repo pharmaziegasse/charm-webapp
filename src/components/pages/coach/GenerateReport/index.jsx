@@ -124,9 +124,12 @@ class GenerateReport extends React.Component{
     }
 
     fetchData = () => {
-        // Fetch data required for creating a report
-        this.fetchTemplate();
-        this.fetchUserData();
+        // Check if there is anamnesis data
+        if(this.state.user.anamneseSet.length >= 1){
+            // Fetch data required for creating a report
+            this.fetchTemplate();
+            this.fetchUserData();
+        }
     }
 
     _normalizeStatement = (condition, key) => {
@@ -290,7 +293,6 @@ class GenerateReport extends React.Component{
                 />
             )
         }*/
-
         return (
             <MDBContainer className="text-center">
                 <h2 className="text-center font-weight-bold">
@@ -317,6 +319,7 @@ class GenerateReport extends React.Component{
                 <MDBRow className="flex-center mt-4">
                         <MDBCol md="6">
                             <MDBCard>
+                            { this.state.user && this.state.user.anamneseSet.length >= 1 ? (
                                 <MDBCardBody>
                                     { this.state.loading ? (
                                         <>
@@ -333,7 +336,8 @@ class GenerateReport extends React.Component{
                                                 </MDBBtn>
                                             </MDBAlert>
                                             <MDBAlert color="success">
-                                                <p><MDBIcon icon="check" className="pr-2"/>Von Christian Aichner kontrolliert</p>
+                                                <p><MDBIcon icon="check" className="pr-2"/>Von Christian 
+                                                Aichner kontrolliert</p>
                                             </MDBAlert>
                                             <p className="lead mt-4">Download als</p>
                                             <MDBBtn color="primary">
@@ -345,6 +349,27 @@ class GenerateReport extends React.Component{
                                         </>
                                     ) }
                                 </MDBCardBody>
+                            ) : (
+                                <MDBCardBody>
+                                    <MDBAlert color="info" className="mb-0">
+                                        <p className="lead">Es wurden keine Anamnesedaten gefunden!</p>
+                                        <p className="mb-3">Möglicherweiße wurden die Daten des Anamnese-Gesprächs noch 
+                                        nicht in Charm übertragen.</p>
+                                        <Link 
+                                        to={{
+                                        pathname: '/anamnesis',
+                                        state: {
+                                            user: this.state.user
+                                        }
+                                        }}
+                                        >
+                                            <MDBBtn color="info" size="md" rounded>
+                                                Anamnesedaten eintragen
+                                            </MDBBtn>
+                                        </Link>
+                                    </MDBAlert>
+                                </MDBCardBody>
+                            )}
                             </MDBCard>
                         </MDBCol>
                 </MDBRow>
