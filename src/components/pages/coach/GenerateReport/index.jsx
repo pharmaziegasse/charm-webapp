@@ -133,28 +133,67 @@ class GenerateReport extends React.Component{
     }
 
     _normalizeStatement = (condition, key) => {
-        // Set variables
-        let userdata = this.state.userdata;
+        
+        // Get user anamnesis data
+        let formData = this.state.userdata.formData;
 
-        if(userdata !== undefined){
-            let formData = userdata.formData;
-            if(formData !== undefined){
-                // Parse user data to JS Object
-                let data = JSON.parse(formData);
+        console.log(condition);
+        
+        // Check if there is a condition
+        if(condition.trim() !== ""){
+            // Parse user data to JS Object
+            let data = JSON.parse(formData);
+
+            // Check if there are multiple conditions
+            if(!condition.includes(', ')){
+                // There is only one condition
+
                 // Replace the first word with the value of the corresponding word ( age > 50 => 3 > 50 )
-                let condNew = condition.replace(/^\S+/g, data[condition.replace(/ .*/,'')]);
-                // Get the three parts of the condition
-                let compareParts = condNew.split(' ');
-                // Solve condition
+                let condNew = condition.replace(/^\S+/g, data[condition.replace(/ .*/,'').toLowerCase()]);
+
+                let condNewPure = condNew.replace(/"/g,'');
+                
+                let compareParts = condNewPure.split(' ');
+                
+                console.log(compareParts);
+
                 if(this.__convertType(compareParts[0]) === null || this.__convertType(compareParts[0]) === undefined){
                     return false;
                 } else {
                     return this.__compare(this.__convertType(compareParts[0]), compareParts[1], compareParts[2]);
                 }
-            }
-        }
+            } else {
+                // There are multiple conditions
+                let conditions = condition.split(', ');
+                // For each condition
+                let results = conditions.map((condition, i) => {
+                    // Replace the first word with the value of the corresponding word ( age > 50 => 3 > 50 )
+                    let condNew = condition.replace(/^\S+/g, data[condition.replace(/ .*/,'').toLowerCase()]);
 
-        
+                    let condNewPure = condNew.replace(/"/g,'');
+                    
+                    let compareParts = condNewPure.split(' ');
+                    
+                    console.log(compareParts);
+
+                    if(this.__convertType(compareParts[0]) === null || this.__convertType(compareParts[0]) === undefined){
+                        return false;
+                    } else {
+                        return this.__compare(this.__convertType(compareParts[0]), compareParts[1], compareParts[2]);
+                    }
+                });
+                // Check if one of the conditions returned false
+                if(results.includes(false)){
+                    // The AND condition block is false
+                    return false;
+                } else {
+                    // The AND condition block is true
+                    return true;
+                }
+            }
+        } else {
+            return true;
+        }
     }
     
     // convertType('null'); => null
@@ -184,14 +223,14 @@ class GenerateReport extends React.Component{
         // Set variables
         let template = this.state.template;
 
-        console.log(template);
+        //console.log(template);
 
         // For each chapter
         template.chapters.map((chapter, ckey) => {
             //> Extract useful information from chapter
             // Header
             let chapterHeader = chapter.chapterHeader;
-            console.log(chapterHeader);
+            //console.log(chapterHeader);
 
             // For each subchapter
             chapter.subChapters.map((subChapter, skey) => {
@@ -199,7 +238,7 @@ class GenerateReport extends React.Component{
                 //> Extract useful information from subchapter
                 // Header
                 let subChapterHeader = subChapter.value.sub_chapter_header;
-                console.log(subChapterHeader);
+                //console.log(subChapterHeader);
 
                 // For each paragraph
                 subChapter.value.paragraphs.map((paragraph, pkey) => {
@@ -207,10 +246,11 @@ class GenerateReport extends React.Component{
                     //> Extract useful information from paragraph
                     // Statement
                     let statement = paragraph.value.statement;
+                    console.log(this._normalizeStatement(statement));
                     // Text
                     let text = paragraph.value.paragraph;
 
-                    console.log(text);
+                    //console.log(text);
                 });
             });
         });
