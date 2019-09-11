@@ -109,6 +109,16 @@ class CoachDashboard extends React.Component{
                                     )
                                 }
                                 </Link>
+                                <MDBTooltip
+                                    placement="top"
+                                >
+                                    <MDBBtn outline rounded color="success">
+                                        <MDBIcon fab icon="whatsapp" size="lg" />
+                                    </MDBBtn>
+                                    <div>
+                                        WhatsApp Kommunikation
+                                    </div>
+                                </MDBTooltip>
                             </div>
                         })
                     });
