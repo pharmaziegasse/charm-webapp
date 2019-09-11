@@ -33,7 +33,7 @@ import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 
 // Base url
-export const APIHost = 'https://charm.pharmaziegasse.at';
+export const APIHost = 'https://manage.pharmaziegasse.at';
 
 // Cache setup
 const fragmentMatcher = new IntrospectionFragmentMatcher({
@@ -46,7 +46,7 @@ const fragmentMatcher = new IntrospectionFragmentMatcher({
 const cache = new InMemoryCache({ fragmentMatcher });
 
 // Create api url from base url
-const APILink = APIHost+"/api/graphiql";
+const APILink = APIHost+"/api/graphql";
 
 const LINK:HttpLink = new HttpLink({
   uri: APILink,

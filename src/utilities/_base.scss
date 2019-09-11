@@ -12,6 +12,11 @@
   position: absolute;
 }
 
+// Default loading spinner color
+.preloader-wrapper .spinner-blue, .preloader-wrapper .spinner-blue-only{
+  border-color: #aa66cc !important;
+}
+
 // Custom colors
 .unique-blue {
   background-color: $unique-blue !important;
@@ -126,6 +131,10 @@
   font-size: 1rem;
   height: 2rem;
   color: #495057;
+}
+
+.clickable{
+  cursor: pointer;
 }
 
 /** 

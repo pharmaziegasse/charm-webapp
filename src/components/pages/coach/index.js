@@ -5,10 +5,12 @@ import ReportList from './ReportList';
 import Anamnesis from './Anamnesis';
 import CoachDashboard from './CoachDashboard';
 import NewCustomer from './NewCustomer';
+import GenerateReport from './GenerateReport';
 
 export {
     ReportRevision,
     ReportList,
+    GenerateReport,
     Anamnesis,
     CoachDashboard,
     NewCustomer,

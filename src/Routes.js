@@ -2,7 +2,7 @@
 // Contains all the functionality necessary to define React components
 import React from 'react';
 // DOM bindings for React Router
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 
 //> Components
 /**
@@ -16,6 +16,7 @@ import {
  */
 import {
   ReportRevision,
+  GenerateReport,
   ReportList,
   Anamnesis,
   CoachDashboard,
@@ -71,12 +72,17 @@ class Routes extends React.Component {
         />
         <Route
         exact
+        path='/report/add'
+        component={(props) => <GenerateReport globalState={this.props.globalState} {...props} />}
+        />
+        <Route
+        exact
         path='/report/edit'
         component={(props) => <ReportRevision globalState={this.props.globalState} {...props} />}
         />
         <Route
           render={function () {
-            return <h1>Not Found</h1>;
+            return <Redirect to='/login' />;
           }}
         />
       </Switch>

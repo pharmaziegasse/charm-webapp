@@ -8,27 +8,19 @@ import { Link, Redirect } from 'react-router-dom';
 // "Material Design for Bootstrap" is a great UI design framework
 import {
     MDBContainer,
-    MDBCollapse,
-    MDBCard,
-    MDBCardBody,
-    MDBCollapseHeader,
-    MDBProgress,
     MDBRow,
     MDBCol,
-    MDBInput,
     MDBBtn,
     MDBIcon,
-    MDBDataTable
+    MDBDataTable,
+    MDBTooltip,
+    MDBBadge,
 } from 'mdbreact';
 
 //> CSS
 import './coachdashboard.scss';
 
 class CoachDashboard extends React.Component{
-    constructor(props){
-        super(props);
-    }
-
     _getCoachUsers = () => {
         if(this.props.globalState){
             if(this.props.globalState.userdata){
@@ -42,25 +34,115 @@ class CoachDashboard extends React.Component{
                             'email': <a href={"mailto:"+user.email} className="blue-text">{user.email}</a>,
                             'phone': user.telephone,
                             'actions':
-                            <div>
+                            <div className="user-action">
+                                {user.beautyreportSet.length >= 1 ? (
+                                    <Link 
+                                    to={{
+                                    pathname: '/report',
+                                    state: {
+                                        user: user
+                                    }
+                                    }}
+                                    >
+                                        <MDBTooltip
+                                            placement="top"
+                                        >
+                                            <MDBBtn rounded outline color="green">
+                                            <MDBIcon icon="signature" size="lg" />
+                                            </MDBBtn>
+                                            <div>
+                                                Beautyreports einsehen
+                                            </div>
+                                        </MDBTooltip>
+                                    </Link>
+                                ) : (
+                                    <Link 
+                                    to={{
+                                    pathname: '/report/add',
+                                    state: {
+                                        user: user
+                                    }
+                                    }}
+                                    >
+                                        <MDBTooltip
+                                            placement="top"
+                                        >
+                                            <MDBBtn rounded outline color="danger">
+                                            <MDBIcon icon="signature" size="lg" />
+                                            </MDBBtn>
+                                            <div>
+                                                Beautyreport erstellen
+                                            </div>
+                                        </MDBTooltip>
+                                    </Link>
+                                )}
                                 <Link 
                                 to={{
-                                pathname: '/report',
+                                pathname: '/anamnesis',
                                 state: {
-                                    userId: user.id
+                                    user: user
                                 }
                                 }}
                                 >
-                                    <MDBBtn outline color="purple" size="md">
-                                    Beauty Reports
-                                    </MDBBtn>
+                                {
+                                    user.anamneseSet.length >= 1 ? (
+                                        <MDBTooltip
+                                            placement="top"
+                                        >
+                                            <MDBBtn outline rounded color="purple">
+                                                <MDBIcon icon="file" size="lg" />
+                                            </MDBBtn>
+                                            <div>
+                                                Anamnese erneuern
+                                            </div>
+                                        </MDBTooltip>
+                                    ) : (
+                                        <MDBTooltip
+                                            placement="top"
+                                        >
+                                            <MDBBtn outline rounded color="danger">
+                                                <MDBIcon far icon="file" size="lg" />
+                                            </MDBBtn>
+                                            <div>
+                                                Anamnese hinzufügen
+                                            </div>
+                                        </MDBTooltip>
+                                    )
+                                }
                                 </Link>
-                                <MDBBtn
-                                color="purple"
-                                size="md"
+                                <MDBTooltip
+                                    placement="top"
                                 >
-                                <MDBIcon icon="user" className="pr-2" />Profil anzeigen
+                                <MDBBtn
+                                href={"https://api.whatsapp.com/send?phone="+user.telephone.replace('+','')}
+                                target="_blank"
+                                className={i === 1 ? "btn-whatsapp-chat notification" : "btn-whatsapp-chat"}
+                                outline
+                                rounded
+                                color="success"
+                                >
+                                    <MDBIcon fab icon="whatsapp" size="lg" />
                                 </MDBBtn>
+                                <div>
+                                    Mit {user.firstName} chatten
+                                </div>
+                                </MDBTooltip>
+                                <MDBTooltip
+                                    placement="top"
+                                >
+                                <MDBBtn
+                                outline
+                                className="btn-facebook-chat"
+                                rounded
+                                color="blue"
+                                disabled={i === 1 && true}
+                                >
+                                    <MDBIcon fab icon="facebook-messenger" size="lg" />
+                                </MDBBtn>
+                                <div>
+                                    Mit {user.firstName} chatten
+                                </div>
+                                </MDBTooltip>
                             </div>
                         })
                     });
@@ -135,6 +217,11 @@ class CoachDashboard extends React.Component{
                 <MDBRow className="text-center">
                     <MDBCol md="12">
                         <h3>Deine KundInnen</h3>
+                        <div className="table-labels">
+                        <span><MDBIcon icon="cube" className="pr-1 pl-3 red-text"/>Keine Daten vorhanden</span>
+                        <span><MDBIcon icon="cube" className="pr-1 pl-3 purple-text"/>Keine Aktion erforderlich</span>
+                        <span><MDBIcon icon="cube" className="pr-1 pl-3 green-text"/>Daten optimal</span>
+                        </div>
                         <MDBDataTable
                         striped
                         bordered

@@ -8,12 +8,16 @@ import { Link, Redirect } from 'react-router-dom';
 // "Material Design for Bootstrap" is a great UI design framework
 import {
     MDBContainer,
+    MDBRow,
+    MDBCol,
+    MDBCard,
+    MDBCardBody,
+    MDBAlert,
     MDBListGroup,
     MDBListGroupItem,
     MDBBtn,
     MDBIcon,
-    MDBRow,
-    MDBCol,
+    MDBSpinner,
 } from 'mdbreact';
 
 //> Connection
@@ -21,340 +25,136 @@ import { withApollo } from "react-apollo";
 import gql from "graphql-tag";
 
 //> Queries
-// Get template
-const GET_TEMPLATE = gql`
-    query getTemplate($token: String!) {
-        pages(token: $token) {
-            ... on ReportsReportsPage {
-                id
-                chapters{
-                    __typename
-                    ... on Reports_S_ChapterBlock{
-                    chapterHeader
-                    subChapters
-                    }
-                }
-            }
-        }
-    }
-`;
-// Get user anamnsesis data
-const GET_USERDATA = gql`
-    query getAnamneseData_byUid($token: String!, $id: Int!) {
-        anByUid(token: $token, uid: $id) {
+// Get all beauty reports
+const GET_REPORTS = gql`
+    query getBeautyReports_byUid($token: String!, $id: Int!) {
+        brByUid(token: $token, uid: $id) {
             id
             date
-            formData
-            user {
+        }
+        brLatestByUid(token: $token, uid: $id) {
             id
-            username
-            }
+            date
         }
     }
 `;
-
-// Dummy data
-const reports = [
-    { title: "Beautyreport", timestamp: "13.08.2019" },
-    { title: "Beautyreport", timestamp: "10.07.2019" },
-]
 
 class ReportList extends React.Component{
     constructor(props){
         super(props);
 
         this.state = {
-            template: undefined,
-            userdata: undefined,
-            articles: undefined,
-            loading: false,
-            operations: 0,
             userId: undefined,
+            reports: {
+                latest: undefined,
+                legacy: []
+            },
+            showLegacy: false,
         }
     }
 
-    componentWillMount = () => {
+    componentDidMount = () => {
         if(this.props.location){
             if(this.props.location.state){
-                if(this.props.location.state.userId){
+                if(this.props.location.state.user.id){
                     this.setState({
-                        userId: this.props.location.state.userId
-                    });
+                        user: this.props.location.state.user,
+                        loading: true
+                    }, () => this.fetchReports(this.props.location.state.user.id));
                 }
             }
         }
     }
 
-    fetchTemplate = () => {
-        this.props.client.query({
-            query: GET_TEMPLATE,
-            variables: { "token": localStorage.getItem("wca") }
-        }).then(({data}) => {
-            if(data.pages !== undefined){
-                let template = undefined;
-                data.pages.map((page, i) => {
-                    if(page.__typename === "ReportsReportsPage"){
-                        template = data.pages[i];
-                    }
-                    return true;
-                });
-                this.setState({
-                    template: template
-                });
-            }
-        })
-        .catch(error => {
-            console.error("Query error:",error);
-        })
+    fetchReports = (uid) => {
+        // Fetch data required for creating a report
+        this.fetchAllReports(uid);
     }
 
-    fetchUserData = async () => {
-        await this.props.client.query({
-            query: GET_USERDATA,
-            variables: { "token": localStorage.getItem("wca"), "id": "1" }
+    fetchAllReports = (uid) => {
+        this.props.client.query({
+        query: GET_REPORTS,
+        variables: { "id": uid, "token": localStorage.getItem("wca") }
         }).then(({data}) => {
             console.log(data);
-            if(data.anByUid !== undefined){
-                if(data.anByUid.length > 1){
-                    this.setState({
-                        userdata: data.anByUid[data.anByUid.length -1]
-                    });
-                }
+            if(data.brLatestByUid){
+                this.setState({
+                    reports: { 
+                        ...this.state.reports,
+                        latest: data.brLatestByUid
+                    },
+                    loading: false
+                });
+            }
+            if(data.brByUid){
+                console.log("Beautyreports exist for this user");
+                // If there are reports, set dummy data
+                this.setState({
+                    reports: { 
+                        ...this.state.reports,
+                        legacy: data.brByUid
+                    },
+                    loading: false
+                });
+            } else {
+                console.log("There are no Beautyreports for this user");
             }
         })
         .catch(error => {
-            console.error("Query error:",error);
-        })
-    }
-
-    fetchReportData = () => {
-        // Start loading animation
-        this.setState({
-            loading: true
+            this.setState({
+                reports: { 
+                    legacy: [],
+                    latest: undefined
+                },
+                loading: false
+            }, () => console.log("Error",error));
         });
-        // Fetch data required for creating a report
-        this.fetchTemplate();
-        this.fetchUserData();
-    }
 
-    _normalizeStatement = (condition, key) => {
-        // Set variables
-        let userdata = this.state.userdata;
-
-        if(userdata !== undefined){
-            let formData = userdata.formData;
-            if(formData !== undefined){
-                // Parse user data to JS Object
-                let data = JSON.parse(formData);
-                // Replace the first word with the value of the corresponding word ( age > 50 => 3 > 50 )
-                let condNew = condition.replace(/^\S+/g, data[condition.replace(/ .*/,'')]);
-                // Get the three parts of the condition
-                let compareParts = condNew.split(' ');
-                // Solve condition
-                if(this.__convertType(compareParts[0]) === null || this.__convertType(compareParts[0]) === undefined){
-                    return false;
-                } else {
-                    return this.__compare(this.__convertType(compareParts[0]), compareParts[1], compareParts[2]);
-                }
-            }
-        }
-
-        
     }
     
-    // convertType('null'); => null
-    __convertType = (value) => {
-        try {
-            return (new Function("return " + value + ";"))();
-        } catch(e) {
-            return value;
-        }
-    }
+    getDate = (date) => {
+        // Note: Handling dates in JavaScript is like hunting K'lor'slugs on Korriban. A huge waste of time.
+        let dateS = new Date(date);
 
-    // compare(5, '<', 10); // true
-    __compare = (post, operator, value) => {
-        switch (operator) {
-            case '>':   return post > parseInt(value);
-            case '<':   return post < parseInt(value);
-            case '>=':  return post >= parseInt(value);
-            case '<=':  return post <= parseInt(value);
-            case '==':  return post == value;
-            case '!=':  return post != value;
-            case '===': return post === value;
-            case '!==': return post !== value;
-        }
-    }
+        // Get the year
+        let year = dateS.getFullYear();
+        // Get the month ( January is 0! )
+        let month = ("0" + (dateS.getMonth() + 1)).slice(-2);
+        // Get the day of the month
+        let day = ("0" + (dateS.getDate())).slice(-2);
+        //> Time
+        // Get hours
+        let hours = ("0" + (dateS.getHours())).slice(-2);
+        // Get minutes
+        let minutes = ("0" + (dateS.getMinutes())).slice(-2);
+        // Get minutes
+        let seconds = ("0" + (dateS.getSeconds())).slice(-2);
 
-    createReport = () => {
-        // Stop loading animation if active
-        if(!this.state.loading){
-            this.setState({
-                loading: false
-            });
-        }
-        // Set variables
-        let template = this.state.template;
-        let operations = 0;
-        let result = {};
-
-        console.log(template);
-
-        // For each article
-        template.chapters.map((chapter, key) => {
-            chapter.subChapters.map((article, k) => {
-                console.log("chapter",chapter);
-                console.log("article",article.value);
-                article.value.paragraphs.map((paragraph, i) => {
-                    console.log("paragraph",paragraph.value);
-                    operations = operations + 1;
-                    let statement = paragraph.value.statement;
-                    let text = (key+1)+"."+(k+1)+". "+article.value.sub_chapter_header + paragraph.value.paragraph;
-
-                    let showParagraph = false;
-                    if(statement.includes(', ')){
-                        let conditions = statement.split(', ')
-                        let normalizeResults = conditions.map((condition, i) => {
-                            return this._normalizeStatement(condition, i);
-                        })
-                        if(!normalizeResults.includes(false)){
-                            showParagraph = true;
-                        }
-                    } else {
-                        let condition = statement.trim();
-                        showParagraph = this._normalizeStatement(condition, i);
-                    }
-                    // If the paragraph should be displayed
-                    if(showParagraph){
-                        if(result.length !== 0){
-                            //There are already articles in state
-                            if(!result["report_article_"+key]){
-                                // There is no state for the article
-                                result = {
-                                    ...result,
-                                    ["report_article_"+key]: {
-                                        heading: (key+1)+". "+chapter.chapterHeader,
-                                        text: text
-                                    }
-                                }
-                                
-                            } else {
-                                // There is already a state for the article
-                                if(!result["report_article_"+key].text.includes(text)){
-                                    // If the text is not already included
-                                    result = { 
-                                        ...result,
-                                        ["report_article_"+key]: {
-                                            heading: (key+1)+". "+chapter.chapterHeader,
-                                            text: result["report_article_"+key].text + text
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            // Create the first article
-                            result = { 
-                                ["report_article_"+key]: {
-                                    heading: (key+1)+". "+chapter.chapterHeader,
-                                    text: text
-                                }
-                            }
-                        }
-                    }
-                    return true; 
-                });
-            })
-            return true;
-        });
-        if(this.state.operations === 0 && result.length !== 0){
-            this.setState({
-                articles: result,
-                operations: operations
-            })
-        }
-    }
-
-    _redirect = () => {
-        let sum = undefined;
-        // First time
-        if(sum === undefined){
-            // If template has loaded
-            if(this.state.template !== undefined){
-                // if articles in template have loaded
-                if(this.state.template.chapters !== undefined){
-                    
-                    // Count items in each article
-                    let operations = this.state.template.chapters.map((a, i) => {
-                        let items = 0;
-                        a.subChapters.map((chapter, key) => {
-                            chapter.value.paragraphs.map(() => {
-                                items++;
-                                return true;
-                            })
-                        });
-                        return items;
-                    });
-                    // The the sum of all articles
-                    sum = operations.reduce((a,b) => a + b, 0);
-                    console.log(sum);
-                    // Check if the sum of all articles is the same as the operation count
-                    return this._redirectPermission(sum);
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        } else {
-            // Check if the sum of all articles is the same as the operation count
-            return this._redirectPermission(sum);
-        }
-    }
-
-    _redirectPermission = (sum) => {
-        if(this.state.operations !== 0){
-            if(this.state.operations === sum){
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
+        /**
+         * Combine to achieve YYYY-MM-DD format like Captain Planet.
+         * LET OUR POWERS COMBINE!
+         * You certainly feel like Captain Planet when you get it to work.
+         */ 
+        return day+"."+month+"."+year+" "+hours+":"+minutes+":"+seconds;
     }
 
     render() {
         // Get global state with login information
-        const { globalState } = this.props;
+        const { globalState, location } = this.props;
         //> Route protection
         // Only logged in uses can access this page
         if(!globalState.logged) return <Redirect to="/login"/>
         // If logged in but not coach
         if(globalState.logged && !globalState.coach) return <Redirect to="/dashboard"/> 
         
-        if(!this.state.userId) return <Redirect to="/coach"/>
-
-        console.log(this.state);
+        if(!location.state) return <Redirect to="/coach"/>
         
-        // Check if the data has been set
-        if(this.state.template !== undefined && this.state.userdata !== undefined){
-            this.createReport();
-        }
-
-        // Redirect to edit page
-        if(this._redirect()){
-            return(
-                <Redirect to={{
-                pathname: '/report/edit',
-                state: { ...this.state }
-                }}
-                />
-            )
-        }
+        console.log(this.state);
 
         return (
             <MDBContainer className="text-center">
                 <h2 className="text-center font-weight-bold">
-                Beautyreports von Erika Mustermann
+                Beautyreports von {location.state.user.firstName + " " + location.state.user.lastName}
                 </h2>
                 <div className="mt-4">
                 <MDBRow>
@@ -366,30 +166,86 @@ class ReportList extends React.Component{
                         </Link>
                     </MDBCol>
                     <MDBCol md="6" className="text-right">
-                        <MDBBtn
-                        onClick={this.fetchReportData}
-                        color="secondary"
-                        rounded
+                        <Link 
+                        to={{
+                        pathname: '/report/add',
+                        state: {
+                            user: this.props.location.state.user
+                        }
+                        }}
                         >
-                        <MDBIcon icon="plus" className="pr-2" />Neuen Report generieren
-                        </MDBBtn>
+                            <MDBBtn
+                            color="secondary"
+                            rounded
+                            >
+                            <MDBIcon icon="plus" className="pr-2" />Neuen Report generieren
+                            </MDBBtn>
+                        </Link>
                     </MDBCol>
                 </MDBRow>
                     
                 </div>
-                <MDBListGroup className="text-left ml-auto mr-auto mb-4" style={{ width: "22rem" }}>
-                    {reports.map((value, i) => {
-                        return(
-                            <MDBListGroupItem
-                            key={i}
-                            href="#"
-                            hover
-                            >
-                            {value.title}<span className="float-right">{value.timestamp}</span>
-                            </MDBListGroupItem>
-                        );
-                    })}
-                </MDBListGroup>
+                {!this.state.loading ? (
+                    <div className="mt-4">
+                        <MDBRow className="flex-center mb-4">
+                            <MDBCol md="6">
+                                <MDBCard>
+                                {this.state.reports.latest ? (
+                                    <MDBCardBody>
+                                        <p className="lead font-weight-bold">Neuester Beautyreport</p>
+                                        <small>{this.getDate(this.state.reports.latest.date)}</small>
+                                        <p className="lead mt-3">Download als</p>
+                                        <MDBBtn color="primary">
+                                            <MDBIcon icon="file-word" className="pr-2"/>Word
+                                        </MDBBtn>
+                                        <MDBBtn color="red">
+                                            <MDBIcon icon="file-pdf" className="pr-2"/>PDF
+                                        </MDBBtn>
+                                    </MDBCardBody>
+                                ) : (
+                                    null
+                                )}
+                                </MDBCard>
+                            </MDBCol>
+                        </MDBRow>
+                        
+                        {this.state.reports.legacy.length >= 1 ? 
+                        (
+                            <>
+                                {this.state.showLegacy ? (
+                                    <MDBListGroup className="text-left ml-auto mr-auto mb-4" style={{ width: "22rem" }}>
+                                        {this.state.reports.legacy.map((report, i) => {
+                                            return(
+                                                <MDBListGroupItem
+                                                key={i}
+                                                href="#"
+                                                hover
+                                                >
+                                                Beauty Report<span className="float-right">{this.getDate(report.date)}</span>
+                                                </MDBListGroupItem>
+                                            );
+                                        })}
+                                    </MDBListGroup>
+                                ) : (
+                                    <span
+                                    onClick={() => {this.setState({showLegacy: true})}}
+                                    className="blue-text clickable"
+                                    >
+                                    Ältere Versionen anzeigen
+                                    </span>
+                                )}
+                                
+                            </>
+                        ) : (
+                            <h3>Noch kein Beauty-Report vorhanden</h3>
+                        )
+                        }
+                    </div>
+                ) : (
+                    <div className="text-center w-100 h-100">
+                        <MDBSpinner/>
+                    </div>
+                )}
             </MDBContainer>
         );
     }

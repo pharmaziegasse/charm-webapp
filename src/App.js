@@ -11,7 +11,6 @@ import { BrowserRouter as Router } from 'react-router-dom';
  */
 import {
   Footer,
-  Navbar,
 } from './components/molecules';
 // Routes
 import Routes from './Routes';
@@ -19,13 +18,13 @@ import Routes from './Routes';
 //> Backend Connection
 // Apollo
 import { graphql, withApollo } from "react-apollo";
-import { ApolloClient, HttpLink, InMemoryCache, gql } from "apollo-boost";
+import { gql } from "apollo-boost";
 import * as compose from 'lodash.flowright';
 
 const VERIFY_TOKEN = gql`
   mutation verify($token: String!) {
       verifyToken(token: $token) {
-      payload
+        payload
       }
   }
 `;
@@ -64,6 +63,12 @@ const GET_DATA = gql`
       city
       postalCode
       userSet{
+        anamneseSet{
+          id
+        }
+        beautyreportSet{
+          id
+        }
         id
         firstName
         lastName
@@ -83,7 +88,7 @@ class App extends React.Component {
   state = {
     logged: false,
     username: undefined,
-    coach: false,
+    coach: undefined,
     loaded: false,
     userdata: {}
   }
@@ -96,7 +101,7 @@ class App extends React.Component {
         // Refresh token every 4 minutes
         setInterval(async () => {
           this._verifyToken();
-        }, 240000);
+        }, 180000);
       } catch(e) {
         console.log(e);
       }
@@ -206,7 +211,6 @@ class App extends React.Component {
   }
 
   render() {
-    console.log(this.state);
     return (
       <Router>
         <div className="flyout">

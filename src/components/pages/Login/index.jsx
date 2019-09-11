@@ -15,6 +15,7 @@ import {
     MDBBtn,
     MDBAlert,
     MDBIcon,
+    MDBSpinner,
 } from "mdbreact";
 
 //> Additional libraries
@@ -71,6 +72,7 @@ class Login extends React.Component {
             phone: "",
             password: "",
             method: 'email',
+            error: false
         }
     }
 
@@ -88,6 +90,9 @@ class Login extends React.Component {
     }
 
     handleSubmit = (e) => {
+        this.setState({
+            loading: true
+        });
         // Prevent page from reloading
         e.preventDefault();
         // Validation
@@ -157,26 +162,33 @@ class Login extends React.Component {
             
         })
         .catch(error => {
-            this.props.handler(false);
+            this.setState({
+                error: true,
+                loading: false
+            }, () => this.props.handler(false));
         })
     }
 
     _login = async (username) => {
-        console.log(username);
         await this.props.mutate({ variables: { "username": username, "password": this.state.password } })
         .then(({ loading, data }) => {
-            console.log(data);
             if(data !== undefined){
                 if(data.tokenAuth !== undefined){
                     if(data.tokenAuth.token !== undefined){
                         localStorage.setItem('wca',data.tokenAuth.token);
-                        this.props.handler(true);
+                        // Remove error message, but keep it loading
+                        this.setState({
+                            error: false,
+                        }, () => this.props.handler(true));
                     }
                 }
             }
         }).catch((loading, error) => {
             // Username or password is wrong
-            this.props.handler(false);
+            this.setState({
+                error: true,
+                loading: false
+            }, () => this.props.handler(false));
         });
     }
 
@@ -231,7 +243,6 @@ class Login extends React.Component {
          * This doubles as a neat way to redirect the user directly after login
          */
         if(globalState.logged){
-            console.log("reached");
             return <Redirect to="/dashboard"/> 
         } 
 
@@ -246,7 +257,18 @@ class Login extends React.Component {
                     >
                         <MDBCardBody>
                             <MDBRow className="flex-center">
+                            {this.state.loading ? (
+                                <MDBCol md="12" className="py-5 text-center">
+                                    <MDBSpinner big />
+                                </MDBCol>
+                            ) : (
                                 <MDBCol md="6">
+                                    {this.state.error &&
+                                        <MDBAlert color="danger" className="text-center">
+                                            Die eingegebene Kombination existiert nicht.
+                                        </MDBAlert>
+                                    }
+                                    
                                     <form onSubmit={this.handleSubmit} className="needs-validation" noValidate>
                                         <p className="h4 text-center mb-4">Einloggen</p>
                                         {this.state.method === 'email' ? (
@@ -266,13 +288,12 @@ class Login extends React.Component {
                                                     Bitte gib deine E-Mail Adresse an.
                                                 </div>
                                                 <div className="text-right">
-                                                    <a
-                                                    role="button"
+                                                    <span
                                                     className="blue-text"
                                                     onClick={() => this.switchMethod('phone')}
                                                     >
                                                     Über Telefonnummer einloggen
-                                                    </a>
+                                                    </span>
                                                 </div>
                                                 
                                             </>
@@ -289,13 +310,12 @@ class Login extends React.Component {
                                                 }}
                                                 />
                                                 <div className="text-right">
-                                                    <a
-                                                    role="button"
+                                                    <span
                                                     className="blue-text"
                                                     onClick={() => this.switchMethod('email')}
                                                     >
                                                     Über E-Mail einloggen
-                                                    </a>
+                                                    </span>
                                                 </div>
                                             </>
                                         ) }
@@ -325,6 +345,8 @@ class Login extends React.Component {
                                         </p>
                                     </form>
                                 </MDBCol>
+                            )}
+                                
                             </MDBRow>
                         </MDBCardBody>
                     </MDBCol>

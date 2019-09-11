@@ -2,7 +2,7 @@
 // Contains all the functionality necessary to define React components
 import React, { Fragment } from 'react';
 // Link and Redirect from Router
-import { Link, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 
 //> MDB
 // "Material Design for Bootstrap" is a great UI design framework
@@ -17,6 +17,7 @@ import {
   MDBCardText,
   MDBBtn,
   MDBAvatar,
+  MDBSpinner,
 } from 'mdbreact';
 // Radar chart
 import { Radar } from "react-chartjs-2";
@@ -110,6 +111,14 @@ class HomePage extends React.Component {
   render() {
     // Get global state with login information
     const { globalState } = this.props;
+
+    if(globalState.coach === undefined){
+      return (
+        <div className="w-100 h-100 flex-center">
+          <MDBSpinner />
+        </div>
+      )
+    }
 
     // Secure page
     if(!globalState.logged) { return (<Redirect to="/login"/>) }
