@@ -423,7 +423,11 @@ class Anamnesis extends React.Component{
                                                 case "singleline":
                                                     // TEXT Input
                                                     return(
-                                                        <div ref={this[`${item.name}_ref`]} key={i} className="form-group my-3">
+                                                        <div 
+                                                        ref={this[`${item.name}_ref`]}
+                                                        key={i}
+                                                        className="form-group my-3"
+                                                        >
                                                             <label className="heading" htmlFor={"fromGroupInput"+i}>
                                                             {item.helpText && item.helpText}
                                                             </label>
@@ -441,7 +445,11 @@ class Anamnesis extends React.Component{
                                                 case "hidden":
                                                     // HIDDEN Input
                                                     return(
-                                                        <div ref={this[`${item.name}_ref`]} key={i} className="form-group my-3 d-none">
+                                                        <div 
+                                                        ref={this[`${item.name}_ref`]}
+                                                        key={i}
+                                                        className="form-group my-3 d-none"
+                                                        >
                                                             <label className="heading" htmlFor={"fromGroupInput"+i}>
                                                             {item.helpText && item.helpText}
                                                             </label>
@@ -563,14 +571,23 @@ class Anamnesis extends React.Component{
                                                                 {item.helpText && item.helpText}
                                                             </label>
                                                             <MDBFormInline>
-                                                                {this.printRadio(item.choices, item.name, item.required, i)}
+                                                                {this.printRadio(
+                                                                    item.choices,
+                                                                    item.name,
+                                                                    item.required,
+                                                                    i
+                                                                )}
                                                             </MDBFormInline>
                                                         </div>
                                                     );
                                                 case "multiline":
                                                     // MULTILINE TEXT Input
                                                     return (
-                                                        <div ref={this[`${item.name}_ref`]} key={i} className="form-group">
+                                                        <div 
+                                                        ref={this[`${item.name}_ref`]}
+                                                        key={i}
+                                                        className="form-group"
+                                                        >
                                                             <label className="heading" htmlFor={"fromGroupInput"+i}>
                                                                 {item.helpText && item.helpText}
                                                             </label>
@@ -587,7 +604,11 @@ class Anamnesis extends React.Component{
                                                     );
                                                 default:
                                                     return(
-                                                        <div ref={this[`${item.name}_ref`]} key={i} className="form-group">
+                                                        <div 
+                                                        ref={this[`${item.name}_ref`]}
+                                                        key={i}
+                                                        className="form-group"
+                                                        >
                                                             <label className="heading" htmlFor={"fromGroupInput"+i}>
                                                             {item.helpText && item.helpText}
                                                             </label>

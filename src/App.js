@@ -24,7 +24,7 @@ import * as compose from 'lodash.flowright';
 const VERIFY_TOKEN = gql`
   mutation verify($token: String!) {
       verifyToken(token: $token) {
-      payload
+        payload
       }
   }
 `;
