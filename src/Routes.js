@@ -80,6 +80,16 @@ class Routes extends React.Component {
         path='/report/edit'
         component={(props) => <ReportRevision globalState={this.props.globalState} {...props} />}
         />
+        <Route 
+        exact
+        path='/admin'
+        component={() => window.location = 'https://manage.pharmaziegasse.at'}
+        />
+        <Route 
+        exact
+        path='/api/graphiql'
+        component={() => window.location = 'https://manage.pharmaziegasse.at/api/graphiql'}
+        />
         <Route
           render={function () {
             return <Redirect to='/login' />;
