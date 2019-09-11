@@ -300,6 +300,25 @@ class GenerateReport extends React.Component{
         })
     }
 
+    _fetchVariables = (text) => {
+        // Check if the text has variables
+        if(text.includes("{{") && text.includes("}}")){
+
+            let formData = this.state.userdata.formData;
+            let data = JSON.parse(formData);
+
+            let variables = text.match(/{{(.*?)}}/g);
+
+            // Replace the variable with the value
+            variables.map((variable, i) => {
+                let variableName = variable.replace(/{{|}}/g,'');
+                text = text.replace(variable, data[variableName.toLowerCase()]);
+            });
+
+            return text;
+        }
+    }
+
     createReport = () => {
         // Set variables
         let template = this.state.template;
@@ -359,7 +378,7 @@ class GenerateReport extends React.Component{
                     // Statement
                     let statement = paragraph.value.statement;
                     // Text
-                    let text = paragraph.value.paragraph;
+                    let text = this._fetchVariables(paragraph.value.paragraph);
 
                     if(this._normalizeStatement(statement)){
                         // Create paragraph items in object
