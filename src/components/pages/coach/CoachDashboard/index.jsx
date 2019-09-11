@@ -14,6 +14,7 @@ import {
     MDBIcon,
     MDBDataTable,
     MDBTooltip,
+    MDBBadge,
 } from 'mdbreact';
 
 //> CSS
@@ -112,12 +113,35 @@ class CoachDashboard extends React.Component{
                                 <MDBTooltip
                                     placement="top"
                                 >
-                                    <MDBBtn outline rounded color="success">
-                                        <MDBIcon fab icon="whatsapp" size="lg" />
-                                    </MDBBtn>
-                                    <div>
-                                        WhatsApp Kommunikation
-                                    </div>
+                                <MDBBtn
+                                href={"https://api.whatsapp.com/send?phone="+user.telephone.replace('+','')}
+                                target="_blank"
+                                className={i === 1 ? "btn-whatsapp-chat notification" : "btn-whatsapp-chat"}
+                                outline
+                                rounded
+                                color="success"
+                                >
+                                    <MDBIcon fab icon="whatsapp" size="lg" />
+                                </MDBBtn>
+                                <div>
+                                    Mit {user.firstName} chatten
+                                </div>
+                                </MDBTooltip>
+                                <MDBTooltip
+                                    placement="top"
+                                >
+                                <MDBBtn
+                                outline
+                                className="btn-facebook-chat"
+                                rounded
+                                color="blue"
+                                disabled={i === 1 && true}
+                                >
+                                    <MDBIcon fab icon="facebook-messenger" size="lg" />
+                                </MDBBtn>
+                                <div>
+                                    Mit {user.firstName} chatten
+                                </div>
                                 </MDBTooltip>
                             </div>
                         })

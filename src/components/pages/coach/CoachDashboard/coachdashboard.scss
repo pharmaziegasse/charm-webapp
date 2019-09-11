@@ -43,6 +43,35 @@
             }
         }
     }
+    .btn-facebook-chat{
+        overflow: visible;
+        margin-left: .5em;
+        margin-right: .5em;
+        padding-left: 1.5em;
+        padding-right: 1.5em;
+    }
+    .btn-whatsapp-chat{
+        overflow: visible;
+        margin-left: .5em;
+        margin-right: .5em;
+        padding-left: 1.5em;
+        padding-right: 1.5em;
+        
+        &.notification{
+            &::before{
+                content: '';
+                border-radius: 50%;
+                width: 15px;
+                height: 15px;
+                position: absolute;
+                top: -3px;
+                right: -3px;
+                overflow: visible;
+                background-color: red;
+                animation: pulse 2s infinite;
+            }
+        }
+    }
 }
 
 /** 
