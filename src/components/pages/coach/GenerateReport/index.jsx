@@ -271,7 +271,7 @@ class GenerateReport extends React.Component{
     sendData = (result) => {
         let values = {
             "uid": this.state.user.id,
-            "data": result
+            "data": JSON.stringify(result)
         }
         this.props.send({
             variables: { 
@@ -293,6 +293,7 @@ class GenerateReport extends React.Component{
             }
         })
         .catch(error => {
+            console.log(error);
             this.setState({
                 loading: false,
                 error: error
