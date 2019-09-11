@@ -139,6 +139,10 @@ class CoachDashboard extends React.Component{
                 <MDBRow className="text-center">
                     <MDBCol md="12">
                         <h3>Deine KundInnen</h3>
+                        <div className="table-labels">
+                        <span><MDBIcon icon="cube" className="pr-1 pl-3 red-text"/>Noch keine Anamnese vorhanden</span>
+                        <span><MDBIcon icon="cube" className="pr-1 pl-3 purple-text"/>Keine Aktion erforderlich</span>
+                        </div>
                         <MDBDataTable
                         striped
                         bordered
