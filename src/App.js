@@ -66,6 +66,9 @@ const GET_DATA = gql`
         anamneseSet{
           id
         }
+        beautyreportSet{
+          id
+        }
         id
         firstName
         lastName

@@ -12,7 +12,8 @@ import {
     MDBCol,
     MDBBtn,
     MDBIcon,
-    MDBDataTable
+    MDBDataTable,
+    MDBTooltip,
 } from 'mdbreact';
 
 //> CSS
@@ -41,9 +42,30 @@ class CoachDashboard extends React.Component{
                                 }
                                 }}
                                 >
-                                    <MDBBtn rounded outline color="purple">
-                                    Beauty Reports
-                                    </MDBBtn>
+                                {user.beautyreportSet.length >= 1 ? (
+                                    <MDBTooltip
+                                        placement="top"
+                                    >
+                                        <MDBBtn rounded outline color="green">
+                                        <MDBIcon icon="signature" size="lg" />
+                                        </MDBBtn>
+                                        <div>
+                                            Beautyreports einsehen
+                                        </div>
+                                    </MDBTooltip>
+                                ) : (
+                                    <MDBTooltip
+                                        placement="top"
+                                    >
+                                        <MDBBtn rounded outline color="danger">
+                                        <MDBIcon icon="signature" size="lg" />
+                                        </MDBBtn>
+                                        <div>
+                                            Beautyreport erstellen
+                                        </div>
+                                    </MDBTooltip>
+                                )}
+                                    
                                 </Link>
                                 <Link 
                                 to={{
@@ -55,13 +77,27 @@ class CoachDashboard extends React.Component{
                                 >
                                 {
                                     user.anamneseSet.length >= 1 ? (
-                                        <MDBBtn outline rounded color="purple">
-                                        Anamnesebogen
-                                        </MDBBtn>
+                                        <MDBTooltip
+                                            placement="top"
+                                        >
+                                            <MDBBtn outline rounded color="purple">
+                                                <MDBIcon icon="file" size="lg" />
+                                            </MDBBtn>
+                                            <div>
+                                                Anamnese erneuern
+                                            </div>
+                                        </MDBTooltip>
                                     ) : (
-                                        <MDBBtn rounded color="danger">
-                                        Anamnesebogen
-                                        </MDBBtn>
+                                        <MDBTooltip
+                                            placement="top"
+                                        >
+                                            <MDBBtn outline rounded color="danger">
+                                                <MDBIcon far icon="file" size="lg" />
+                                            </MDBBtn>
+                                            <div>
+                                                Anamnese hinzufügen
+                                            </div>
+                                        </MDBTooltip>
                                     )
                                 }
                                 </Link>
@@ -140,8 +176,9 @@ class CoachDashboard extends React.Component{
                     <MDBCol md="12">
                         <h3>Deine KundInnen</h3>
                         <div className="table-labels">
-                        <span><MDBIcon icon="cube" className="pr-1 pl-3 red-text"/>Noch keine Anamnese vorhanden</span>
+                        <span><MDBIcon icon="cube" className="pr-1 pl-3 red-text"/>Keine Daten vorhanden</span>
                         <span><MDBIcon icon="cube" className="pr-1 pl-3 purple-text"/>Keine Aktion erforderlich</span>
+                        <span><MDBIcon icon="cube" className="pr-1 pl-3 green-text"/>Daten optimal</span>
                         </div>
                         <MDBDataTable
                         striped

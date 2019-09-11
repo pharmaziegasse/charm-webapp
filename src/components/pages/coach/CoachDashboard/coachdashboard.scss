@@ -24,14 +24,22 @@
             text-transform: inherit;
             box-shadow: none;
         }
-        .btn-danger{
+        .btn-outline-danger{
+            transition: all .2s;
             &:hover{
-                background-color: darken(#ff3547, 15%) !important;
+                background-color: lighten(#ff3547, 37%) !important;
             }
         }
         .btn-outline-purple{
+            transition: all .2s;
             &:hover{
                 background-color: lighten(purple, 73%) !important;
+            }
+        }
+        .btn-outline-green{
+            transition: all .2s;
+            &:hover{
+                background-color: lighten(green, 70%) !important;
             }
         }
     }
