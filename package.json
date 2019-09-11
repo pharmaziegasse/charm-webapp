@@ -10,6 +10,7 @@
     "graphql": "^14.4.2",
     "graphql-tag": "^2.10.1",
     "lodash.flowright": "^3.5.0",
+    "lodash.template": ">=4.5.0",
     "mdbreact": "./mdbreact-4.19.2.tgz",
     "node-sass": "^4.12.0",
     "react": "^16.8.6",
