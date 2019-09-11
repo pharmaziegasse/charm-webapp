@@ -27,13 +27,13 @@
         .btn-outline-danger{
             transition: all .2s;
             &:hover{
-                background-color: lighten(#ff3547, 37%) !important;
+                background-color: lighten(red, 47%) !important;
             }
         }
         .btn-outline-purple{
             transition: all .2s;
             &:hover{
-                background-color: lighten(purple, 73%) !important;
+                background-color: lighten(purple, 70%) !important;
             }
         }
         .btn-outline-green{

@@ -34,39 +34,47 @@ class CoachDashboard extends React.Component{
                             'phone': user.telephone,
                             'actions':
                             <div className="user-action">
-                                <Link 
-                                to={{
-                                pathname: '/report',
-                                state: {
-                                    user: user
-                                }
-                                }}
-                                >
                                 {user.beautyreportSet.length >= 1 ? (
-                                    <MDBTooltip
-                                        placement="top"
+                                    <Link 
+                                    to={{
+                                    pathname: '/report',
+                                    state: {
+                                        user: user
+                                    }
+                                    }}
                                     >
-                                        <MDBBtn rounded outline color="green">
-                                        <MDBIcon icon="signature" size="lg" />
-                                        </MDBBtn>
-                                        <div>
-                                            Beautyreports einsehen
-                                        </div>
-                                    </MDBTooltip>
+                                        <MDBTooltip
+                                            placement="top"
+                                        >
+                                            <MDBBtn rounded outline color="green">
+                                            <MDBIcon icon="signature" size="lg" />
+                                            </MDBBtn>
+                                            <div>
+                                                Beautyreports einsehen
+                                            </div>
+                                        </MDBTooltip>
+                                    </Link>
                                 ) : (
-                                    <MDBTooltip
-                                        placement="top"
+                                    <Link 
+                                    to={{
+                                    pathname: '/report/add',
+                                    state: {
+                                        user: user
+                                    }
+                                    }}
                                     >
-                                        <MDBBtn rounded outline color="danger">
-                                        <MDBIcon icon="signature" size="lg" />
-                                        </MDBBtn>
-                                        <div>
-                                            Beautyreport erstellen
-                                        </div>
-                                    </MDBTooltip>
+                                        <MDBTooltip
+                                            placement="top"
+                                        >
+                                            <MDBBtn rounded outline color="danger">
+                                            <MDBIcon icon="signature" size="lg" />
+                                            </MDBBtn>
+                                            <div>
+                                                Beautyreport erstellen
+                                            </div>
+                                        </MDBTooltip>
+                                    </Link>
                                 )}
-                                    
-                                </Link>
                                 <Link 
                                 to={{
                                 pathname: '/anamnesis',
