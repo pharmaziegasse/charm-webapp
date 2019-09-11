@@ -8,12 +8,16 @@ import { Link, Redirect } from 'react-router-dom';
 // "Material Design for Bootstrap" is a great UI design framework
 import {
     MDBContainer,
+    MDBRow,
+    MDBCol,
+    MDBCard,
+    MDBCardBody,
+    MDBAlert,
     MDBListGroup,
     MDBListGroupItem,
     MDBBtn,
     MDBIcon,
-    MDBRow,
-    MDBCol,
+    MDBSpinner,
 } from 'mdbreact';
 
 //> Connection
@@ -28,6 +32,10 @@ const GET_REPORTS = gql`
             id
             date
         }
+        brLatestByUid(token: $token, uid: $id) {
+            id
+            date
+        }
     }
 `;
 
@@ -37,7 +45,11 @@ class ReportList extends React.Component{
 
         this.state = {
             userId: undefined,
-            reports: [],
+            reports: {
+                latest: undefined,
+                legacy: []
+            },
+            showLegacy: false,
         }
     }
 
@@ -46,7 +58,8 @@ class ReportList extends React.Component{
             if(this.props.location.state){
                 if(this.props.location.state.user.id){
                     this.setState({
-                        user: this.props.location.state.user
+                        user: this.props.location.state.user,
+                        loading: true
                     }, () => this.fetchReports(this.props.location.state.user.id));
                 }
             }
@@ -54,10 +67,6 @@ class ReportList extends React.Component{
     }
 
     fetchReports = (uid) => {
-        // Start loading animation
-        this.setState({
-            loading: true
-        });
         // Fetch data required for creating a report
         this.fetchAllReports(uid);
     }
@@ -67,23 +76,66 @@ class ReportList extends React.Component{
         query: GET_REPORTS,
         variables: { "id": uid, "token": localStorage.getItem("wca") }
         }).then(({data}) => {
+            console.log(data);
+            if(data.brLatestByUid){
+                this.setState({
+                    reports: { 
+                        ...this.state.reports,
+                        latest: data.brLatestByUid
+                    },
+                    loading: false
+                });
+            }
             if(data.brByUid){
                 console.log("Beautyreports exist for this user");
                 // If there are reports, set dummy data
-                let reports = [
-                    { timestamp: "13.08.2019" },
-                    { timestamp: "10.07.2019" }
-                ];
                 this.setState({
-                    reports: reports
-                })
+                    reports: { 
+                        ...this.state.reports,
+                        legacy: data.brByUid
+                    },
+                    loading: false
+                });
             } else {
                 console.log("There are no Beautyreports for this user");
             }
         })
         .catch(error => {
-            console.log("Error",error);
-        })
+            this.setState({
+                reports: { 
+                    legacy: [],
+                    latest: undefined
+                },
+                loading: false
+            }, () => console.log("Error",error));
+        });
+
+    }
+    
+    getDate = (date) => {
+        // Note: Handling dates in JavaScript is like hunting K'lor'slugs on Korriban. A huge waste of time.
+        let dateS = new Date(date);
+
+        // Get the year
+        let year = dateS.getFullYear();
+        // Get the month ( January is 0! )
+        let month = ("0" + (dateS.getMonth() + 1)).slice(-2);
+        // Get the day of the month
+        let day = ("0" + (dateS.getDate())).slice(-2);
+        //> Time
+        // Get hours
+        let hours = ("0" + (dateS.getHours())).slice(-2);
+        // Get minutes
+        let minutes = ("0" + (dateS.getMinutes())).slice(-2);
+        // Get minutes
+        let seconds = ("0" + (dateS.getSeconds())).slice(-2);
+
+        /**
+         * Combine to achieve YYYY-MM-DD format like Captain Planet.
+         * LET OUR POWERS COMBINE!
+         * You certainly feel like Captain Planet when you get it to work.
+         */ 
+        return day+"."+month+"."+year+" "+hours+":"+minutes+":"+seconds;
     }
 
     render() {
@@ -97,6 +149,8 @@ class ReportList extends React.Component{
         
         if(!location.state) return <Redirect to="/coach"/>
         
+        console.log(this.state);
+
         return (
             <MDBContainer className="text-center">
                 <h2 className="text-center font-weight-bold">
@@ -131,28 +185,67 @@ class ReportList extends React.Component{
                 </MDBRow>
                     
                 </div>
-                <div className="mt-4">
-                
-                    {this.state.reports.length >= 1 ? 
-                    (
-                        <MDBListGroup className="text-left ml-auto mr-auto mb-4" style={{ width: "22rem" }}>
-                            {this.state.reports.map((value, i) => {
-                                return(
-                                    <MDBListGroupItem
-                                    key={i}
-                                    href="#"
-                                    hover
+                {!this.state.loading ? (
+                    <div className="mt-4">
+                        <MDBRow className="flex-center mb-4">
+                            <MDBCol md="6">
+                                <MDBCard>
+                                {this.state.reports.latest ? (
+                                    <MDBCardBody>
+                                        <p className="lead font-weight-bold">Neuester Beautyreport</p>
+                                        <small>{this.getDate(this.state.reports.latest.date)}</small>
+                                        <p className="lead mt-3">Download als</p>
+                                        <MDBBtn color="primary">
+                                            <MDBIcon icon="file-word" className="pr-2"/>Word
+                                        </MDBBtn>
+                                        <MDBBtn color="red">
+                                            <MDBIcon icon="file-pdf" className="pr-2"/>PDF
+                                        </MDBBtn>
+                                    </MDBCardBody>
+                                ) : (
+                                    null
+                                )}
+                                </MDBCard>
+                            </MDBCol>
+                        </MDBRow>
+                        
+                        {this.state.reports.legacy.length >= 1 ? 
+                        (
+                            <>
+                                {this.state.showLegacy ? (
+                                    <MDBListGroup className="text-left ml-auto mr-auto mb-4" style={{ width: "22rem" }}>
+                                        {this.state.reports.legacy.map((report, i) => {
+                                            return(
+                                                <MDBListGroupItem
+                                                key={i}
+                                                href="#"
+                                                hover
+                                                >
+                                                Beauty Report<span className="float-right">{this.getDate(report.date)}</span>
+                                                </MDBListGroupItem>
+                                            );
+                                        })}
+                                    </MDBListGroup>
+                                ) : (
+                                    <span
+                                    onClick={() => {this.setState({showLegacy: true})}}
+                                    className="blue-text clickable"
                                     >
-                                    Beauty Report<span className="float-right">{value.timestamp}</span>
-                                    </MDBListGroupItem>
-                                );
-                            })}
-                        </MDBListGroup>
-                    ) : (
-                        <h3>Noch kein Beauty-Report vorhanden</h3>
-                    )
-                    }
-                </div>
+                                    Ältere Versionen anzeigen
+                                    </span>
+                                )}
+                                
+                            </>
+                        ) : (
+                            <h3>Noch kein Beauty-Report vorhanden</h3>
+                        )
+                        }
+                    </div>
+                ) : (
+                    <div className="text-center w-100 h-100">
+                        <MDBSpinner/>
+                    </div>
+                )}
             </MDBContainer>
         );
     }
