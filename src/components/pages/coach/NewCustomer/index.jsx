@@ -218,7 +218,6 @@ class NewCustomer extends React.Component{
                             return page.urlPath;
                         }
                     }
-                    return true;
                 });
                 this.setState({
                     Coaches: coaches,
