@@ -231,7 +231,7 @@ class NewCustomer extends React.Component{
     }
 
     _createUser = () => {
-        if(this.state.email.trim() !== "" && this.state.phone.trim() !== "" && this.state.coach.length >= 1 ){
+        if(this.state.phone.trim() !== "" && this.state.coach.length >= 1  ){
             
             // Get all values and prepare them for API handling
             const values = {
@@ -401,7 +401,7 @@ class NewCustomer extends React.Component{
                         </MDBCol>
                         <MDBCol md="4">
                             <div className="form-group">
-                                <label htmlFor="ema">E-Mail<span>*</span></label>
+                                <label htmlFor="ema">E-Mail</label>
                                 <input
                                     type="email"
                                     name="email"
@@ -409,7 +409,6 @@ class NewCustomer extends React.Component{
                                     onChange={this.handleTextChange}
                                     className="form-control"
                                     id="ema"
-                                    required
                                 />
                             </div>
                         </MDBCol>
