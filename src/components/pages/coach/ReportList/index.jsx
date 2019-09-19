@@ -18,11 +18,16 @@ import {
     MDBBtn,
     MDBIcon,
     MDBSpinner,
+    MDBFileInput,
+    MDBInput,
 } from 'mdbreact';
 
 //> Connection
 import { withApollo } from "react-apollo";
 import gql from "graphql-tag";
+
+//> CSS
+import './reportlist.scss';
 
 //> Queries
 // Get all beauty reports
@@ -152,7 +157,7 @@ class ReportList extends React.Component{
         console.log(this.state);
 
         return (
-            <MDBContainer className="text-center">
+            <MDBContainer className="text-center" id="reportlist">
                 <h2 className="text-center font-weight-bold">
                 Beautyreports von {location.state.user.firstName + " " + location.state.user.lastName}
                 </h2>
@@ -191,16 +196,31 @@ class ReportList extends React.Component{
                             <MDBCol md="6">
                                 <MDBCard>
                                 {this.state.reports.latest ? (
-                                    <MDBCardBody>
+                                    <MDBCardBody className="active-report">
                                         <p className="lead font-weight-bold">Neuester Beautyreport</p>
                                         <small>{this.getDate(this.state.reports.latest.date)}</small>
-                                        <p className="lead mt-3">Download als</p>
-                                        <MDBBtn color="primary">
-                                            <MDBIcon icon="file-word" className="pr-2"/>Word
+                                        <p className="lead mt-3 mb-2">Download</p>
+                                        <MDBBtn color="primary" className="d-block m-auto">
+                                            <MDBIcon icon="file-word" className="pr-2"/>MS Word
                                         </MDBBtn>
-                                        <MDBBtn color="red">
-                                            <MDBIcon icon="file-pdf" className="pr-2"/>PDF
+                                        <hr/>
+                                        <p className="lead my-3">Neuste Version hochladen</p>
+                                        <MDBFileInput
+                                        btnTitle="File auswählen"
+                                        btnColor="purple"
+                                        textFieldTitle="Lade das neueste PDF hoch"
+                                        />
+                                        <p className="lead mt-3">Aktuelle Version</p>
+                                        <small>Hochgeladen: 19.09.2019 12:42:22</small>
+                                        <MDBBtn color="red" className="d-block mt-3 ml-auto mr-auto">
+                                            <MDBIcon icon="file-pdf" className="pr-2"/>PDF anzeigen
                                         </MDBBtn>
+                                        <MDBInput 
+                                        label="Für Kunden sichtbar"
+                                        filled
+                                        type="checkbox"
+                                        id="show_latest"
+                                        />
                                     </MDBCardBody>
                                 ) : (
                                     null
@@ -213,15 +233,55 @@ class ReportList extends React.Component{
                         (
                             <>
                                 {this.state.showLegacy ? (
-                                    <MDBListGroup className="text-left ml-auto mr-auto mb-4" style={{ width: "22rem" }}>
+                                    <MDBListGroup 
+                                    className="text-left ml-auto mr-auto mb-4"
+                                    style={{ width: "22rem" }}
+                                    >
                                         {this.state.reports.legacy.map((report, i) => {
                                             return(
                                                 <MDBListGroupItem
                                                 key={i}
-                                                href="#"
-                                                hover
                                                 >
-                                                Beauty Report<span className="float-right">{this.getDate(report.date)}</span>
+                                                <strong>Beauty Report</strong>
+                                                <span className="float-right">{this.getDate(report.date)}</span>
+                                                <MDBFileInput
+                                                btnTitle="File auswählen"
+                                                btnColor="purple"
+                                                textFieldTitle="Lade das PDF hoch"
+                                                />
+                                                    <MDBBtn 
+                                                    size="md"
+                                                    color="primary"
+                                                    >
+                                                        <MDBIcon 
+                                                        icon="file-word"
+                                                        className="pr-2"
+                                                        />
+                                                        Download
+                                                    </MDBBtn>
+                                                    {i === 1 ? (
+                                                        <>
+                                                            <MDBBtn 
+                                                            size="md"
+                                                            color="red"
+                                                            >
+                                                                <MDBIcon 
+                                                                icon="file-pdf"
+                                                                className="pr-2"
+                                                                />
+                                                                PDF anzeigen
+                                                            </MDBBtn>
+                                                            <MDBInput 
+                                                            label="Für Kunden sichtbar"
+                                                            filled
+                                                            type="checkbox"
+                                                            id={"show_latest_"+i}
+                                                            />
+                                                        </>
+                                                    ) : (
+                                                        <p className="pt-2">Noch keine PDF hochgeladen</p>
+                                                    )}
+                                                
                                                 </MDBListGroupItem>
                                             );
                                         })}

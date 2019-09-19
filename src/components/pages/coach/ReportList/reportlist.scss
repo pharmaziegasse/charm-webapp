@@ -1,7 +1,15 @@
-.list-group{
-    .list-group-item{
-        span{
-            font-size: .8em;
+#reportlist{
+    .list-group{
+        .list-group-item{
+            span{
+                font-size: .8em;
+            }
+        }
+    }
+    .active-report{
+        .form-check-label{
+            margin-right: 1.2rem !important;
+            margin-top: 1rem;
         }
     }
 }
