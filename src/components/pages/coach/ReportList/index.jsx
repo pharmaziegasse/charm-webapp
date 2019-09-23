@@ -13,8 +13,7 @@ import {
     MDBCard,
     MDBCardBody,
     MDBAlert,
-    MDBListGroup,
-    MDBListGroupItem,
+    MDBDataTable,
     MDBBtn,
     MDBIcon,
     MDBSpinner,
@@ -81,7 +80,6 @@ class ReportList extends React.Component{
         query: GET_REPORTS,
         variables: { "id": uid, "token": localStorage.getItem("wca") }
         }).then(({data}) => {
-            console.log(data);
             if(data.brLatestByUid){
                 this.setState({
                     reports: { 
@@ -112,7 +110,7 @@ class ReportList extends React.Component{
                     latest: undefined
                 },
                 loading: false
-            }, () => console.log("Error",error));
+            }, () => console.warn("Error",error));
         });
 
     }
@@ -143,6 +141,85 @@ class ReportList extends React.Component{
         return day+"."+month+"."+year+" "+hours+":"+minutes+":"+seconds;
     }
 
+    _getTable = () => {
+        return({
+                columns: [
+            {
+                label: '#',
+                field: 'id',
+                sort: 'asc'
+            },
+            {
+                label: 'Date',
+                field: 'date',
+                sort: 'asc'
+            },
+            {
+                label: 'Visible',
+                field: 'visible',
+                sort: 'disabled'
+            },
+            {
+                label: 'PDF Upload',
+                field: 'pdf',
+                sort: 'disabled'
+            },
+            {
+                label: 'Download',
+                field: 'download',
+                sort: 'disabled'
+            },
+            {
+                label: 'Quick actions',
+                field: 'actions',
+                sort: 'disabled'
+            }
+        ],
+        rows: this._getBeautyReports()
+        })
+    }
+
+    _getBeautyReports = () => {
+        let reports = this.state.reports.legacy.map((report, i) => {
+            return({
+                'id': i+1,
+                'date': this.getDate(report.date),
+                'visible': <MDBInput 
+                            label="Für Kunden sichtbar"
+                            filled
+                            type="checkbox"
+                            id={"show_latest_"+i}
+                            />,
+                'pdf': <MDBFileInput
+                        btnTitle="File auswählen"
+                        btnColor="purple"
+                        textFieldTitle="Lade das PDF hoch"
+                        />,
+                'download': <MDBBtn 
+                            size="md"
+                            color="primary"
+                            >
+                                <MDBIcon 
+                                icon="file-word"
+                                className="pr-2"
+                                />
+                                Download
+                            </MDBBtn>,
+                'actions': <MDBBtn 
+                            size="md"
+                            color="danger"
+                            >
+                                <MDBIcon 
+                                icon="trashcan"
+                                className="pr-2"
+                                />
+                                Remove
+                            </MDBBtn>
+            });
+        });
+        return reports;
+    }
+
     render() {
         // Get global state with login information
         const { globalState, location } = this.props;
@@ -153,8 +230,6 @@ class ReportList extends React.Component{
         if(globalState.logged && !globalState.coach) return <Redirect to="/dashboard"/> 
         
         if(!location.state) return <Redirect to="/coach"/>
-        
-        console.log(this.state);
 
         return (
             <MDBContainer className="text-center" id="reportlist">
@@ -233,59 +308,17 @@ class ReportList extends React.Component{
                         (
                             <>
                                 {this.state.showLegacy ? (
-                                    <MDBListGroup 
-                                    className="text-left ml-auto mr-auto mb-4"
-                                    style={{ width: "22rem" }}
-                                    >
-                                        {this.state.reports.legacy.map((report, i) => {
-                                            return(
-                                                <MDBListGroupItem
-                                                key={i}
-                                                >
-                                                <strong>Beauty Report</strong>
-                                                <span className="float-right">{this.getDate(report.date)}</span>
-                                                <MDBFileInput
-                                                btnTitle="File auswählen"
-                                                btnColor="purple"
-                                                textFieldTitle="Lade das PDF hoch"
-                                                />
-                                                    <MDBBtn 
-                                                    size="md"
-                                                    color="primary"
-                                                    >
-                                                        <MDBIcon 
-                                                        icon="file-word"
-                                                        className="pr-2"
-                                                        />
-                                                        Download
-                                                    </MDBBtn>
-                                                    {i === 1 ? (
-                                                        <>
-                                                            <MDBBtn 
-                                                            size="md"
-                                                            color="red"
-                                                            >
-                                                                <MDBIcon 
-                                                                icon="file-pdf"
-                                                                className="pr-2"
-                                                                />
-                                                                PDF anzeigen
-                                                            </MDBBtn>
-                                                            <MDBInput 
-                                                            label="Für Kunden sichtbar"
-                                                            filled
-                                                            type="checkbox"
-                                                            id={"show_latest_"+i}
-                                                            />
-                                                        </>
-                                                    ) : (
-                                                        <p className="pt-2">Noch keine PDF hochgeladen</p>
-                                                    )}
-                                                
-                                                </MDBListGroupItem>
-                                            );
-                                        })}
-                                    </MDBListGroup>
+                                    <MDBDataTable
+                                    striped
+                                    bordered
+                                    small
+                                    exportToCSV
+                                    data={this._getTable()}
+                                    paginationLabel={[
+                                        <MDBIcon icon="angle-left" size="lg" className="pl-3 pr-3" />,
+                                        <MDBIcon icon="angle-right" size="lg" className="pl-3 pr-3" />
+                                    ]}
+                                    />
                                 ) : (
                                     <span
                                     onClick={() => {this.setState({showLegacy: true})}}
