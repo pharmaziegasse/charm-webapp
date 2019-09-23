@@ -317,6 +317,8 @@ class GenerateReport extends React.Component{
             });
 
             return text;
+        } else {
+            return text;
         }
     }
 
@@ -325,13 +327,13 @@ class GenerateReport extends React.Component{
         let template = this.state.template;
         let result = undefined;
 
-        //console.log(template);
+        console.log(template);
 
         // For each chapter
         template.chapters.map((chapter, ckey) => {
             //> Extract useful information from chapter
             // Header
-            let chapterHeader = chapter.chapterHeader;
+            let chapterHeader = this._fetchVariables(chapter.chapterHeader);
 
             // Create header items in object
             if(result){
@@ -357,7 +359,7 @@ class GenerateReport extends React.Component{
 
                 //> Extract useful information from subchapter
                 // Header
-                let subChapterHeader = subChapter.value.sub_chapter_header;
+                let subChapterHeader = this._fetchVariables(subChapter.value.sub_chapter_header);
 
                 // Create sub header items in object
                 result = {
@@ -380,9 +382,25 @@ class GenerateReport extends React.Component{
                     let statement = paragraph.value.statement;
                     // Text
                     let text = this._fetchVariables(paragraph.value.paragraph);
-
-                    if(this._normalizeStatement(statement)){
-                        // Create paragraph items in object
+                    
+                    if(statement !== ""){
+                        if(this._normalizeStatement(statement)){
+                            // Create paragraph items in object
+                            result = {
+                                ...result,
+                                ["chapter"+ckey]: {
+                                    ...result["chapter"+ckey],
+                                    ["subchapter"+skey]: {
+                                        ...result["chapter"+ckey]["subchapter"+skey],
+                                        ["paragraph"+pkey]: {
+                                            ...result["chapter"+ckey]["subchapter"+skey]["paragraph"+pkey],
+                                            text: text
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
                         result = {
                             ...result,
                             ["chapter"+ckey]: {
@@ -398,6 +416,8 @@ class GenerateReport extends React.Component{
                         }
                     }
 
+                    
+
                     //console.log(text);
                     // Check if finished
                     if(
@@ -406,6 +426,7 @@ class GenerateReport extends React.Component{
                         pkey + 1 === subChapter.value.paragraphs.length 
                     ){
                         // Finished
+                        console.log(result);
                         this.sendData(result);
                     }
                 });
