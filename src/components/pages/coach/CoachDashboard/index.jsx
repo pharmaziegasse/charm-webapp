@@ -127,22 +127,6 @@ class CoachDashboard extends React.Component{
                                     Mit {user.firstName} chatten
                                 </div>
                                 </MDBTooltip>
-                                <MDBTooltip
-                                    placement="top"
-                                >
-                                <MDBBtn
-                                outline
-                                className="btn-facebook-chat"
-                                rounded
-                                color="blue"
-                                disabled={i === 1 && true}
-                                >
-                                    <MDBIcon fab icon="facebook-messenger" size="lg" />
-                                </MDBBtn>
-                                <div>
-                                    Mit {user.firstName} chatten
-                                </div>
-                                </MDBTooltip>
                             </div>
                         })
                     });
