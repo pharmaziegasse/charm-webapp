@@ -116,7 +116,7 @@ class CoachDashboard extends React.Component{
                                 <MDBBtn
                                 href={"https://api.whatsapp.com/send?phone="+user.telephone.replace('+','')}
                                 target="_blank"
-                                className={i === 1 ? "btn-whatsapp-chat notification" : "btn-whatsapp-chat"}
+                                className={true === false ? "btn-whatsapp-chat notification" : "btn-whatsapp-chat"}
                                 outline
                                 rounded
                                 color="success"
