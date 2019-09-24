@@ -327,8 +327,6 @@ class GenerateReport extends React.Component{
         let template = this.state.template;
         let result = undefined;
 
-        console.log(template);
-
         // For each chapter
         template.chapters.map((chapter, ckey) => {
             //> Extract useful information from chapter
@@ -426,7 +424,6 @@ class GenerateReport extends React.Component{
                         pkey + 1 === subChapter.value.paragraphs.length 
                     ){
                         // Finished
-                        console.log(result);
                         this.sendData(result);
                     }
                 });
