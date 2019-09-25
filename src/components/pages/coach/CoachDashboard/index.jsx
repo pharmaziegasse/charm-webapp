@@ -29,6 +29,7 @@ class CoachDashboard extends React.Component{
                     let users = userSet.map((user, i) => {
                         return({
                             'id': i+1,
+                            'userid': user.customerId,
                             'first': user.firstName,
                             'last': user.lastName,
                             'email': <a href={"mailto:"+user.email} className="blue-text">{user.email}</a>,
@@ -144,6 +145,11 @@ class CoachDashboard extends React.Component{
             {
                 label: '#',
                 field: 'id',
+                sort: 'asc'
+            },
+            {
+                label: 'Customer ID',
+                field: 'userid',
                 sort: 'asc'
             },
             {
