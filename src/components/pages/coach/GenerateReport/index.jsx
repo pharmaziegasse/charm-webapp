@@ -584,6 +584,10 @@ class GenerateReport extends React.Component{
                                                 >
                                                 support@aichner-christian.com
                                                 </a>
+                                                <br/>
+                                                oder
+                                                <br/>
+                                                +43 681 20502754
                                             </p>
                                         </MDBAlert>
                                     )
