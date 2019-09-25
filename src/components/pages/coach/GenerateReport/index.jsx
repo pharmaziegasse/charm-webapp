@@ -86,6 +86,22 @@ const SEND_DATA = gql`
         }
     }
 `;
+// Send
+const GET_WORD = gql`
+    query getDocuments{
+        documents{
+            id
+            file
+            createdAt
+            tags
+            fileSize
+            fileHash
+            url
+            filename
+            fileExtension
+        }
+    }
+`;
 
 class GenerateReport extends React.Component{
     constructor(props){
@@ -558,8 +574,17 @@ class GenerateReport extends React.Component{
                                         </>
                                     ) : (
                                         <MDBAlert color="danger">
-                                            Ein unerwarteter Fehler ist aufgetreten. Bitte kontaktieren Sie den 
-                                            Support der Werbeagentur Christian Aichner.
+                                            <p>
+                                                Ein unerwarteter Fehler ist aufgetreten. Bitte kontaktieren 
+                                                Sie den Support der Werbeagentur Christian Aichner.
+                                            </p>
+                                            <p className="pt-3">
+                                                <a
+                                                href="mailto:support@aichner-christian.com"
+                                                >
+                                                support@aichner-christian.com
+                                                </a>
+                                            </p>
                                         </MDBAlert>
                                     )
                                     }
