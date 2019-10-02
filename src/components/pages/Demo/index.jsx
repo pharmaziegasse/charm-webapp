@@ -122,28 +122,44 @@ class Demo extends React.Component {
             <div className="classic-tabs">
               <MDBNav classicTabs color="indigo" className="mt-5">
                 <MDBNavItem>
-                  <MDBNavLink to="#" active={this.state.activeItemClassicTabs3==="1"} onClick={this.toggleClassicTabs3("1")}>
+                  <MDBNavLink 
+                  to="#"
+                  active={this.state.activeItemClassicTabs3==="1"}
+                  onClick={this.toggleClassicTabs3("1")}
+                  >
                     <MDBIcon icon="user" size="lg" />
                     <br />
                     Timeline
                   </MDBNavLink>
                 </MDBNavItem>
                 <MDBNavItem>
-                  <MDBNavLink to="#" active={this.state.activeItemClassicTabs3==="2"} onClick={this.toggleClassicTabs3("2")}>
+                  <MDBNavLink 
+                  to="#"
+                  active={this.state.activeItemClassicTabs3==="2"}
+                  onClick={this.toggleClassicTabs3("2")}
+                  >
                     <MDBIcon icon="heart" size="lg" />
                     <br />
                     Follow
                   </MDBNavLink>
                 </MDBNavItem>
                 <MDBNavItem>
-                  <MDBNavLink to="#" active={this.state.activeItemClassicTabs3==="3"} onClick={this.toggleClassicTabs3("3")}>
+                  <MDBNavLink 
+                  to="#"
+                  active={this.state.activeItemClassicTabs3==="3"}
+                  onClick={this.toggleClassicTabs3("3")}
+                  >
                     <MDBIcon icon="envelope" size="lg" />
                     <br />
                     Contact
                   </MDBNavLink>
                 </MDBNavItem>
                 <MDBNavItem>
-                  <MDBNavLink to="#" active={this.state.activeItemClassicTabs3==="4"} onClick={this.toggleClassicTabs3("4")}>
+                  <MDBNavLink 
+                  to="#"
+                  active={this.state.activeItemClassicTabs3==="4"}
+                  onClick={this.toggleClassicTabs3("4")}
+                  >
                     <MDBIcon icon="star" size="lg" />
                     <br />
                     Be Awesome
