@@ -26,7 +26,8 @@ import {
  * Login: Login page
  */
 import {
-  Login
+  Login,
+  Demo,
 } from './components/pages';
 
 class Routes extends React.Component {
@@ -40,6 +41,11 @@ class Routes extends React.Component {
   render() {
     return (
       <Switch>
+        <Route
+        exact
+        path='/demo'
+        component={(props) => <Demo globalState={this.props.globalState} {...props} />}
+        />
         <Route
         exact
         path='/dashboard'
