@@ -48,12 +48,6 @@ const GET_DATA = gql`
       isStaff
       isCoach
       isCustomer
-      coach {
-        id
-        firstName
-        lastName
-        email
-      }
       title    
       firstName
       lastName
@@ -215,7 +209,7 @@ class App extends React.Component {
     return (
       <Router>
         <div className="flyout">
-          <main className="mt-5">
+          <main>
             {this.state.loaded &&
             <Routes handler={this.handler} globalState={this.state} />
             }

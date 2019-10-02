@@ -193,7 +193,7 @@ class CoachDashboard extends React.Component{
         if(globalState.logged && !globalState.coach) return <Redirect to="/dashboard"/> 
 
         return(
-            <MDBContainer id="coach">
+            <MDBContainer id="coach" className="pt-5">
                 <h2 className="text-center font-weight-bold">
                 Willkommen zurück, <span>{globalState.userdata.firstName}</span>!
                 </h2>

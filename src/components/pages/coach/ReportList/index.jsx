@@ -232,7 +232,7 @@ class ReportList extends React.Component{
         if(!location.state) return <Redirect to="/coach"/>
 
         return (
-            <MDBContainer className="text-center" id="reportlist">
+            <MDBContainer className="text-center pt-5" id="reportlist">
                 <h2 className="text-center font-weight-bold">
                 Beautyreports von {location.state.user.firstName + " " + location.state.user.lastName}
                 </h2>

@@ -468,7 +468,7 @@ class GenerateReport extends React.Component{
         }
 
         return (
-            <MDBContainer className="text-center">
+            <MDBContainer className="text-center pt-5">
                 <h2 className="text-center font-weight-bold">
                 Beautyreport erstellen
                 </h2>

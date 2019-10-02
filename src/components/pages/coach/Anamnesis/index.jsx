@@ -362,7 +362,7 @@ class Anamnesis extends React.Component{
         }
 
         return (
-            <MDBContainer id="anamnesis" className="text-left">
+            <MDBContainer id="anamnesis" className="text-left pt-5">
                 <h2 className="mb-5 text-center">Anamnese für {user.firstName+" "+user.lastName}</h2>
                 <div className="text-left mt-4">
                     <Link to="/coach">
