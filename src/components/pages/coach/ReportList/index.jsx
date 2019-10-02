@@ -194,6 +194,7 @@ class ReportList extends React.Component{
                             label="Für Kunden sichtbar"
                             filled
                             type="checkbox"
+                            disabled
                             id={"show_latest_"+i}
                             />,
                 'pdf': <MDBFileInput
@@ -224,6 +225,7 @@ class ReportList extends React.Component{
                 'actions': <MDBBtn 
                             size="md"
                             color="danger"
+                            disabled
                             >
                                 <MDBIcon 
                                 icon="trashcan"
@@ -315,10 +317,11 @@ class ReportList extends React.Component{
                                         />
                                         <p className="lead mt-3">Aktuelle Version</p>
                                         <small>Hochgeladen: 19.09.2019 12:42:22</small>
-                                        <MDBBtn color="red" className="d-block mt-3 ml-auto mr-auto">
+                                        <MDBBtn color="red" disabled className="d-block mt-3 ml-auto mr-auto">
                                             <MDBIcon icon="file-pdf" className="pr-2"/>PDF anzeigen
                                         </MDBBtn>
                                         <MDBInput 
+                                        disabled
                                         label="Für Kunden sichtbar"
                                         filled
                                         type="checkbox"
