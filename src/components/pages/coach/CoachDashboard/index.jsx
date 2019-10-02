@@ -29,6 +29,7 @@ class CoachDashboard extends React.Component{
                     let users = userSet.map((user, i) => {
                         return({
                             'id': i+1,
+                            'userid': user.customerId,
                             'first': user.firstName,
                             'last': user.lastName,
                             'email': <a href={"mailto:"+user.email} className="blue-text">{user.email}</a>,
@@ -116,28 +117,12 @@ class CoachDashboard extends React.Component{
                                 <MDBBtn
                                 href={"https://api.whatsapp.com/send?phone="+user.telephone.replace('+','')}
                                 target="_blank"
-                                className={i === 1 ? "btn-whatsapp-chat notification" : "btn-whatsapp-chat"}
+                                className={true === false ? "btn-whatsapp-chat notification" : "btn-whatsapp-chat"}
                                 outline
                                 rounded
                                 color="success"
                                 >
                                     <MDBIcon fab icon="whatsapp" size="lg" />
-                                </MDBBtn>
-                                <div>
-                                    Mit {user.firstName} chatten
-                                </div>
-                                </MDBTooltip>
-                                <MDBTooltip
-                                    placement="top"
-                                >
-                                <MDBBtn
-                                outline
-                                className="btn-facebook-chat"
-                                rounded
-                                color="blue"
-                                disabled={i === 1 && true}
-                                >
-                                    <MDBIcon fab icon="facebook-messenger" size="lg" />
                                 </MDBBtn>
                                 <div>
                                     Mit {user.firstName} chatten
@@ -160,6 +145,11 @@ class CoachDashboard extends React.Component{
             {
                 label: '#',
                 field: 'id',
+                sort: 'asc'
+            },
+            {
+                label: 'Customer ID',
+                field: 'userid',
                 sort: 'asc'
             },
             {

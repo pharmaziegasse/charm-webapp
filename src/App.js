@@ -70,6 +70,7 @@ const GET_DATA = gql`
           id
         }
         id
+        customerId
         firstName
         lastName
         email

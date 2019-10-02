@@ -231,7 +231,7 @@ class NewCustomer extends React.Component{
     }
 
     _createUser = () => {
-        if(this.state.email.trim() !== "" && this.state.phone.trim() !== "" && this.state.coach.length >= 1 ){
+        if(this.state.phone.trim() !== "" && this.state.coach.length >= 1  ){
             
             // Get all values and prepare them for API handling
             const values = {
@@ -246,6 +246,7 @@ class NewCustomer extends React.Component{
                 "city": this.state.city,
                 "postal_code": this.state.zip,
                 "country": this.state.country.countryCode,
+                "customer_id": this.state.customerid
             }
 
             let urlPath = this.state.urlPath[0];
@@ -328,6 +329,21 @@ class NewCustomer extends React.Component{
                         <MDBCol md="12" className="mt-4">
                             <h4 className="text-center font-weight-bold">Name</h4>
                         </MDBCol>
+                        <MDBCol md="12" className="mt-4 flex-center">
+                            <MDBCol md="3">
+                                <div className="form-group">
+                                    <label htmlFor="cus">Kunden ID</label>
+                                    <input
+                                        type="text"
+                                        name="customerid"
+                                        value={this.state.customerid}
+                                        onChange={this.handleTextChange}
+                                        className="form-control"
+                                        id="cus"
+                                    />
+                                </div>
+                            </MDBCol>
+                        </MDBCol>
                         <MDBCol md="1">
                             <div className="form-group">
                                 <label htmlFor="tit">Titel</label>
@@ -385,7 +401,7 @@ class NewCustomer extends React.Component{
                         </MDBCol>
                         <MDBCol md="4">
                             <div className="form-group">
-                                <label htmlFor="ema">E-Mail<span>*</span></label>
+                                <label htmlFor="ema">E-Mail</label>
                                 <input
                                     type="email"
                                     name="email"
@@ -393,7 +409,6 @@ class NewCustomer extends React.Component{
                                     onChange={this.handleTextChange}
                                     className="form-control"
                                     id="ema"
-                                    required
                                 />
                             </div>
                         </MDBCol>

@@ -280,7 +280,6 @@ class Anamnesis extends React.Component{
                 [name] : 0 + parseInt(type,10)
             });
         }
-        
     }
 
     printCheckboxes = (item, i) => {
