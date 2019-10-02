@@ -43,11 +43,6 @@ class Routes extends React.Component {
       <Switch>
         <Route
         exact
-        path='/demo'
-        component={(props) => <Demo globalState={this.props.globalState} {...props} />}
-        />
-        <Route
-        exact
         path='/dashboard'
         component={(props) => <Dashboard globalState={this.props.globalState} {...props} />}
         />
@@ -97,7 +92,13 @@ class Routes extends React.Component {
         component={() => window.location = 'https://manage.pharmaziegasse.at/api/graphiql'}
         />
         <Route
+        exact
+        path='/demo'
+        component={(props) => <Demo globalState={this.props.globalState} {...props} />}
+        />
+        <Route
           render={function () {
+            console.log("Called");
             return <Redirect to='/login' />;
           }}
         />

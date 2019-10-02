@@ -1,0 +1,23 @@
+#demo{
+    #searchbox{
+        background-color: lighten(#3f51b5, 10%) !important;
+        border: none;
+        outline: none;
+        color: white;
+        box-shadow: none;
+        &::placeholder{
+            color: lighten(#3f51b5, 30%);
+        }
+    }
+    .navbar-expand-md .navbar-nav{
+        flex-direction: row-reverse;
+    }
+    .flex-center ul li{
+        margin-bottom: 0;
+    }
+}
+
+/** 
+ * SPDX-License-Identifier: (EUPL-1.2)
+ * Copyright © 2019 Werbeagentur Christian Aichner
+ */
