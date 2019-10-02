@@ -18,6 +18,7 @@ import {
     MDBIcon,
     MDBAlert,
     MDBProgress,
+    MDBSpinner,
 } from 'mdbreact';
 
 //> Connection
@@ -62,6 +63,17 @@ const GET_USERDATA = gql`
             user {
                 id
                 username
+            }
+        }
+    }
+`;
+// Get document link
+const GET_LINK = gql`
+    query getlink($token: String!, $id: Int!) {
+        brLatestByUid(token: $token, uid: $id) {
+            document{
+                id
+                link
             }
         }
     }
@@ -115,6 +127,7 @@ class GenerateReport extends React.Component{
             operations: 0,
             userId: undefined,
             error: undefined,
+            doclink: null,
         }
     }
 
@@ -284,6 +297,28 @@ class GenerateReport extends React.Component{
         }
     }
 
+    getLink = () => {
+        this.props.client.query({
+            query: GET_LINK,
+            variables: { 
+                "token": localStorage.getItem("wca"),
+                "id": this.props.location.state.user.id
+            }
+        }).then(({data}) => {
+            console.log(data);
+            if(data){
+                if(data.brLatestByUid){
+                    this.setState({
+                        doclink: "https://manage.pharmaziegasse.at/"+data.brLatestByUid.document.link
+                    });
+                }
+            }
+        })
+        .catch(error => {
+            console.error("Query error:",error);
+        })
+    }
+
     sendData = (result) => {
         let values = {
             "uid": this.state.user.id,
@@ -300,7 +335,7 @@ class GenerateReport extends React.Component{
                 this.setState({
                     loading: false,
                     error: undefined
-                });
+                }, () => this.getLink());
             } else if(data.beautyreportBrFormPage.result === "FAIL") {
                 this.setState({
                     loading: false,
@@ -468,7 +503,7 @@ class GenerateReport extends React.Component{
         }
 
         return (
-            <MDBContainer className="text-center">
+            <MDBContainer className="text-center pt-5">
                 <h2 className="text-center font-weight-bold">
                 Beautyreport erstellen
                 </h2>
@@ -528,12 +563,21 @@ class GenerateReport extends React.Component{
                                                 </p>
                                             </MDBAlert>
                                             <p className="lead">Download als</p>
-                                            <MDBBtn color="primary">
-                                                <MDBIcon icon="file-word" className="pr-2"/>Word
-                                            </MDBBtn>
-                                            <MDBBtn color="red">
-                                                <MDBIcon icon="file-pdf" className="pr-2"/>PDF
-                                            </MDBBtn>
+                                            {this.state.doclink ? (
+                                                <>
+                                                    <a
+                                                    href={this.state.doclink}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    >
+                                                    <MDBBtn color="primary">
+                                                        <MDBIcon icon="file-word" className="pr-2"/>Word
+                                                    </MDBBtn>
+                                                    </a>
+                                                </>
+                                            ) : (
+                                                <MDBSpinner />
+                                            )}
                                         </>
                                     ) }
                                 </MDBCardBody>

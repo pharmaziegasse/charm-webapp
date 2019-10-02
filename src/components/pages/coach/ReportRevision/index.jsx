@@ -133,7 +133,7 @@ class ReportRevision extends React.Component{
         if(location !== undefined){
             if(location.state !== undefined){
                 return (
-                    <MDBContainer>
+                    <MDBContainer className="pt-5">
                         <h2 className="text-center font-weight-bold">
                         Beautyreport überprüfen
                         </h2>

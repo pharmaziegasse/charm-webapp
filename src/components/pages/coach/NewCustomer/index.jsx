@@ -302,7 +302,7 @@ class NewCustomer extends React.Component{
         console.log(this.state);
 
         return(
-            <MDBContainer id="newcustomer">
+            <MDBContainer id="newcustomer" className="pt-5">
                 <h2 className="text-center font-weight-bold">Create customer</h2>
                 <div className="text-left mt-4">
                     <Link to="/coach">
