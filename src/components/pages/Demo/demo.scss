@@ -15,6 +15,20 @@
     .flex-center ul li{
         margin-bottom: 0;
     }
+    .card-actions{
+        .btn{
+            padding: 0.7em 1.2em 0.7em 1.2em;
+        }
+    }
+    .classic-tabs .nav li:first-child{
+        margin-left: 0px !important;
+    }
+    .classic-tabs .nav li a{
+        text-transform: inherit;
+    }
+    .btn{
+        box-shadow: none;
+    }
 }
 
 /** 

@@ -25,6 +25,9 @@ import {
   MDBDropdownItem,
   MDBNavItem,
   MDBCardBody,
+  MDBNav,
+  MDBTabContent,
+  MDBTabPane,
   MDBBadge,
   MDBBtn,
   MDBAlert,
@@ -37,8 +40,17 @@ import './demo.scss';
 
 class Demo extends React.Component {
   state = {
-    isOpen: false
+    isOpen: false,
+    activeItemClassicTabs3: "1",
   };
+
+  toggleClassicTabs3 = tab => () => {
+    if (this.state.activeItemClassicTabs3 !== tab) {
+    this.setState({
+      activeItemClassicTabs3: tab
+    });
+    }
+  }
 
   toggleCollapse = () => {
     this.setState({ isOpen: !this.state.isOpen });
@@ -86,23 +98,97 @@ class Demo extends React.Component {
               </MDBCol>
             </MDBRow>
         </MDBNavbar>
-        <MDBRow>
-          <MDBCol md="2">
-            <MDBCard>
-              <MDBCardHeader color="deep-orange lighten-1">Customer</MDBCardHeader>
+        <MDBRow className="p-0 m-0 w-100">
+          <MDBCol md="2" className="p-3">
+            <MDBCard className="card-profile">
+              <MDBCardHeader color="indigo">Customer</MDBCardHeader>
               <MDBCardBody className="text-center">
                 <MDBCardTitle>Simone Prast</MDBCardTitle>
                 <MDBCardText>
-                  <p>
                   <MDBBadge color="primary" className="ml-1 mr-1">Primary</MDBBadge>
                   <MDBBadge color="primary" className="ml-1 mr-1">Primary</MDBBadge>
-                  </p>
                 </MDBCardText>
+              </MDBCardBody>
+            </MDBCard>
+            <MDBCard className="mt-3 card-actions">
+              <MDBCardHeader color="indigo">Quick actions</MDBCardHeader>
+              <MDBCardBody className="text-center">
+                <MDBBtn rounded outline><MDBIcon icon="phone" className="pr-2"/>Call</MDBBtn>
+                <MDBBtn rounded outline><MDBIcon icon="envelope" className="pr-2"/>E-Mail</MDBBtn>
               </MDBCardBody>
             </MDBCard>
           </MDBCol>
           <MDBCol md="6">
-
+            <div className="classic-tabs">
+              <MDBNav classicTabs color="indigo" className="mt-5">
+                <MDBNavItem>
+                  <MDBNavLink to="#" active={this.state.activeItemClassicTabs3==="1"} onClick={this.toggleClassicTabs3("1")}>
+                    <MDBIcon icon="user" size="lg" />
+                    <br />
+                    Timeline
+                  </MDBNavLink>
+                </MDBNavItem>
+                <MDBNavItem>
+                  <MDBNavLink to="#" active={this.state.activeItemClassicTabs3==="2"} onClick={this.toggleClassicTabs3("2")}>
+                    <MDBIcon icon="heart" size="lg" />
+                    <br />
+                    Follow
+                  </MDBNavLink>
+                </MDBNavItem>
+                <MDBNavItem>
+                  <MDBNavLink to="#" active={this.state.activeItemClassicTabs3==="3"} onClick={this.toggleClassicTabs3("3")}>
+                    <MDBIcon icon="envelope" size="lg" />
+                    <br />
+                    Contact
+                  </MDBNavLink>
+                </MDBNavItem>
+                <MDBNavItem>
+                  <MDBNavLink to="#" active={this.state.activeItemClassicTabs3==="4"} onClick={this.toggleClassicTabs3("4")}>
+                    <MDBIcon icon="star" size="lg" />
+                    <br />
+                    Be Awesome
+                  </MDBNavLink>
+                </MDBNavItem>
+              </MDBNav>
+              <MDBTabContent className="card mb-5" activeItem={this.state.activeItemClassicTabs3}>
+                <MDBTabPane tabId="1">
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing
+                    elit. Nihil odit magnam minima, soluta doloribus
+                    reiciendis molestiae placeat unde eos molestias.
+                    Quisquam aperiam, pariatur. Tempora, placeat ratione
+                    porro voluptate odit minima.
+                  </p>
+                </MDBTabPane>
+                <MDBTabPane tabId="2">
+                  <p>
+                    Quisquam aperiam, pariatur. Tempora, placeat ratione
+                    porro voluptate odit minima. Lorem ipsum dolor sit amet,
+                    consectetur adipisicing elit. Nihil odit magnam minima,
+                    soluta doloribus reiciendis molestiae placeat unde eos
+                    molestias.
+                  </p>
+                </MDBTabPane>
+                <MDBTabPane tabId="3">
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing
+                    elit. Nihil odit magnam minima, soluta doloribus
+                    reiciendis molestiae placeat unde eos molestias.
+                    Quisquam aperiam, pariatur. Tempora, placeat ratione
+                    porro voluptate odit minima.
+                  </p>
+                </MDBTabPane>
+                <MDBTabPane tabId="4">
+                  <p>
+                    Quisquam aperiam, pariatur. Tempora, placeat ratione
+                    porro voluptate odit minima. Lorem ipsum dolor sit amet,
+                    consectetur adipisicing elit. Nihil odit magnam minima,
+                    soluta doloribus reiciendis molestiae placeat unde eos
+                    molestias.
+                  </p>
+                </MDBTabPane>
+              </MDBTabContent>
+            </div>
           </MDBCol>
           <MDBCol md="4">
 
