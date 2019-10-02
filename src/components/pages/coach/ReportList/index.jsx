@@ -35,10 +35,16 @@ const GET_REPORTS = gql`
         brByUid(token: $token, uid: $id) {
             id
             date
+            document{
+                link
+            }
         }
         brLatestByUid(token: $token, uid: $id) {
             id
             date
+            document{
+                link
+            }
         }
     }
 `;
@@ -147,7 +153,7 @@ class ReportList extends React.Component{
             {
                 label: '#',
                 field: 'id',
-                sort: 'asc'
+                sort: 'desc'
             },
             {
                 label: 'Date',
@@ -195,16 +201,26 @@ class ReportList extends React.Component{
                         btnColor="purple"
                         textFieldTitle="Lade das PDF hoch"
                         />,
-                'download': <MDBBtn 
-                            size="md"
-                            color="primary"
-                            >
-                                <MDBIcon 
-                                icon="file-word"
-                                className="pr-2"
-                                />
-                                Download
-                            </MDBBtn>,
+                'download': <>
+                {report.document !== null ? (
+                    <a
+                    href={"https://manage.pharmaziegasse.at/"+report.document.link}
+                    >
+                        <MDBBtn 
+                        size="md"
+                        color="primary"
+                        >
+                            <MDBIcon 
+                            icon="file-word"
+                            className="pr-2"
+                            />
+                            Download
+                        </MDBBtn>
+                    </a>
+                ) : (
+                    <p>No download</p>
+                )}
+                            </>,
                 'actions': <MDBBtn 
                             size="md"
                             color="danger"
@@ -275,9 +291,21 @@ class ReportList extends React.Component{
                                         <p className="lead font-weight-bold">Neuester Beautyreport</p>
                                         <small>{this.getDate(this.state.reports.latest.date)}</small>
                                         <p className="lead mt-3 mb-2">Download</p>
-                                        <MDBBtn color="primary" className="d-block m-auto">
-                                            <MDBIcon icon="file-word" className="pr-2"/>MS Word
-                                        </MDBBtn>
+                                        {this.state.reports.latest.document &&
+                                            <a
+                                            href={
+                                                "https://manage.pharmaziegasse.at/"+
+                                                this.state.reports.latest.document.link
+                                            }
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            >
+                                            <MDBBtn color="primary" className="d-block m-auto">
+                                                <MDBIcon icon="file-word" className="pr-2"/>MS Word
+                                            </MDBBtn>
+                                            </a>
+                                        }
+                                        
                                         <hr/>
                                         <p className="lead my-3">Neuste Version hochladen</p>
                                         <MDBFileInput
