@@ -35,6 +35,10 @@ import {
   MDBSpinner,
 } from "mdbreact";
 
+//> Axios
+// For HTTP requests
+import axios from 'axios';
+
 //> CSS
 import './demo.scss';
 
@@ -45,10 +49,65 @@ class Demo extends React.Component {
   };
 
   componentDidMount = () => {
-    const baseURL = "https://api.breezometer.com/";
-    let apiKey = process.env.REACT_APP_BREEZOMETER_APIKEY;
+    let apiKey, apiVersion, type;
+
+    const baseURL = "https://api.breezometer.com";
+
+    apiKey = process.env.REACT_APP_BREEZOMETER_APIKEY;
+    apiVersion = "v2"
+
+    // Configure type
+    type = "/"+"air-quality"+"/"+apiVersion+"/";
+
+    // Basic user data
+    let coordinates = {
+      lat: "46.6086",
+      long: "13.8506"
+    }
+
+    // Configure features
+    let features = "&features="+
+    "breezometer_aqi,local_aqi,health_recommendations,sources_and_effects,pollutants_concentrations,pollutants_aqi_information";
+
+    console.log(features);
+
+    let apiParams = "current-conditions?lat="+
+    coordinates.lat+"&"+"lon="+
+    coordinates.long+"&key="+apiKey;
 
     console.log(apiKey);
+
+    axios({
+      method: 'get',
+      url: baseURL+type+apiParams+features
+    })
+    .then((response) => {
+      if(response){
+        console.log(response);
+        let fetchData = response.data.data;
+        if(fetchData.data_available){
+          let indexes = fetchData.indexes;
+          let pollutants = fetchData.pollutants;
+          let health_recommendations = fetchData.health_recommendations;
+
+          let data = {
+            indexes: indexes,
+            pollutants: pollutants,
+            health_recommendations: health_recommendations,
+          }
+
+          console.log(data);
+        } else {
+          console.log("No data available");
+        }
+      } else {
+        console.log("No response from Breezometer API");
+      }
+      
+    })
+    .catch((err) => {
+      console.log(err);
+    })
   }
 
   toggleClassicTabs3 = tab => () => {
