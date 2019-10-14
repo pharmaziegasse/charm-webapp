@@ -44,6 +44,13 @@ class Demo extends React.Component {
     activeItemClassicTabs3: "1",
   };
 
+  componentDidMount = () => {
+    const baseURL = "https://api.breezometer.com/";
+    let apiKey = process.env.REACT_APP_BREEZOMETER_APIKEY;
+
+    console.log(apiKey);
+  }
+
   toggleClassicTabs3 = tab => () => {
     if (this.state.activeItemClassicTabs3 !== tab) {
     this.setState({
