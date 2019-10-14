@@ -97,6 +97,11 @@ class Routes extends React.Component {
         component={(props) => <Demo globalState={this.props.globalState} {...props} />}
         />
         <Route
+        exact
+        path='/test'
+        component={(props) => <Dashboard globalState={this.props.globalState} {...props} />}
+        />
+        <Route
           render={function () {
             console.log("Called");
             return <Redirect to='/login' />;
