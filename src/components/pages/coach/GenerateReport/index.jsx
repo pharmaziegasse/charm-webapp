@@ -234,6 +234,29 @@ class GenerateReport extends React.Component{
         }
     }
 
+    _getReturnValue = (item, condition) => {
+        // If its a string
+        if(typeof item == "string"){
+            item = item.replace(/\s/g, '_');
+        }
+        // If it's an object
+        if(typeof item == "object"){
+            item = item[0].replace(/\s/g, '_');
+        }
+
+        let condNew = condition.replace(/^\S+/g, item);
+
+        let condNewPure = condNew.replace(/"/g,'');
+        
+        let compareParts = condNewPure.split(' ');
+
+        if(this.__convertType(compareParts[0]) === null || this.__convertType(compareParts[0]) === undefined){
+            return false;
+        } else {
+            return this.__compare(this.__convertType(compareParts[0]), compareParts[1], compareParts[2]);
+        }
+    }
+
     _normalizeCondition = (condition, data) => {
         // Get the string between quotes
         let preEscapedCondition = condition.match(/"(.*?)"/g);
@@ -249,26 +272,19 @@ class GenerateReport extends React.Component{
         let replacement = this.__convertType(data[condition.replace(/ .*/,'').toLowerCase()]);
         
         if(replacement){
-            // If its a string
-            if(typeof replacement == "string"){
-                replacement = replacement.replace(/\s/g, '_');
-            }
-            // If it's an object
-            if(typeof replacement == "object"){
-                replacement = replacement[0].replace(/\s/g, '_');
-            }
-
-            let condNew = condition.replace(/^\S+/g, replacement);
-
-            let condNewPure = condNew.replace(/"/g,'');
-            
-            let compareParts = condNewPure.split(' ');
-
-            if(this.__convertType(compareParts[0]) === null || this.__convertType(compareParts[0]) === undefined){
-                return false;
+            if(Array.isArray(replacement)){
+                let repl = replacement.map((item, i) => {
+                    return this._getReturnValue(item, condition);
+                });
+                if(repl.includes(true)){
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
-                return this.__compare(this.__convertType(compareParts[0]), compareParts[1], compareParts[2]);
+                return this._getReturnValue(replacement, condition);
             }
+            
         } else {
             return false;
         }
@@ -361,10 +377,41 @@ class GenerateReport extends React.Component{
 
             let variables = text.match(/{{(.*?)}}/g);
 
+            //console.log(data);
+
             // Replace the variable with the value
             variables.map((variable, i) => {
-                let variableName = variable.replace(/{{|}}/g,'');
-                text = text.replace(variable, data[variableName.toLowerCase()]);
+                let variableName = variable.replace(/{{|}}/g,'').toLowerCase();
+                variableName = variableName.replace(/ä/g, 'a');
+                variableName = variableName.replace(/ö/g, 'o');
+                variableName = variableName.replace(/ü/g, 'u');
+                variableName = variableName.replace(/ß/g, 'ss');
+                let dat = data[variableName];
+                //console.log(data,dat,variableName);
+                let result = dat;
+                if(Array.isArray(dat)){
+                    let datarr = "";
+                    dat = [
+                        "morgens",
+                        "mittags",
+                        "abends"
+                    ]
+                    dat.map((da, i) => {
+                        if(dat.length > 1){
+                            datarr += dat[i];
+                            if(dat.length - 2 === i){
+                                datarr += " und "
+                            } else if(dat.length - 2 !== i && dat.length - 1 !== i){
+                                datarr += ", ";
+                            }
+                        } else {
+                            datarr += dat[i];
+                        }
+                    })
+                    result = datarr;
+                }
+                text = text.replace(variable, result);
+                //console.log(variable,result);
             });
 
             return text;
@@ -431,9 +478,14 @@ class GenerateReport extends React.Component{
                     let statement = paragraph.value.statement;
                     // Text
                     let text = this._fetchVariables(paragraph.value.paragraph);
+
+                    // Debugging
+                    console.log(statement)
                     
                     if(statement !== ""){
-                        if(this._normalizeStatement(statement)){
+                        let statementResult = this._normalizeStatement(statement);
+                        console.log(statementResult);
+                        if(statementResult){
                             // Create paragraph items in object
                             result = {
                                 ...result,
