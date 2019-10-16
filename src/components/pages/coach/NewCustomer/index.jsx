@@ -94,6 +94,7 @@ class NewCustomer extends React.Component{
             urlPath: undefined,
             error: false,
             success: false,
+            errors: {},
         }
     }
 
@@ -122,7 +123,7 @@ class NewCustomer extends React.Component{
                 phoneCountry: {
                     name: country.name,
                     countryCode: country.countryCode.toUpperCase()
-                }
+                },
             });
         } else {
             this.setState({
@@ -130,7 +131,7 @@ class NewCustomer extends React.Component{
                 phoneCountry: {
                     name: country.name,
                     countryCode: country.countryCode.toUpperCase()
-                }
+                },
             });
         }
     }
@@ -251,9 +252,15 @@ class NewCustomer extends React.Component{
 
             let urlPath = this.state.urlPath[0];
 
-            if(urlPath !== undefined && this.state.coach[0] !== undefined){
+            if(
+                urlPath &&
+                this.state.coach[0] &&
+                this.state.firstName &&
+                this.state.lastName
+            ){
                 this.setState({
-                    loading: true
+                    loading: true,
+                    errors: {}
                 });
                 this.props.update({
                     variables: { 
@@ -267,7 +274,7 @@ class NewCustomer extends React.Component{
                     });
                     if(data.userUserFormPage.result === "OK"){
                         this.setState({
-                            error: false,
+                            errors: {},
                             success: true
                         });
                     } else if (data.userUserFormPage.result === "FAIL"){
@@ -275,17 +282,46 @@ class NewCustomer extends React.Component{
                     }
                 })
                 .catch(error => {
-                    console.log("Error",error);
+                    if(error){
+                        console.log(error.graphQLErrors.map(x => x.message));
+                        let errors = error.graphQLErrors;
+
+                        let results = {};
+                        errors.map((x) => {
+                            //let msg = JSON.parse(x.message);
+                            console.log(x);
+                            if(x.message.includes("'telephone'")){
+                                results = {
+                                    telephone: true,
+                                }
+                            }
+                        })
+
+                        console.log(results);
+
+                        if(results){
+                            this.setState({
+                                errors: {
+                                    ...this.state.errors,
+                                    ...results,
+                                },
+                                loading: false,
+                            }, () => console.log(this.state.errors));
+                        }
+                    }
                 })
             }
 
-            console.log(values);
+            //console.log(values);
 
         } else {
             this.setState({
-                error: true
+                errors: {
+                    ...this.state.errors,
+                    required: true,
+                },
+                loading: false,
             });
-            console.log("Required fields not filled in");
         }
     }
 
@@ -359,7 +395,7 @@ class NewCustomer extends React.Component{
                         </MDBCol>
                         <MDBCol md="3">
                             <div className="form-group">
-                                <label htmlFor="firstN">Vorname</label>
+                                <label htmlFor="firstN">Vorname<span>*</span></label>
                                 <input
                                     type="text"
                                     name="firstName"
@@ -372,7 +408,7 @@ class NewCustomer extends React.Component{
                         </MDBCol>
                         <MDBCol md="3">
                             <div className="form-group">
-                                <label htmlFor="lastN">Nachname</label>
+                                <label htmlFor="lastN">Nachname<span>*</span></label>
                                 <input
                                     type="text"
                                     name="lastName"
@@ -507,6 +543,31 @@ class NewCustomer extends React.Component{
                     </MDBRow>
                 ) }
                 <div className="text-center">
+                {this.state.errors && this.state.errors.required &&
+                    <div>
+                    <small className="text-danger">
+                        <MDBIcon icon="exclamation-triangle" className="text-danger pr-2" />
+                        Pflichtfelder sind noch nicht ausgefüllt.<br/>
+                        <span className="text-muted">
+                            Hinweis: Pflichtfelder sind mit einem
+                            <span className="text-danger"> * </span>
+                            versehen.
+                        </span>
+                    </small>
+                    </div>
+                }
+                {this.state.errors && this.state.errors.telephone &&
+                    <div>
+                    <small className="text-danger">
+                        <MDBIcon icon="exclamation-triangle" className="text-danger pr-2" />
+                        Es existiert bereits ein Nutzer mit dieser Telefonnummer.<br/>
+                        <span className="text-muted">
+                            Hinweis: Der Kunde existiert vermutlich bereits.<br/>
+                            Bitte wenden Sie sich an den Supervisor.
+                        </span>
+                    </small>
+                    </div>
+                }
                 { !this.state.success &&
                     <>
                         { !this.state.loading ? (
