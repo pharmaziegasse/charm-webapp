@@ -306,7 +306,7 @@ class NewCustomer extends React.Component{
                                     ...results,
                                 },
                                 loading: false,
-                            }, () => console.log(this.state.errors));
+                            });
                         }
                     }
                 })
@@ -341,7 +341,7 @@ class NewCustomer extends React.Component{
             <MDBContainer id="newcustomer" className="pt-5">
                 <h2 className="text-center font-weight-bold">Create customer</h2>
                 <div className="text-left mt-4">
-                    <Link to="/coach">
+                    <Link to="/coach" onClick={this.props.flushData}>
                         <MDBBtn color="red">
                             <MDBIcon icon="angle-left" className="pr-2" />Zurück
                         </MDBBtn>

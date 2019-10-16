@@ -85,7 +85,8 @@ class App extends React.Component {
     username: undefined,
     coach: undefined,
     loaded: false,
-    userdata: {}
+    userdata: {},
+    flush: false,
   }
 
   componentWillMount = () => {
@@ -105,6 +106,10 @@ class App extends React.Component {
         loaded: true
       });
     }
+  }
+
+  componentDidMount = () => {
+    this._verifyToken();
   }
 
   _getUserData = () => {
@@ -205,13 +210,25 @@ class App extends React.Component {
     }
   }
 
+  flushData = () => {
+    this.setState({
+      flush: !this.state.flush
+    })
+  }
+
   render() {
+    
+    console.log("Updated", this.state);
     return (
       <Router>
         <div className="flyout">
           <main>
             {this.state.loaded &&
-            <Routes handler={this.handler} globalState={this.state} />
+            <Routes 
+            handler={this.handler}
+            globalState={this.state}
+            flushData={this.flushData}
+            />
             }
           </main>
           <Footer globalState={this.state} />
