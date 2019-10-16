@@ -86,7 +86,10 @@ class Routes extends React.Component {
         <Route
         exact
         path='/report/add'
-        component={(props) => <GenerateReport globalState={this.props.globalState} {...props} />}
+        component={(props) => <GenerateReport 
+        globalState={this.props.globalState} {...props} 
+        flushData={this.flushData}
+        />}
         />
         <Route
         exact

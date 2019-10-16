@@ -563,6 +563,7 @@ class GenerateReport extends React.Component{
                     <MDBRow>
                         <MDBCol md="12" className="text-left">
                             <Link 
+                            onClick={this.props.flushData}
                             to={{
                             pathname: '/report',
                             state: {
