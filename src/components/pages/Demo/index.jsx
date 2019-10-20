@@ -46,68 +46,166 @@ class Demo extends React.Component {
   state = {
     isOpen: false,
     activeItemClassicTabs3: "1",
+    customGenerated: false,
   };
 
-  componentDidMount = () => {
-    let apiKey, apiVersion, type;
-
-    const baseURL = "https://api.breezometer.com";
-
-    apiKey = process.env.REACT_APP_BREEZOMETER_APIKEY;
-    apiVersion = "v2"
-
+  getAirQuality = async (coordinates, apiKey, baseURL) => {
     // Configure type
-    type = "/"+"air-quality"+"/"+apiVersion+"/";
-
-    // Basic user data
-    let coordinates = {
-      lat: "46.6086",
-      long: "13.8506"
-    }
+    let apiVersion = "v2";
+    let type = "/"+"air-quality"+"/"+apiVersion+"/";
 
     // Configure features
     let features = "&features="+
-    "breezometer_aqi,local_aqi,health_recommendations,sources_and_effects,pollutants_concentrations,pollutants_aqi_information";
-
-    console.log(features);
+    "breezometer_aqi,local_aqi";
 
     let apiParams = "current-conditions?lat="+
     coordinates.lat+"&"+"lon="+
     coordinates.long+"&key="+apiKey;
 
-    console.log(apiKey);
-
-    axios({
+    await axios({
       method: 'get',
       url: baseURL+type+apiParams+features
     })
     .then((response) => {
       if(response){
-        console.log(response);
         let fetchData = response.data.data;
         if(fetchData.data_available){
           let indexes = fetchData.indexes;
-          let pollutants = fetchData.pollutants;
-          let health_recommendations = fetchData.health_recommendations;
 
-          let data = {
-            indexes: indexes,
-            pollutants: pollutants,
-            health_recommendations: health_recommendations,
-          }
-
-          console.log(data);
+          this.setState({
+            airQuality: indexes
+          });
         } else {
           console.log("No data available");
         }
       } else {
         console.log("No response from Breezometer API");
       }
-      
     })
     .catch((err) => {
       console.log(err);
     })
+  }
+
+  getWeather = async (coordinates, apiKey, baseURL) => {
+    // Configure type
+    let apiVersion = "v1";
+    let type = "/"+"weather"+"/"+apiVersion+"/";
+
+    let apiParams = "current-conditions?lat="+
+    coordinates.lat+"&"+"lon="+
+    coordinates.long+"&key="+apiKey;
+
+    await axios({
+      method: 'get',
+      url: baseURL+type+apiParams
+    })
+    .then((response) => {
+      if(response){
+        let fetchData = response.data.data;
+        this.setState({
+          weather: fetchData
+        });
+      } else {
+        console.log("No response from Breezometer API");
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+  }
+
+  getWeatherForecast = async (coordinates, apiKey, baseURL) => {
+
+    // Configure type
+    let apiVersion = "v1";
+    let type = "/weather/"+apiVersion+"/forecast/";
+    let fetchedDays = 5;
+
+    let apiParams = "daily?lat="+
+    coordinates.lat+"&"+"lon="+
+    coordinates.long+"&key="+apiKey+"&days="+fetchedDays;
+
+    await axios({
+      method: 'get',
+      url: baseURL+type+apiParams
+    })
+    .then((response) => {
+      if(response){
+        let days = response.data.data;
+
+        // Get average UV Index
+        let avgUvIndex = 0;
+        days.map((day, i) => {
+          avgUvIndex += day.max_uv_index;
+        });
+        avgUvIndex = avgUvIndex / fetchedDays;
+
+        this.setState({
+          forecast: days,
+          avgUvIndex: avgUvIndex
+        });
+      } else {
+        console.log("No response from Breezometer API");
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+  }
+
+  getAirQualityHistory = async (coordinates, apiKey, baseURL) => {
+    // Configure type
+    let apiVersion = "v2";
+    let type = "/"+"air-quality"+"/"+apiVersion+"/";
+
+    // Configure features
+    let features = "&features="+
+    "breezometer_aqi,local_aqi";
+    let hours = 100;
+
+    let apiParams = "historical/hourly?lat="+
+    coordinates.lat+"&"+"lon="+
+    coordinates.long+"&key="+apiKey+
+    "&hours="+hours;
+
+    await axios({
+      method: 'get',
+      url: baseURL+type+apiParams+features
+    })
+    .then((response) => {
+      if(response){
+        console.log(response);
+      } else {
+        console.log("No response from Breezometer API");
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+  }
+
+  componentDidMount = () => {
+    let apiKey;
+
+    const baseURL = "https://api.breezometer.com";
+
+    apiKey = process.env.REACT_APP_BREEZOMETER_APIKEY;
+    
+    // Basic user data
+    let coordinates = {
+      lat: "46.6086",
+      long: "13.8506"
+    }
+
+    // Get Air Quality data
+    this.getAirQuality(coordinates, apiKey, baseURL);
+    // Get weather data
+    this.getWeather(coordinates, apiKey, baseURL);
+    // Get weather forecast
+    this.getWeatherForecast(coordinates, apiKey, baseURL);
+    // Get Air Quality history data
+    //this.getAirQualityHistory(coordinates, apiKey, baseURL);
   }
 
   toggleClassicTabs3 = tab => () => {
@@ -121,7 +219,54 @@ class Demo extends React.Component {
   toggleCollapse = () => {
     this.setState({ isOpen: !this.state.isOpen });
   }
+
+  calculateCustomResult = () => {
+    let avgUvIndex = this.state.avgUvIndex;
+    let airQuality = this.state.airQuality;
+    let weather = this.state.weather;
+
+    let data = {
+      average: {
+        uvIndex: avgUvIndex
+      },
+      current: {
+        weather: {
+          isDayTime: weather.is_day_time,
+          temperature: weather.temperature,
+          pressure: weather.pressure,
+          humidity: weather.relative_humidity
+        },
+        airQuality: {
+          local: {
+            index: airQuality.baqi.aqi,
+            color: airQuality.baqi.color,
+            category: airQuality.baqi.category,
+            dominantPollutant: airQuality.baqi.dominant_pollutant
+          },
+          environment: {
+            index: airQuality.aut_umwelt.aqi,
+            color: airQuality.aut_umwelt.color,
+            category: airQuality.aut_umwelt.category,
+            dominantPollutant: airQuality.aut_umwelt.dominant_pollutant
+          }
+        }
+      },
+    }
+
+    console.log(data);
+  }
+
   render() {
+
+    console.log(this.state);
+
+    const { avgUvIndex, airQuality, weather, customGenerated } = this.state;
+
+    if(avgUvIndex && airQuality && weather && !customGenerated){
+      console.log("Finished");
+      this.calculateCustomResult();
+    }
+
     return (
       <div id="demo">
         <MDBNavbar color="indigo" dark expand="md">
