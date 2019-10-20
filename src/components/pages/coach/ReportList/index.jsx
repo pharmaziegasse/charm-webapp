@@ -76,17 +76,23 @@ class ReportList extends React.Component{
         }
     }
 
+    componentWillUnmount = () => {
+        //clearInterval(this.interval);
+    }
+
     fetchReports = (uid) => {
+        //this.interval = setInterval(() => this.fetchAllReports(uid), 5000);
         // Fetch data required for creating a report
         this.fetchAllReports(uid);
     }
 
-    fetchAllReports = (uid) => {
+    fetchAllReports = (uid) => {;
         this.props.client.query({
         query: GET_REPORTS,
         variables: { "id": uid, "token": localStorage.getItem("wca") }
         }).then(({data}) => {
             if(data.brLatestByUid){
+                console.log(data);
                 this.setState({
                     reports: { 
                         ...this.state.reports,
@@ -248,6 +254,8 @@ class ReportList extends React.Component{
         if(globalState.logged && !globalState.coach) return <Redirect to="/dashboard"/> 
         
         if(!location.state) return <Redirect to="/coach"/>
+
+        console.log(this.state);
 
         return (
             <MDBContainer className="text-center pt-5" id="reportlist">

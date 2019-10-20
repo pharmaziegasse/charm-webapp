@@ -21,6 +21,7 @@ import {
 import './coachdashboard.scss';
 
 class CoachDashboard extends React.Component{
+
     _getCoachUsers = () => {
         if(this.props.globalState){
             if(this.props.globalState.userdata){

@@ -38,7 +38,12 @@ class Routes extends React.Component {
     this.props.handler(status);
   }
 
+  flushData = () => {
+    this.props.flushData();
+  }
+
   render() {
+    console.log("Called");
     return (
       <Switch>
         <Route
@@ -59,12 +64,19 @@ class Routes extends React.Component {
         <Route
         exact
         path='/coach'
-        component={(props) => <CoachDashboard globalState={this.props.globalState} {...props} />}
+        component={(props) => <CoachDashboard 
+        globalState={this.props.globalState} {...props}
+        />
+        }
+
         />
         <Route
         exact
         path='/add'
-        component={(props) => <NewCustomer globalState={this.props.globalState} {...props} />}
+        component={(props) => <NewCustomer 
+        globalState={this.props.globalState} {...props}
+        flushData={this.flushData}
+        />}
         />
         <Route
         exact
@@ -74,7 +86,10 @@ class Routes extends React.Component {
         <Route
         exact
         path='/report/add'
-        component={(props) => <GenerateReport globalState={this.props.globalState} {...props} />}
+        component={(props) => <GenerateReport 
+        globalState={this.props.globalState} {...props} 
+        flushData={this.flushData}
+        />}
         />
         <Route
         exact
