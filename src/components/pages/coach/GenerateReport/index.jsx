@@ -391,17 +391,10 @@ class GenerateReport extends React.Component{
                 let result = dat;
                 if(Array.isArray(dat)){
                     let datarr = "";
-                    dat = [
-                        "morgens",
-                        "mittags",
-                        "abends"
-                    ]
                     dat.map((da, i) => {
                         if(dat.length > 1){
                             datarr += dat[i];
-                            if(dat.length - 2 === i){
-                                datarr += " und "
-                            } else if(dat.length - 2 !== i && dat.length - 1 !== i){
+                            if(dat.length - 1 !== i){
                                 datarr += ", ";
                             }
                         } else {
@@ -411,7 +404,7 @@ class GenerateReport extends React.Component{
                     result = datarr;
                 }
                 text = text.replace(variable, result);
-                //console.log(variable,result);
+                console.log(variable,result);
             });
 
             return text;
