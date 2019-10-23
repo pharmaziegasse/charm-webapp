@@ -271,7 +271,7 @@ class GenerateReport extends React.Component{
         // Replace the first word with the value of the corresponding word ( age > 50 => 3 > 50 )
         let replacement = this.__convertType(data[condition.replace(/ .*/,'').toLowerCase()]);
         
-        if(replacement){
+        if(replacement !== undefined){
             if(Array.isArray(replacement)){
                 let repl = replacement.map((item, i) => {
                     return this._getReturnValue(item, condition);
