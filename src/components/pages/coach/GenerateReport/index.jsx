@@ -268,8 +268,16 @@ class GenerateReport extends React.Component{
             condition = condition.replace(/"(.*?)"/g,escapedCondition);
         }
 
+        let variableName = condition.replace(/ .*/,'').toLowerCase();
+        variableName = variableName.replace(/ä/g, 'a');
+        variableName = variableName.replace(/ö/g, 'o');
+        variableName = variableName.replace(/ü/g, 'u');
+        variableName = variableName.replace(/ß/g, 'ss');
+
         // Replace the first word with the value of the corresponding word ( age > 50 => 3 > 50 )
-        let replacement = this.__convertType(data[condition.replace(/ .*/,'').toLowerCase()]);
+        let replacement = this.__convertType(data[variableName]);
+
+        console.log(condition, replacement, variableName);
         
         if(replacement !== undefined){
             if(Array.isArray(replacement)){
@@ -387,7 +395,6 @@ class GenerateReport extends React.Component{
                 variableName = variableName.replace(/ü/g, 'u');
                 variableName = variableName.replace(/ß/g, 'ss');
                 let dat = data[variableName];
-                //console.log(data,dat,variableName);
                 let result = dat;
                 if(Array.isArray(dat)){
                     let datarr = "";
@@ -404,7 +411,6 @@ class GenerateReport extends React.Component{
                     result = datarr;
                 }
                 text = text.replace(variable, result);
-                console.log(variable,result);
             });
 
             return text;
