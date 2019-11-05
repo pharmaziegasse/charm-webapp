@@ -4,6 +4,10 @@ import React from 'react';
 // Redirect
 import { Link, Redirect } from 'react-router-dom';
 
+//> Additional libraries
+// Moment.js for time handling
+import moment from 'moment';
+
 //> MDB
 // "Material Design for Bootstrap" is a great UI design framework
 import {
