@@ -71,7 +71,10 @@ const GET_USERDATA = gql`
 const GET_LINK = gql`
     query getlink($token: String!, $id: Int!) {
         brLatestByUid(token: $token, uid: $id) {
+            __typename
+            id
             document{
+                __typename
                 id
                 link
             }
@@ -277,7 +280,8 @@ class GenerateReport extends React.Component{
         // Replace the first word with the value of the corresponding word ( age > 50 => 3 > 50 )
         let replacement = this.__convertType(data[variableName]);
 
-        console.log(condition, replacement, variableName);
+        // Debugging
+        //console.log(condition, replacement, variableName);
         
         if(replacement !== undefined){
             if(Array.isArray(replacement)){
@@ -322,6 +326,7 @@ class GenerateReport extends React.Component{
     }
 
     getLink = () => {
+        console.log("User ID",this.props.location.state.user.id);
         this.props.client.query({
             query: GET_LINK,
             variables: { 
@@ -329,6 +334,7 @@ class GenerateReport extends React.Component{
                 "id": this.props.location.state.user.id
             }
         }).then(({data}) => {
+            console.log("User Data");
             console.log(data);
             if(data){
                 if(data.brLatestByUid){
@@ -479,11 +485,14 @@ class GenerateReport extends React.Component{
                     let text = this._fetchVariables(paragraph.value.paragraph);
 
                     // Debugging
-                    console.log(statement)
+                    //console.log(statement)
                     
                     if(statement !== ""){
                         let statementResult = this._normalizeStatement(statement);
-                        console.log(statementResult);
+
+                        // Debugging
+                        //console.log(statementResult);
+
                         if(statementResult){
                             // Create paragraph items in object
                             result = {
