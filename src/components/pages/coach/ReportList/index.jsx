@@ -141,7 +141,6 @@ class ReportList extends React.Component{
                 loading: false
             }, () => console.error("Error",error));
         });
-
     }
     
     getDate = (date) => {
