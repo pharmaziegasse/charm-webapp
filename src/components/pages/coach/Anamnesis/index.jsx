@@ -413,6 +413,8 @@ class Anamnesis extends React.Component{
                                         
                                         return formfields.map((item, i) => {
                                             this[`${item.name}_ref`] = React.createRef();
+
+                                            // Debugging
                                             //console.log(item);
 
                                             // Store the names of all items for refs
@@ -438,7 +440,7 @@ class Anamnesis extends React.Component{
                                                             <input
                                                                 type="text"
                                                                 value={this.state[item.name]}
-                                                                onChange={this._handleChange}
+                                                                onChange={() => this._handleChange}
                                                                 name={item.name}
                                                                 className="form-control"
                                                                 id={"fromGroupInput"+i}
@@ -488,7 +490,7 @@ class Anamnesis extends React.Component{
                                                                 name={item.name}
                                                                 id={"fromGroupInput"+i}
                                                                 value={this.state[item.name]}
-                                                                onChange={this._handleChange}
+                                                                onChange={() => this._handleChange}
                                                                 type="number"
                                                                 />
                                                                 <button
@@ -508,7 +510,7 @@ class Anamnesis extends React.Component{
                                                             <MDBInput
                                                             checked={this.state[item.name]}
                                                             name={item.name}
-                                                            onChange={this._handleCheckBoxChange}
+                                                            onChange={() => this._handleCheckBoxChange}
                                                             label={item.label && item.label}
                                                             filled
                                                             type="checkbox"
@@ -539,7 +541,7 @@ class Anamnesis extends React.Component{
                                                                 <select
                                                                 name={item.name}
                                                                 selected={this.state[item.name]}
-                                                                onChange={this._handleSelectChange}
+                                                                onChange={() => this._handleSelectChange}
                                                                 className="browser-default custom-select">
                                                                 <option>Choose your option</option>
                                                                 {this.printOptions(item.choices, i)}
@@ -558,7 +560,7 @@ class Anamnesis extends React.Component{
                                                                 <select
                                                                 multiple name={item.name}
                                                                 selected={this.state[item.name]}
-                                                                onChange={this._handleMultiSelectChange}
+                                                                onChange={() => this._handleMultiSelectChange}
                                                                 className="browser-default custom-select"
                                                                 >
                                                                 <option>Choose your option</option>
@@ -598,7 +600,7 @@ class Anamnesis extends React.Component{
                                                             <textarea
                                                             className="form-control"
                                                             value={this.state[item.name]}
-                                                            onChange={this._handleChange}
+                                                            onChange={() => this._handleChange}
                                                             name={item.name}
                                                             id={"fromGroupInput"+i}
                                                             rows="5"
@@ -619,7 +621,7 @@ class Anamnesis extends React.Component{
                                                             <input
                                                                 type="text"
                                                                 value={this.state[item.name]}
-                                                                onChange={this._handleChange}
+                                                                onChange={() => this._handleChange}
                                                                 name={item.name}
                                                                 className="form-control"
                                                                 id={"fromGroupInput"+i}
