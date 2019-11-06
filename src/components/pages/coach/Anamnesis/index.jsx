@@ -90,11 +90,11 @@ class Anamnesis extends React.Component{
     }
 
     componentDidMount = () => {
-        console.log("Anamnesis has been mounted.");
+        // Set page title
+        document.title = "Anamnese";
         
         // Set user variable
         const user = this.props.location.state.user;
-
         if(!this.state.user){
             this.setState({
                 user: user
@@ -103,16 +103,14 @@ class Anamnesis extends React.Component{
     }
 
     initialize = async () => {
+        // Get the types and names of the anamnesis fields
         this.getAnamneseFields();
+        // Get the actual user data (if existant)
         this.getAnmaneseData();
     }
 
-    componentWillMount = () => {
-        // Set page title
-        document.title = "Anamnese";
-    }
-
     resetButton = () => {
+        // Get the button back to the initial state ready for submit
         if(this.state.success){
             this.setState({
                 success: false,
@@ -165,7 +163,7 @@ class Anamnesis extends React.Component{
         .catch(error => {
             this.setState({
                 formdata: false
-            }, () => console.error(error));
+            }, () => console.log(error.message));
         });
     }
 
