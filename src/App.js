@@ -217,7 +217,6 @@ class App extends React.Component {
   }
 
   render() {
-    
     console.log("Updated", this.state);
     return (
       <Router>
