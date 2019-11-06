@@ -106,7 +106,12 @@ class HomePage extends React.Component {
         })
         }
     }]
-  } 
+  }
+
+  componentWillMount = () => {
+    // Set page title
+    document.title = "Dein individuelles Programm";
+  }
 
   render() {
     // Get global state with login information

@@ -134,6 +134,11 @@ class GenerateReport extends React.Component{
         }
     }
 
+    componentWillMount = () => {
+        // Set page title
+        document.title = "Generate Report";
+    }
+
     componentDidMount = () => {
         if(this.props.location){
             if(this.props.location.state){

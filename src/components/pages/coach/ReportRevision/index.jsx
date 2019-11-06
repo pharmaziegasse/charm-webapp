@@ -73,6 +73,9 @@ class ReportRevision extends React.Component{
                 return false;
             }
         });
+
+        // Set page title
+        document.title = "Beautyreport Revision";
     }
 
     // Toggle the visibility of the sections

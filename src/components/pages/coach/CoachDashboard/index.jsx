@@ -22,6 +22,11 @@ import './coachdashboard.scss';
 
 class CoachDashboard extends React.Component{
 
+    componentWillMount = () => {
+        // Set page title
+        document.title = "Your customers";
+    }
+
     _getCoachUsers = () => {
         if(this.props.globalState){
             if(this.props.globalState.userdata){

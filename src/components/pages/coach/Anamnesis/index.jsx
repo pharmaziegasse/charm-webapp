@@ -72,6 +72,11 @@ class Anamnesis extends React.Component{
         }
     }
 
+    componentWillMount = () => {
+        // Set page title
+        document.title = "Anamnese";
+    }
+
     sendData = async () => {
         // Set values that will be set
         // Normalize data

@@ -73,6 +73,11 @@ class ReportList extends React.Component{
         }
     }
 
+    componentWillMount = () => {
+        // Set page title
+        document.title = "Beautyreport List";
+    }
+
     componentDidMount = () => {
         console.log("Mounted");
         if(this.props.location){

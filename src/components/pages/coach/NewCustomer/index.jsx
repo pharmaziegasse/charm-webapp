@@ -101,6 +101,9 @@ class NewCustomer extends React.Component{
     componentWillMount() {
         this._fetchAllCoaches();
         this._fetchAllCountries();
+
+        // Set page title
+        document.title = "New Customer";
     }
     
 
