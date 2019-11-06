@@ -12,8 +12,6 @@ import {
     MDBCol,
     MDBCard,
     MDBCardBody,
-    MDBListGroup,
-    MDBListGroupItem,
     MDBBtn,
     MDBIcon,
     MDBAlert,
@@ -101,22 +99,10 @@ const SEND_DATA = gql`
         }
     }
 `;
-// Send
-const GET_WORD = gql`
-    query getDocuments{
-        documents{
-            id
-            file
-            createdAt
-            tags
-            fileSize
-            fileHash
-            url
-            filename
-            fileExtension
-        }
-    }
-`;
+
+//> Eslint settings
+// Disable certain things needed for the generation of the report to work
+/* eslint-disable array-callback-return, eqeqeq, no-unused-vars, array-callback-return */
 
 class GenerateReport extends React.Component{
     constructor(props){
@@ -134,12 +120,10 @@ class GenerateReport extends React.Component{
         }
     }
 
-    componentWillMount = () => {
+    componentDidMount = () => {
         // Set page title
         document.title = "Generate Report";
-    }
 
-    componentDidMount = () => {
         if(this.props.location){
             if(this.props.location.state){
                 if(this.props.location.state.user.id){
@@ -310,7 +294,7 @@ class GenerateReport extends React.Component{
     // convertType('null'); => null
     __convertType = (value) => {
         try {
-            return (new Function("return " + value + ";"))();
+            return (new Function("return " + value + ";"))(); // eslint-disable-line
         } catch(e) {
             return value;
         }
@@ -327,6 +311,7 @@ class GenerateReport extends React.Component{
             case '!=':  return post != value;
             case '===': return post === value;
             case '!==': return post !== value;
+            default: return null;
         }
     }
 

@@ -220,7 +220,11 @@ class NewCustomer extends React.Component{
                     if(page.urlPath !== undefined){
                         if(page.__typename === "UserUserFormPage"){
                             return page.urlPath;
+                        } else {
+                            return false;
                         }
+                    } else {
+                        return false;
                     }
                 });
                 this.setState({
@@ -298,6 +302,7 @@ class NewCustomer extends React.Component{
                                     telephone: true,
                                 }
                             }
+                            return true;
                         })
 
                         console.log(results);

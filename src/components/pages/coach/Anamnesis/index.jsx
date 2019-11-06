@@ -19,7 +19,7 @@ import {
 
 //> Backend Connection
 // Apollo
-import { graphql, Query, withApollo } from "react-apollo";
+import { graphql, withApollo } from "react-apollo";
 import gql from 'graphql-tag';
 
 //> CSS
@@ -153,6 +153,7 @@ class Anamnesis extends React.Component{
                         ...res,
                         [field]: fD[field] !== null ? fD[field] : undefined
                     }
+                    return i;
                 });
                 this.setState({
                     ...this.state,
@@ -438,7 +439,6 @@ class Anamnesis extends React.Component{
 
     renderFields = () => {
         let data = this.state.data;
-        let error = this.state.error;
 
         // Loading
         if (data === undefined) {

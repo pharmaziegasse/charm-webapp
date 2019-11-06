@@ -6,7 +6,7 @@ import { Link, Redirect } from 'react-router-dom';
 
 //> Additional libraries
 // Moment.js for time handling
-import moment from 'moment';
+//import moment from 'moment';
 
 //> MDB
 // "Material Design for Bootstrap" is a great UI design framework
@@ -16,7 +16,6 @@ import {
     MDBCol,
     MDBCard,
     MDBCardBody,
-    MDBAlert,
     MDBDataTable,
     MDBBtn,
     MDBIcon,
@@ -73,13 +72,10 @@ class ReportList extends React.Component{
         }
     }
 
-    componentWillMount = () => {
+    componentDidMount = () => {
         // Set page title
         document.title = "Beautyreport List";
-    }
-
-    componentDidMount = () => {
-        console.log("Mounted");
+        
         if(this.props.location){
             if(this.props.location.state){
                 if(this.props.location.state.user.id){
