@@ -37,16 +37,22 @@ import './reportlist.scss';
 const GET_REPORTS = gql`
     query getBeautyReports_byUid($token: String!, $id: Int!) {
         brByUid(token: $token, uid: $id) {
+            __typename
             id
             date
             document{
+                __typename
+                id
                 link
             }
         }
         brLatestByUid(token: $token, uid: $id) {
+            __typename
             id
             date
             document{
+                __typename
+                id
                 link
             }
         }
@@ -68,6 +74,7 @@ class ReportList extends React.Component{
     }
 
     componentDidMount = () => {
+        console.log("Mounted");
         if(this.props.location){
             if(this.props.location.state){
                 if(this.props.location.state.user.id){
@@ -96,6 +103,7 @@ class ReportList extends React.Component{
         variables: { "id": uid, "token": localStorage.getItem("wca") }
         }).then(({data}) => {
             if(data.brLatestByUid){
+                console.log("Data");
                 console.log(data);
                 this.setState({
                     reports: { 
@@ -126,7 +134,7 @@ class ReportList extends React.Component{
                     latest: undefined
                 },
                 loading: false
-            }, () => console.warn("Error",error));
+            }, () => console.error("Error",error));
         });
 
     }
