@@ -61,6 +61,20 @@ const UPDATE_FORMS = gql`
         }
     }
 `;
+// Get anamnesis data
+const GET_DATA = gql`
+    query getAnamneseData_byUid($token: String!, $id: Int!) {
+        anLatestByUid(token: $token, uid: $id) {
+            id
+            date
+            formData
+            user {
+                id
+                username
+            }
+        }
+    }
+`;
 
 class Anamnesis extends React.Component{
     constructor(props){
@@ -69,22 +83,41 @@ class Anamnesis extends React.Component{
             urlPath: undefined,
             errors: [],
             refNames: [],
-            data: undefined
+            data: undefined,
+            user: undefined,
+            success: false,
         }
     }
 
     componentDidMount = () => {
         console.log("Anamnesis has been mounted.");
-        this.getAnamneseFields();
+        
+        // Set user variable
+        const user = this.props.location.state.user;
+
+        if(!this.state.user){
+            this.setState({
+                user: user
+            }, () => this.initialize());
+        }
     }
 
-    componentDidUpdate = () => {
-        console.log("Anamnesis has been updated.");
+    initialize = async () => {
+        this.getAnamneseFields();
+        this.getAnmaneseData();
     }
 
     componentWillMount = () => {
         // Set page title
         document.title = "Anamnese";
+    }
+
+    resetButton = () => {
+        if(this.state.success){
+            this.setState({
+                success: false,
+            });
+        }
     }
 
     getAnamneseFields = () => {
@@ -103,10 +136,42 @@ class Anamnesis extends React.Component{
         });
     }
 
+    getAnmaneseData = () => {
+        console.log(this.state.user);
+        this.props.client.query({
+        query: GET_DATA,
+        variables: { 
+            "token": localStorage.getItem('wca'),
+            "id": this.state.user.id
+        }
+        }).then(({data}) => {
+            console.log(data);
+            if(data.anLatestByUid){
+                let fD = JSON.parse(data.anLatestByUid.formData);
+                let res = {};
+                // Convert null to undefined
+                Object.keys(fD).map((field, i) => {
+                    res = {
+                        ...res,
+                        [field]: fD[field] !== null ? fD[field] : undefined
+                    }
+                });
+                this.setState({
+                    ...this.state,
+                    ...res
+                });
+            }
+        })
+        .catch(error => {
+            this.setState({
+                formdata: false
+            }, () => console.error(error));
+        });
+    }
+
     sendData = async () => {
         // Set values that will be set
         // Normalize data
-        console.log(this.state);
         let formvalues = {
             ...this.state
         };
@@ -127,10 +192,20 @@ class Anamnesis extends React.Component{
                         let page = data.anamneseAnFormPage;
                         if(page.result === "OK"){
                             console.log("Sent");
+                            this.setState({
+                                success: true,
+                                errors: [],
+                            });
+                            // Remove all error messages
+                            [].forEach.call(document.querySelectorAll('.alert-error'),function(e){
+                                e.parentNode.removeChild(e);
+                            });
                         } else if(page.result === "FAIL"){
                             console.log("Error");
                             // Write error messages
-                            this.handleError(page.errors);
+                            this.setState({
+                                success: false,
+                            }, () => this.handleError(page.errors));
                         }
                     }
                 }
@@ -173,17 +248,16 @@ class Anamnesis extends React.Component{
     _handleChange = (e) => {
         this.setState({
             [e.target.name]: e.target.value
-        });
+        }, () => this.resetButton());
     }
 
     _handleCheckBoxChange = (e) => {
         this.setState({
             [e.target.name]: e.target.checked 
-        });
+        }, () => this.resetButton());
     }
 
     _handleCheckBoxesChange = (e, name, label) => {
-        console.log(e, name, label);
         // Get current active checkboxes
         let current = this.state[name];
         // Check if there currently are active checkboxes
@@ -197,28 +271,28 @@ class Anamnesis extends React.Component{
                 // Update state
                 this.setState({
                     [name]: filtered
-                });
+                }, () => this.resetButton());
             } else {
                 // Add to array
                 current.push(label);
                 // Update state
                 this.setState({
                     [name]: current
-                });
+                }, () => this.resetButton());
             }
         } else {
             // No active checkboxes - we can only add to the state
             let newCB = [label];
             this.setState({
                 [name]: newCB
-            });
+            }, () => this.resetButton());
         }
     }
 
     _handleSelectChange = (e) => {
         this.setState({
             [e.target.name]: e.target.value
-        });
+        }, () => this.resetButton());
     }
 
     _setDefaultValue = (item, i) => {
@@ -297,7 +371,7 @@ class Anamnesis extends React.Component{
     _handleMultiSelectChange = (e) => {
         this.setState({
             [e.target.name]: this.getSelectValues(e.target)
-        });
+        }, () => this.resetButton());
     }
 
     _handleNumberClick = (name, type) => {
@@ -305,11 +379,11 @@ class Anamnesis extends React.Component{
         if(this.state[name]){
             this.setState({
                 [name] : parseInt(this.state[name],10) + parseInt(type,10)
-            });
+            }, () => this.resetButton());
         } else {
             this.setState({
                 [name] : 0 + parseInt(type,10)
-            });
+            }, () => this.resetButton());
         }
     }
 
@@ -651,41 +725,49 @@ class Anamnesis extends React.Component{
             }
         }
 
-        // Set user variable
-        const user = location.state.user;
-
-        if(!this.state.uid){
-            this.setState({
-                uid: user.id
-            });
-        }
-
-        return (
-            <MDBContainer id="anamnesis" className="text-left pt-5">
-                <h2 className="mb-5 text-center">Anamnese für {user.firstName+" "+user.lastName}</h2>
-                <div className="text-left mt-4">
-                    <Link to="/coach">
-                        <MDBBtn color="red">
-                            <MDBIcon icon="angle-left" className="pr-2" />Zurück
+        if(!this.state.user){
+            return(
+                <div className="text-center"><MDBSpinner /></div>
+            );
+        } else {
+            return (
+                <MDBContainer id="anamnesis" className="text-left pt-5">
+                    <h2 className="mb-5 text-center">Anamnese für{" "}
+                    {this.state.user.firstName+" "+this.state.user.lastName}
+                    </h2>
+                    <div className="text-left mt-4">
+                        <Link to="/coach">
+                            <MDBBtn color="red">
+                                <MDBIcon icon="angle-left" className="pr-2" />Zurück
+                            </MDBBtn>
+                        </Link>
+                    </div>
+                    <MDBRow className="mb-4">
+                        <MDBCol md="8">
+                            {this.renderFields()}
+                        </MDBCol>
+                    </MDBRow>
+                    
+                    {!this.state.success ? (
+                        <MDBBtn
+                        color="secondary"
+                        onClick={this.sendData}
+                        >
+                            <MDBIcon icon="save" className="pr-2" />
+                            Speichern
                         </MDBBtn>
-                    </Link>
-                </div>
-                <MDBRow className="mb-4">
-                    <MDBCol md="8">
-                        { 
-                            this.renderFields()
-                        }
-                        
-                    </MDBCol>
-                </MDBRow>
-                
-                <MDBBtn
-                color="secondary"
-                onClick={this.sendData}>
-                    <MDBIcon icon="save" className="pr-2" />Speichern
-                </MDBBtn>
-            </MDBContainer>
-        );
+                    ) : (
+                        <MDBBtn
+                        color="success"
+                        disabled
+                        >
+                            <MDBIcon icon="check" className="pr-2" />
+                            Gespeichert
+                        </MDBBtn>
+                    )}
+                </MDBContainer>
+            );
+        }
     }
 }
 
