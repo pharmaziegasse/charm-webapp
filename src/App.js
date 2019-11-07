@@ -89,7 +89,7 @@ class App extends React.Component {
     flush: false,
   }
 
-  componentWillMount = () => {
+  componentDidMount = () => {
     if(localStorage.getItem('wca') !== null){
       try {
         // Verify Token on first load
@@ -106,10 +106,6 @@ class App extends React.Component {
         loaded: true
       });
     }
-  }
-
-  componentDidMount = () => {
-    this._verifyToken();
   }
 
   _getUserData = () => {
@@ -217,7 +213,6 @@ class App extends React.Component {
   }
 
   render() {
-    
     console.log("Updated", this.state);
     return (
       <Router>

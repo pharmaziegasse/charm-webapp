@@ -27,7 +27,6 @@ import {
  */
 import {
   Login,
-  Demo,
 } from './components/pages';
 
 class Routes extends React.Component {
@@ -105,11 +104,6 @@ class Routes extends React.Component {
         exact
         path='/api/graphiql'
         component={() => window.location = 'https://manage.pharmaziegasse.at/api/graphiql'}
-        />
-        <Route
-        exact
-        path='/demo'
-        component={(props) => <Demo globalState={this.props.globalState} {...props} />}
         />
         <Route
         exact

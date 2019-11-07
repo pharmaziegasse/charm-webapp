@@ -12,8 +12,6 @@ import {
     MDBCol,
     MDBCard,
     MDBCardBody,
-    MDBListGroup,
-    MDBListGroupItem,
     MDBBtn,
     MDBIcon,
     MDBAlert,
@@ -71,7 +69,10 @@ const GET_USERDATA = gql`
 const GET_LINK = gql`
     query getlink($token: String!, $id: Int!) {
         brLatestByUid(token: $token, uid: $id) {
+            __typename
+            id
             document{
+                __typename
                 id
                 link
             }
@@ -98,22 +99,10 @@ const SEND_DATA = gql`
         }
     }
 `;
-// Send
-const GET_WORD = gql`
-    query getDocuments{
-        documents{
-            id
-            file
-            createdAt
-            tags
-            fileSize
-            fileHash
-            url
-            filename
-            fileExtension
-        }
-    }
-`;
+
+//> Eslint settings
+// Disable certain things needed for the generation of the report to work
+/* eslint-disable array-callback-return, eqeqeq, no-unused-vars, array-callback-return */
 
 class GenerateReport extends React.Component{
     constructor(props){
@@ -132,6 +121,9 @@ class GenerateReport extends React.Component{
     }
 
     componentDidMount = () => {
+        // Set page title
+        document.title = "Generate Report";
+
         if(this.props.location){
             if(this.props.location.state){
                 if(this.props.location.state.user.id){
@@ -277,7 +269,8 @@ class GenerateReport extends React.Component{
         // Replace the first word with the value of the corresponding word ( age > 50 => 3 > 50 )
         let replacement = this.__convertType(data[variableName]);
 
-        console.log(condition, replacement, variableName);
+        // Debugging
+        //console.log(condition, replacement, variableName);
         
         if(replacement !== undefined){
             if(Array.isArray(replacement)){
@@ -301,7 +294,7 @@ class GenerateReport extends React.Component{
     // convertType('null'); => null
     __convertType = (value) => {
         try {
-            return (new Function("return " + value + ";"))();
+            return (new Function("return " + value + ";"))(); // eslint-disable-line
         } catch(e) {
             return value;
         }
@@ -318,10 +311,12 @@ class GenerateReport extends React.Component{
             case '!=':  return post != value;
             case '===': return post === value;
             case '!==': return post !== value;
+            default: return null;
         }
     }
 
     getLink = () => {
+        console.log("User ID",this.props.location.state.user.id);
         this.props.client.query({
             query: GET_LINK,
             variables: { 
@@ -329,6 +324,7 @@ class GenerateReport extends React.Component{
                 "id": this.props.location.state.user.id
             }
         }).then(({data}) => {
+            console.log("User Data");
             console.log(data);
             if(data){
                 if(data.brLatestByUid){
@@ -479,11 +475,14 @@ class GenerateReport extends React.Component{
                     let text = this._fetchVariables(paragraph.value.paragraph);
 
                     // Debugging
-                    console.log(statement)
+                    //console.log(statement)
                     
                     if(statement !== ""){
                         let statementResult = this._normalizeStatement(statement);
-                        console.log(statementResult);
+
+                        // Debugging
+                        //console.log(statementResult);
+
                         if(statementResult){
                             // Create paragraph items in object
                             result = {

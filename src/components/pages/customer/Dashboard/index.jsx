@@ -106,13 +106,18 @@ class HomePage extends React.Component {
         })
         }
     }]
-  } 
+  }
+
+  componentDidMount = () => {
+    // Set page title
+    document.title = "Dein individuelles Programm";
+  }
 
   render() {
     // Get global state with login information
     const { globalState } = this.props;
 
-    /*if(globalState.coach === undefined){
+    if(globalState.coach === undefined){
       return (
         <div className="w-100 h-100 flex-center">
           <MDBSpinner />
@@ -123,7 +128,7 @@ class HomePage extends React.Component {
     // Secure page
     if(!globalState.logged) { return (<Redirect to="/login"/>) }
 
-    if(globalState.logged && globalState.coach) { return (<Redirect to="/coach"/>) }*/
+    if(globalState.logged && globalState.coach) { return (<Redirect to="/coach"/>) }
 
     return (
       <Fragment>

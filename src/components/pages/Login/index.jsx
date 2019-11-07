@@ -77,6 +77,9 @@ class Login extends React.Component {
     }
 
     componentWillMount = () => {
+        // Set page title
+        document.title = "Login";
+
         let method = localStorage.getItem('method');
         if(method){
             this.setState({

@@ -14,13 +14,17 @@ import {
     MDBIcon,
     MDBDataTable,
     MDBTooltip,
-    MDBBadge,
 } from 'mdbreact';
 
 //> CSS
 import './coachdashboard.scss';
 
 class CoachDashboard extends React.Component{
+
+    componentDidMount = () => {
+        // Set page title
+        document.title = "Your customers";
+    }
 
     _getCoachUsers = () => {
         if(this.props.globalState){
