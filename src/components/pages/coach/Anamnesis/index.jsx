@@ -172,16 +172,36 @@ class Anamnesis extends React.Component{
     sendData = async () => {
         // Set values that will be set
         // Normalize data
-        let formvalues = {
-            ...this.state
-        };
+        let rtn = {};
+        this.state.data.pages.map((page, i) => {
+            if(page.__typename === "AnamneseAnFormPage"){
+                page.formFields.map((field, key) => {
+                    if(this.state[field.name]){
+                        rtn[field.name] = {
+                            helpText: field.helpText,
+                            fieldType: field.fieldType,
+                            value: this.state[field.name]
+                        }
+                    } else {
+                        rtn[field.name] = {
+                            helpText: field.helpText,
+                            fieldType: field.fieldType,
+                            value: undefined
+                        }
+                    }
+                });
+            }
+        });
+
+        console.log(rtn);
+        
         // Check if the form values have been set
-        if(formvalues !== null && formvalues !== undefined && this.state.urlPath !== undefined){
+        if(rtn !== null && rtn !== undefined && this.state.urlPath !== undefined){
             // Call graphQL mutation
             await this.props.update({
                 variables: {
                     "token": localStorage.getItem('wca'),
-                    "values": formvalues,
+                    "values": rtn,
                     "urlpath": this.state.urlPath
                 }
             })
