@@ -1,9 +1,11 @@
 //> Components
 // Import all components to export them for easy access from parent components
 import Login from './Login';
+import SetPassword from './SetPassword';
 
 export {
     Login,
+    SetPassword,
 };
 
 /** 

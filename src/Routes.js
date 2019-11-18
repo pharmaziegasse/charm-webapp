@@ -27,6 +27,7 @@ import {
  */
 import {
   Login,
+  SetPassword,
 } from './components/pages';
 
 class Routes extends React.Component {
@@ -94,6 +95,11 @@ class Routes extends React.Component {
         exact
         path='/report/edit'
         component={(props) => <ReportRevision globalState={this.props.globalState} {...props} />}
+        />
+        <Route
+        exact
+        path='/reset'
+        component={(props) => <SetPassword globalState={this.props.globalState} {...props} />}
         />
         <Route 
         exact
