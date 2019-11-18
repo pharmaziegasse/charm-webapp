@@ -97,7 +97,8 @@ class Anamnesis extends React.Component{
         const user = this.props.location.state.user;
         if(!this.state.user){
             this.setState({
-                user: user
+                user: user,
+                uid: user.id
             }, () => this.initialize());
         }
     }
