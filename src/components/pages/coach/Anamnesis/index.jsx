@@ -177,21 +177,20 @@ class Anamnesis extends React.Component{
             if(page.__typename === "AnamneseAnFormPage"){
                 page.formFields.map((field, key) => {
                     if(this.state[field.name]){
-                        rtn[field.name] = {
+                        rtn[field.name] = JSON.stringify({
                             helpText: field.helpText,
                             fieldType: field.fieldType,
                             value: this.state[field.name]
-                        }
+                        });
                     } else {
-                        rtn[field.name] = {
-                            helpText: field.helpText,
-                            fieldType: field.fieldType,
-                            value: undefined
-                        }
+                        rtn[field.name] = undefined
                     }
                 });
             }
         });
+        console.log(rtn);
+
+        rtn = null;
         
         // Check if the form values have been set
         if(rtn !== null && rtn !== undefined && this.state.urlPath !== undefined){
