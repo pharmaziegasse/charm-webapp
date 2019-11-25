@@ -28,9 +28,10 @@ import './questionnaire.scss';
 //> Queries
 // Get forms
 const GET_FORMS = gql`
-    query getAnamneseFields($token: String!) {
-        pages (token: $token) {
-            ... on AnamneseAnFormPage {
+    query pages($token: String!) {
+        pages(token: $token) {
+            ... on QuestionnaireQ3FormPage {
+                id
                 urlPath
                 title
                 formFields {
@@ -48,12 +49,11 @@ const GET_FORMS = gql`
 `;
 // Update data
 const UPDATE_FORMS = gql`
-    mutation createAn ($token: String!, $values: GenericScalar!, $urlpath: String!) {
-        anamneseAnFormPage(
+    mutation sendform($token: String!, $values: GenericScalar!) {
+        questionnaireQ3FormPage(
             token: $token,
-            url: $urlpath,
-            values: $values
-        ) {
+            url: "/fragebogen-3",
+            values: $values) {
             result
             errors {
                 name
@@ -77,41 +77,40 @@ class Anamnesis extends React.Component{
     }
 
     componentDidMount = () => {
-        // Set page title
-        document.title = "Custom Form";
+      // Set page title
+      document.title = "Custom Form";
 
-        this.initialize();
+      this.initialize();
     }
 
     initialize = async () => {
-        // Get the types and names of the anamnesis fields
-        this.getAnamneseFields();
+      // Get the types and names of the anamnesis fields
+      this.getAnamneseFields();
     }
 
     resetButton = () => {
-        // Get the button back to the initial state ready for submit
-        if(this.state.success){
-            this.setState({
-                success: false,
-            });
-        }
+      // Get the button back to the initial state ready for submit
+      if(this.state.success){
+        this.setState({
+          success: false,
+        });
+      }
     }
 
     getAnamneseFields = () => {
-        this.props.client.query({
-        query: GET_FORMS,
-        variables: { "token": localStorage.getItem('wca') }
-        }).then(({data}) => {
-          console.log(data);
-            this.setState({
-              data
-            });
-        })
-        .catch((error) => {
-            this.setState({
-              data: false
-            }, () => console.error(error));
+      this.props.client.query({
+      query: GET_FORMS,
+      variables: { "token": localStorage.getItem('wca') }
+      }).then(({data}) => {
+        this.setState({
+          data
         });
+      })
+      .catch((error) => {
+        this.setState({
+          data: false
+        }, () => console.error(error));
+      });
     }
 
     sendData = async () => {
@@ -119,23 +118,21 @@ class Anamnesis extends React.Component{
         // Normalize data
         let rtn = {};
         this.state.data.pages.map((page, i) => {
-            if(page.__typename === "AnamneseAnFormPage"){
-                page.formFields.map((field, key) => {
-                    if(this.state[field.name]){
-                        rtn[field.name] = JSON.stringify({
-                            helpText: field.helpText,
-                            fieldType: field.fieldType,
-                            value: this.state[field.name]
-                        });
-                    } else {
-                        rtn[field.name] = undefined
-                    }
+          if(page.__typename === "QuestionnaireQ3FormPage"){
+            page.formFields.map((field, key) => {
+              if(this.state[field.name]){
+                rtn[field.name] = JSON.stringify({
+                    helpText: field.helpText,
+                    fieldType: field.fieldType,
+                    value: this.state[field.name]
                 });
-            }
+              } else {
+                  rtn[field.name] = undefined
+              }
+            });
+          }
         });
         console.log(rtn);
-
-        rtn = null;
         
         // Check if the form values have been set
         if(rtn !== null && rtn !== undefined && this.state.urlPath !== undefined){
@@ -150,8 +147,8 @@ class Anamnesis extends React.Component{
             .then(({data}) => {
                 console.log(data);
                 if(data){
-                    if(data.anamneseAnFormPage){
-                        let page = data.anamneseAnFormPage;
+                    if(data.QuestionnaireQ3FormPage){
+                        let page = data.QuestionnaireQ3FormPage;
                         if(page.result === "OK"){
                             console.log("Sent");
                             this.setState({
@@ -418,7 +415,7 @@ class Anamnesis extends React.Component{
                 // Get key
                 let key = undefined;
                 data.pages.map((item, i) => {
-                    if(item.__typename === "AnamneseAnFormPage"){
+                    if(item.__typename === "QuestionnaireQ3FormPage"){
                         key = i;
                     }
                     return true;
@@ -434,6 +431,12 @@ class Anamnesis extends React.Component{
                     }
 
                     let formfields = data.pages[key].formFields;
+
+                    if(!this.state.formtitle){
+                      this.setState({
+                        formtitle: data.pages[key].title
+                      });
+                    }
                     
                     return formfields.map((item, i) => {
                         this[`${item.name}_ref`] = React.createRef();
@@ -679,7 +682,7 @@ class Anamnesis extends React.Component{
 
       return (
         <MDBContainer id="anamnesis" className="text-left pt-5">
-            <h2 className="mb-5 text-center">Data Form</h2>
+            <h2 className="mb-5 text-center">{this.state.formtitle}</h2>
             <div className="text-left mt-4">
                 <Link to="/coach">
                     <MDBBtn color="red">
