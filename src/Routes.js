@@ -21,6 +21,7 @@ import {
   Anamnesis,
   CoachDashboard,
   NewCustomer,
+  Questionnaire,
 } from './components/pages/coach';
 /**
  * Login: Login page
@@ -104,6 +105,11 @@ class Routes extends React.Component {
         exact
         path='/admin'
         component={() => window.location = 'https://manage.pharmaziegasse.at'}
+        />
+        <Route
+        exact
+        path='/form/:id'
+        component={(props) => <Questionnaire globalState={this.props.globalState} {...props} />}
         />
         <Route 
         exact

@@ -6,6 +6,7 @@ import Anamnesis from './Anamnesis';
 import CoachDashboard from './CoachDashboard';
 import NewCustomer from './NewCustomer';
 import GenerateReport from './GenerateReport';
+import Questionnaire from './Questionnaire';
 
 export {
     ReportRevision,
@@ -14,6 +15,7 @@ export {
     Anamnesis,
     CoachDashboard,
     NewCustomer,
+    Questionnaire,
 };
 
 /** 
