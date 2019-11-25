@@ -189,8 +189,6 @@ class Anamnesis extends React.Component{
             }
         });
         console.log(rtn);
-
-        rtn = null;
         
         // Check if the form values have been set
         if(rtn !== null && rtn !== undefined && this.state.urlPath !== undefined){
