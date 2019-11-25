@@ -27,6 +27,7 @@ import 'react-phone-input-2/dist/style.css';
 // Apollo
 import { graphql, withApollo } from 'react-apollo';
 import { gql } from 'apollo-boost';
+import * as compose from 'lodash.flowright';
 
 //> CSS
 import './login.scss';
@@ -39,29 +40,39 @@ const LOGIN_USER = gql`
         }
     }
 `;
-
+// Get user via email
 const USER_BY_EMAIL = gql`
-    query(
-        $token: String!
-        $email: String!
-    ) {
-        usernameByEmail(
-            token: $token,
-            email: $email
-        )
-    }
+  query(
+    $token: String!
+    $email: String!
+  ) {
+    usernameByEmail(
+      token: $token,
+      email: $email
+    )
+  }
 `;
-
+// Get user via phone
 const USER_BY_PHONE = gql`
-    query(
-        $token: String!
-        $phone: String!
-    ) {
-        usernameByPhone(
-        token: $token,
-        phone: $phone
-        )
+  query(
+    $token: String!
+    $phone: String!
+  ) {
+    usernameByPhone(
+    token: $token,
+    phone: $phone
+    )
+  }
+`;
+// Reset password
+const RESET_PSW = gql`
+  mutation passwordResetActivation($username: String!) {
+    passwordResetActivation(username: $username) {
+      result
+      message
+      msgCode
     }
+  }
 `;
 
 class Login extends React.Component {
@@ -101,10 +112,10 @@ class Login extends React.Component {
         // Validation
         e.target.className = "needs-validation was-validated";
 
-        this._loginAnonymous("+436643409980", "admin");
+        this._loginAnonymous();
     }
 
-    _loginAnonymous = async (phone, password) => {
+    _loginAnonymous = async () => {
 
         await this.props.mutate({ variables: { "username": "simon", "password": "admin" } })
         .then(({ loading, data }) => {
@@ -112,14 +123,13 @@ class Login extends React.Component {
             if(data !== undefined){
                 if(data.tokenAuth !== undefined){
                     if(data.tokenAuth.token !== undefined){
-                        
                         if(this.state.method === 'phone'){
                             this._getUsernameByMethod(data.tokenAuth.token, 'phone');
                         } else {
                             this._getUsernameByMethod(data.tokenAuth.token, 'email');
                         }
                         
-                        //localStorage.setItem('wca',data.tokenAuth.token);
+                        //localStorage.setItem("fprint",data.tokenAuth.token);
                         //this.props.handler(true);
                     }
                 }
@@ -155,11 +165,11 @@ class Login extends React.Component {
             console.log(data);
             if(method === 'phone'){
                 if(data.usernameByPhone !== undefined){
-                    this._login(data.usernameByPhone);
+                  this._login(data.usernameByPhone);
                 }
             } else {
                 if(data.usernameByEmail !== undefined){
-                    this._login(data.usernameByEmail);
+                  this._login(data.usernameByEmail);
                 }
             }
             
@@ -234,6 +244,65 @@ class Login extends React.Component {
         }, () => localStorage.setItem('method',method));
     }
 
+    resetPsw = () => {
+      let query = undefined;
+      let variables = {};
+      const token = localStorage.getItem('fprint');
+
+      if(this.state.method === "phone"){
+        variables = { 
+          "token": token,
+          "phone": this.state.phone
+        }
+        query = USER_BY_PHONE;
+      } else {
+        variables = {
+          "token": token,
+          "email": this.state.email
+        }
+        query = USER_BY_EMAIL;
+      }
+
+      this.props.client.query({
+        query: query,
+        variables: variables
+      }).then(({data}) => {
+        console.log(data);
+        if(data){
+          let username = data.usernameByEmail;
+          this.props.reset({
+            variables: {
+              username
+            }
+          }).then(({data}) => {
+            if(data){
+              if(data.passwordResetActivation.result){
+                // Success
+                console.log(data.passwordResetActivation.message);
+                this.setState({
+                  successReset: "Eine E-Mail wurde an "+this.state.email+" gesendet.",
+                  errorReset: false
+                });
+              } else {
+                // Fail
+                console.log(data.passwordResetActivation.message);
+                this.setState({
+                  successReset: false,
+                  errorReset: "Eine E-Mail wurde bereits in den letzten 15 Minuten an "+
+                  this.state.email+" gesendet."
+                });
+              }
+            }
+          })
+          .catch((error) => {
+            console.warn(error);
+          })
+        }
+      })
+      .catch((error) => {
+        console.warn(error);
+      })
+    }
 
     render() {
 
@@ -336,6 +405,24 @@ class Login extends React.Component {
                                         <div className="invalid-feedback">
                                             Bitte gib ein Passwort an.
                                         </div>
+                                        <div className="text-right">
+                                            <span
+                                            className="blue-text"
+                                            onClick={this.resetPsw}
+                                            >
+                                            Passwort vergessen?
+                                            </span>
+                                        </div>
+                                        {this.state.errorReset &&
+                                        <MDBAlert color="danger" className="text-center">
+                                        <p>{this.state.errorReset}</p>
+                                        </MDBAlert>
+                                        }
+                                        {this.state.successReset &&
+                                        <MDBAlert color="success" className="text-center">
+                                        <p>{this.state.successReset}</p>
+                                        </MDBAlert>
+                                        }
                                         <div className="text-center mt-4">
                                             <MDBBtn color="success" type="submit">
                                                 <MDBIcon icon="angle-right" className="pr-2" />Einloggen
@@ -360,7 +447,10 @@ class Login extends React.Component {
     }
 }
 
-const AuthWithMutation = graphql(LOGIN_USER)(withApollo(Login));
+const AuthWithMutation = compose(
+  graphql(LOGIN_USER),
+  graphql(RESET_PSW, { name: 'reset' }),
+)(withApollo(Login));
 
 export default AuthWithMutation;
 

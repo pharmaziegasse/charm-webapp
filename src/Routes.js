@@ -43,7 +43,6 @@ class Routes extends React.Component {
   }
 
   render() {
-    console.log("Called");
     return (
       <Switch>
         <Route
@@ -118,7 +117,6 @@ class Routes extends React.Component {
         />
         <Route
           render={function () {
-            console.log("Called");
             return <Redirect to='/login' />;
           }}
         />
