@@ -110,6 +110,16 @@ class Anamnesis extends React.Component{
         this.getAnmaneseData();
     }
 
+    //> Fetching customer data
+    __init = () => {
+        // Here I need to get the user city and convert it to lag/long
+        // We use: https://opencagedata.com/
+    }
+    __getWeatherData = () => {
+        // Get the history data
+        // We use: https://darksky.net/
+    }
+
     resetButton = () => {
         // Get the button back to the initial state ready for submit
         if(this.state.success){
