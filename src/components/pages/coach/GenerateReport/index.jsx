@@ -227,6 +227,8 @@ class GenerateReport extends React.Component{
     }
 
     _getReturnValue = (item, condition) => {
+        item = item.value;
+        console.log(item);
         // If its a string
         if(typeof item == "string"){
             item = item.replace(/\s/g, '_');
@@ -390,7 +392,11 @@ class GenerateReport extends React.Component{
                 variableName = variableName.replace(/ö/g, 'o');
                 variableName = variableName.replace(/ü/g, 'u');
                 variableName = variableName.replace(/ß/g, 'ss');
+                console.log("data",data);
                 let dat = data[variableName];
+                console.log(variableName);
+                console.log(data[variableName]);
+                console.log(data[variableName].value);
                 let result = dat;
                 if(Array.isArray(dat)){
                     let datarr = "";
@@ -408,7 +414,6 @@ class GenerateReport extends React.Component{
                 }
                 text = text.replace(variable, result);
             });
-
             return text;
         } else {
             return text;

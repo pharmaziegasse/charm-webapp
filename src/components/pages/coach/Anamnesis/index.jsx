@@ -162,7 +162,7 @@ class Anamnesis extends React.Component{
                 Object.keys(fD).map((field, i) => {
                     res = {
                         ...res,
-                        [field]: fD[field] !== null ? fD[field] : undefined
+                        [field]: fD[field] !== null ? fD[field].value : undefined
                     }
                     return i;
                 });
@@ -193,12 +193,18 @@ class Anamnesis extends React.Component{
                             value: this.state[field.name]
                         });
                     } else {
-                        rtn[field.name] = undefined
+                        rtn[field.name] = JSON.stringify({
+                            helpText: field.helpText,
+                            fieldType: undefined,
+                            value: undefined
+                        })
                     }
                 });
             }
         });
         console.log(rtn);
+
+        //rtn = null;
         
         // Check if the form values have been set
         if(rtn !== null && rtn !== undefined && this.state.urlPath !== undefined){
