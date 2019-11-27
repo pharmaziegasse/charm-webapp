@@ -72,6 +72,10 @@ const GET_DATA = gql`
                 id
                 username
             }
+            document{
+                id
+                link
+            }
         }
     }
 `;
@@ -156,6 +160,13 @@ class Anamnesis extends React.Component{
         }).then(({data}) => {
             console.log("Get anamnesis data");
             console.log(data);
+            // Set the Excel document link
+            let documentLink = undefined;
+            if(data.anLatestByUid.document){
+                if(data.anLatestByUid.document.link){
+                    documentLink = "https://dev-manage.pharmaziegasse.at/"+data.anLatestByUid.document.link;
+                }
+            }
             if(data.anLatestByUid){
                 let fD = JSON.parse(data.anLatestByUid.formData);
                 let res = {};
@@ -181,7 +192,8 @@ class Anamnesis extends React.Component{
                 }
                 this.setState({
                     ...this.state,
-                    ...res
+                    ...res,
+                    documentLink,
                 });
             }
         })
@@ -777,7 +789,8 @@ class Anamnesis extends React.Component{
                     <h2 className="mb-5 text-center">Anamnese für{" "}
                     {this.state.user.firstName+" "+this.state.user.lastName}
                     </h2>
-                    <div className="text-left mt-4">
+                    <MDBRow className="mt-4">
+                    <MDBCol md="6" className="text-left">
                         <Link to="/coach">
                             <MDBBtn color="red">
                                 <MDBIcon icon="angle-left" className="pr-2" />Zurück
@@ -800,7 +813,23 @@ class Anamnesis extends React.Component{
                                 Gespeichert
                             </MDBBtn>
                         )}
-                    </div>
+                    </MDBCol>
+                    <MDBCol md="6" className="text-right">
+                        {this.state.documentLink &&
+                            <MDBBtn
+                            color="green"
+                            onClick={this.sendData}
+                            href={this.state.documentLink}
+                            tag="a"
+                            target="_blank"
+                            >
+                                <MDBIcon far icon="file-excel" className="pr-2" />
+                                Download Excel
+                            </MDBBtn>
+                        }
+                        
+                    </MDBCol>
+                    </MDBRow>
                     <MDBRow className="mb-4">
                         <MDBCol md="8">
                             {this.renderFields()}
