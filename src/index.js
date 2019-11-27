@@ -33,7 +33,7 @@ import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 
 // Base url
-export const APIHost = 'https://manage.pharmaziegasse.at';
+export const APIHost = 'https://dev-manage.pharmaziegasse.at';
 
 // Cache setup
 const fragmentMatcher = new IntrospectionFragmentMatcher({
