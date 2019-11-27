@@ -159,14 +159,26 @@ class Anamnesis extends React.Component{
             if(data.anLatestByUid){
                 let fD = JSON.parse(data.anLatestByUid.formData);
                 let res = {};
-                // Convert null to undefined
-                Object.keys(fD).map((field, i) => {
-                    res = {
-                        ...res,
-                        [field]: fD[field] !== null ? fD[field].value : undefined
-                    }
-                    return i;
-                });
+                console.log(fD);
+                // Check if the data type is old
+                if(fD.uid.value === undefined){
+                    Object.keys(fD).map((field, i) => {
+                        res = {
+                            ...res,
+                            [field]: fD[field] !== null ? fD[field] : undefined
+                        }
+                        return i;
+                    });
+                } else {
+                    // Convert null to undefined
+                    Object.keys(fD).map((field, i) => {
+                        res = {
+                            ...res,
+                            [field]: fD[field] !== null ? fD[field].value : undefined
+                        }
+                        return i;
+                    });
+                }
                 this.setState({
                     ...this.state,
                     ...res
@@ -222,8 +234,7 @@ class Anamnesis extends React.Component{
                 if(data){
                     if(data.anamneseAnFormPage){
                         let page = data.anamneseAnFormPage;
-                        if(page.result === "OK"){
-                            console.log("Sent");
+                        if(page.result === "OK, parsed special input" || page.result === "OK"){
                             this.setState({
                                 success: true,
                                 errors: [],
@@ -772,6 +783,23 @@ class Anamnesis extends React.Component{
                                 <MDBIcon icon="angle-left" className="pr-2" />Zurück
                             </MDBBtn>
                         </Link>
+                        {!this.state.success ? (
+                            <MDBBtn
+                            color="secondary"
+                            onClick={this.sendData}
+                            >
+                                <MDBIcon icon="save" className="pr-2" />
+                                Speichern
+                            </MDBBtn>
+                        ) : (
+                            <MDBBtn
+                            color="success"
+                            disabled
+                            >
+                                <MDBIcon icon="check" className="pr-2" />
+                                Gespeichert
+                            </MDBBtn>
+                        )}
                     </div>
                     <MDBRow className="mb-4">
                         <MDBCol md="8">
