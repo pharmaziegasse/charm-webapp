@@ -154,6 +154,7 @@ class Anamnesis extends React.Component{
             "id": this.state.user.id
         }
         }).then(({data}) => {
+            console.log("Get anamnesis data");
             console.log(data);
             if(data.anLatestByUid){
                 let fD = JSON.parse(data.anLatestByUid.formData);
@@ -195,8 +196,8 @@ class Anamnesis extends React.Component{
                     } else {
                         rtn[field.name] = JSON.stringify({
                             helpText: field.helpText,
-                            fieldType: undefined,
-                            value: undefined
+                            fieldType: "",
+                            value: ""
                         })
                     }
                 });
