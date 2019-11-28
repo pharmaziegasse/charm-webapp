@@ -469,7 +469,7 @@ class Anamnesis extends React.Component{
             let display = name.trim();
             return(
                 <MDBInput
-                onClick={() => this.setState({[container]: display})}
+                onClick={() => this.setState({[container]: display}, () => this.resetButton())}
                 checked={this.state[container] && this.state[container] === display ? true : false}
                 label={display}
                 key={key}
