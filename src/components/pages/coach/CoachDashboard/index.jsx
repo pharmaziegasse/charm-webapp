@@ -209,7 +209,7 @@ class CoachDashboard extends React.Component{
                         <div className="table-labels">
                         <span><MDBIcon icon="cube" className="pr-1 pl-3 red-text"/>Keine Daten vorhanden</span>
                         <span><MDBIcon icon="cube" className="pr-1 pl-3 purple-text"/>Keine Aktion erforderlich</span>
-                        <span><MDBIcon icon="cube" className="pr-1 pl-3 green-text"/>Daten optimal</span>
+                        <span><MDBIcon icon="cube" className="pr-1 pl-3 green-text"/>Daten vorhanden</span>
                         </div>
                         <MDBDataTable
                         striped
