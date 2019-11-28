@@ -723,6 +723,8 @@ class Anamnesis extends React.Component{
                                         <span className="text-muted">
                                         Durchschnittstemperatur am 
                                         Kundenstandort: {this.state.weatherAPI.avgTemp.toFixed(2)} °C
+                                        <br/>
+                                        <small>Powered by Dark Sky</small>
                                         </span>
                                         }
                                         </>
@@ -733,6 +735,8 @@ class Anamnesis extends React.Component{
                                         <span className="text-muted">
                                         Absolute Luftfeuchtigkeit am 
                                         Kundenstandort: {this.state.weatherAPI.humidity.toFixed(2)} g/m<sup>3</sup>
+                                        <br/>
+                                        <small>Powered by Dark Sky</small>
                                         </span>
                                         }
                                         </>
@@ -743,6 +747,8 @@ class Anamnesis extends React.Component{
                                         <span className="text-muted">
                                         UV Index am 
                                         Kundenstandort: {this.state.weatherAPI.uvIndex} 
+                                        <br/>
+                                        <small>Powered by Dark Sky</small>
                                         </span>
                                         }
                                         </>
