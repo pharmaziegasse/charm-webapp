@@ -22,6 +22,12 @@ import {
 import { graphql, withApollo } from "react-apollo";
 import gql from 'graphql-tag';
 
+//> Fetch
+// Get lag long from city name
+import getLatLongByCityname from '../../../../utilities/intel/getLatLongByCity.js';
+// Get weather by lat/lng
+import getWeatherbyLatLng from '../../../../utilities/intel/getWeatherbyLatLng.js';
+
 //> CSS
 import './anamnesis.scss';
 
@@ -99,9 +105,11 @@ class Anamnesis extends React.Component{
         
         // Set user variable
         const user = this.props.location.state.user;
+        const userdata = this.props.location.state.userdata;
         if(!this.state.user){
             this.setState({
-                user: user,
+                user,
+                userdata,
                 uid: user.id
             }, () => this.initialize());
         }
@@ -112,17 +120,33 @@ class Anamnesis extends React.Component{
         this.getAnamneseFields();
         // Get the actual user data (if existant)
         this.getAnmaneseData();
+        // Initialize data fetching
+        this.__init();
     }
 
     //> Fetching customer data
     __init = () => {
         // Here I need to get the user city and convert it to lag/long
         // We use: https://opencagedata.com/
+        let userdata = this.state.userdata;
+        if(userdata.city && userdata.country){
+            this.__getCityLatLng(userdata.city, userdata.country);
+        }
     }
-    __getWeatherData = () => {
+    __getCityLatLng = async (city, country) => {
+        let res = await getLatLongByCityname(city, country);
+        if(res.status === 200){
+            this.__getWeatherData(res.lat, res.lng);
+        }
+    }
+    __getWeatherData = async (lat, lng) => {
         // Get the history data
         // We use: https://darksky.net/
-    }
+        let res = await getWeatherbyLatLng(lat, lng);
+        this.setState({
+            weatherAPI: res
+        });
+    } 
 
     resetButton = () => {
         // Get the button back to the initial state ready for submit
@@ -693,6 +717,36 @@ class Anamnesis extends React.Component{
                                         <label className="heading" htmlFor={"fromGroupInput"+i}>
                                             {item.helpText && item.helpText}
                                         </label>
+                                        {item.name === "temperatur" &&
+                                        <>
+                                        {this.state.weatherAPI && this.state.weatherAPI.status === 200 &&
+                                        <span className="text-muted">
+                                        Durchschnittstemperatur am 
+                                        Kundenstandort: {this.state.weatherAPI.avgTemp.toFixed(2)} °C
+                                        </span>
+                                        }
+                                        </>
+                                        }
+                                        {item.name === "luftfeuchtigkeit" &&
+                                        <>
+                                        {this.state.weatherAPI && this.state.weatherAPI.status === 200 &&
+                                        <span className="text-muted">
+                                        Absolute Luftfeuchtigkeit am 
+                                        Kundenstandort: {this.state.weatherAPI.humidity.toFixed(2)} g/m<sup>3</sup>
+                                        </span>
+                                        }
+                                        </>
+                                        }
+                                        {item.name === "uv-index" &&
+                                        <>
+                                        {this.state.weatherAPI && this.state.weatherAPI.status === 200 &&
+                                        <span className="text-muted">
+                                        UV Index am 
+                                        Kundenstandort: {this.state.weatherAPI.uvIndex} 
+                                        </span>
+                                        }
+                                        </>
+                                        }
                                         <MDBFormInline>
                                             {this.printRadio(
                                                 item.choices,
@@ -778,6 +832,8 @@ class Anamnesis extends React.Component{
                 return <Redirect to="/coach"/> 
             }
         }
+
+        console.log(this.state);
 
         if(!this.state.user){
             return(
