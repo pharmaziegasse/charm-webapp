@@ -1,81 +1,82 @@
-#coach{
-    a[role="button"]{
-        box-shadow: none;
-    }
-    h2{
-        /**
+#coach {
+	a[role="button"] {
+		box-shadow: none;
+	}
+	h2 {
+		/**
          * For span to receive the ::first-letter attribute, it must be block
          * Ref: https://stackoverflow.com/questions/7631722/css-first-letter-not-working
-         */ 
-        span{
-            display: inline-block;
-        }
-        span::first-letter{
-            text-transform: uppercase;
-        }
-    }
-    .table{
-        td, th{
-            vertical-align: middle;
-        }
-    }
-    .user-action{
-        button{
-            text-transform: inherit;
-            box-shadow: none;
-        }
-        .btn{
-            margin-left: .1rem;
-            margin-right: .1rem;
-        }
-        .btn-outline-danger{
-            transition: all .2s;
-            &:hover{
-                background-color: lighten(red, 47%) !important;
-            }
-        }
-        .btn-outline-purple{
-            transition: all .2s;
-            &:hover{
-                background-color: lighten(purple, 70%) !important;
-            }
-        }
-        .btn-outline-green{
-            transition: all .2s;
-            &:hover{
-                background-color: lighten(green, 70%) !important;
-            }
-        }
-    }
-    .btn-facebook-chat{
-        overflow: visible;
-        margin-left: .5em;
-        margin-right: .5em;
-        padding-left: 1.5em;
-        padding-right: 1.5em;
-    }
-    .btn-whatsapp-chat{
-        overflow: visible;
-        margin-left: .5em;
-        margin-right: .5em;
-        padding-left: 1.5em;
-        padding-right: 1.5em;
-        
-        &.notification{
-            &::before{
-                content: '';
-                border-radius: 50%;
-                width: 15px;
-                height: 15px;
-                position: absolute;
-                top: -3px;
-                right: -3px;
-                overflow: visible;
-                background-color: red;
-                animation: pulse 2s infinite;
-            }
-        }
-    }
+         */
+		span {
+			display: inline-block;
+		}
+		span::first-letter {
+			text-transform: uppercase;
+		}
+	}
+	.table {
+		td,
+		th {
+			vertical-align: middle;
+		}
+	}
+	.user-action {
+		button {
+			text-transform: inherit;
+			box-shadow: none;
+		}
+		.btn {
+			margin-left: 0.1rem;
+			margin-right: 0.1rem;
+		}
+		.btn-outline-danger {
+			transition: all 0.2s;
+			&:hover {
+				background-color: lighten(red, 47%) !important;
+			}
+		}
+		.btn-outline-purple {
+			transition: all 0.2s;
+			&:hover {
+				background-color: lighten(purple, 70%) !important;
+			}
+		}
+		.btn-outline-green {
+			transition: all 0.2s;
+			&:hover {
+				background-color: lighten(green, 70%) !important;
+			}
+		}
+	}
+	.btn-facebook-chat {
+		overflow: visible;
+		margin-left: 0.5em;
+		margin-right: 0.5em;
+		padding-left: 1.5em;
+		padding-right: 1.5em;
+	}
+	.btn-whatsapp-chat {
+		overflow: visible;
+		margin-left: 0.5em;
+		margin-right: 0.5em;
+		padding-left: 1.5em;
+		padding-right: 1.5em;
+
+		&.notification {
+			&::before {
+				content: "";
+				border-radius: 50%;
+				width: 15px;
+				height: 15px;
+				position: absolute;
+				top: -3px;
+				right: -3px;
+				overflow: visible;
+				background-color: red;
+				animation: pulse 2s infinite;
+			}
+		}
+	}
 }
 
 /** 
