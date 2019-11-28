@@ -24,6 +24,10 @@
             text-transform: inherit;
             box-shadow: none;
         }
+        .btn{
+            margin-left: .1rem;
+            margin-right: .1rem;
+        }
         .btn-outline-danger{
             transition: all .2s;
             &:hover{
