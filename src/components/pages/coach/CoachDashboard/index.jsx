@@ -85,7 +85,8 @@ class CoachDashboard extends React.Component{
                                 to={{
                                 pathname: '/anamnesis',
                                 state: {
-                                    user: user
+                                    user: user,
+                                    userdata: this.props.globalState.userdata
                                 }
                                 }}
                                 >
