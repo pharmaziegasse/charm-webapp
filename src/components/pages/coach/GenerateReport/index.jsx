@@ -336,7 +336,7 @@ class GenerateReport extends React.Component{
             if(data){
                 if(data.brLatestByUid){
                     this.setState({
-                        doclink: "https://dev-manage.pharmaziegasse.at/"+data.brLatestByUid.document.link
+                        doclink: "https://manage.pharmaziegasse.at/"+data.brLatestByUid.document.link
                     });
                 }
             }

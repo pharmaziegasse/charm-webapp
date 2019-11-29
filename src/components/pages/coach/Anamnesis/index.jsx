@@ -188,7 +188,7 @@ class Anamnesis extends React.Component{
             let documentLink = undefined;
             if(data.anLatestByUid.document){
                 if(data.anLatestByUid.document.link){
-                    documentLink = "https://dev-manage.pharmaziegasse.at/"+data.anLatestByUid.document.link;
+                    documentLink = "https://manage.pharmaziegasse.at/"+data.anLatestByUid.document.link;
                 }
             }
             if(data.anLatestByUid){
