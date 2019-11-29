@@ -117,6 +117,7 @@ class GenerateReport extends React.Component{
             userId: undefined,
             error: undefined,
             doclink: null,
+            version: true,
         }
     }
 
@@ -227,13 +228,21 @@ class GenerateReport extends React.Component{
     }
 
     _getReturnValue = (item, condition) => {
+        console.log(item);
+        console.log(condition);
+        item = item.value;
+        console.log(item);
+
         // If its a string
         if(typeof item == "string"){
+            console.log("is string");
             item = item.replace(/\s/g, '_');
         }
         // If it's an object
         if(typeof item == "object"){
-            item = item[0].replace(/\s/g, '_');
+            if(item.length > 0){
+                item = item[0].replace(/\s/g, '_');
+            }
         }
 
         let condNew = condition.replace(/^\S+/g, item);
@@ -324,8 +333,6 @@ class GenerateReport extends React.Component{
                 "id": this.props.location.state.user.id
             }
         }).then(({data}) => {
-            console.log("User Data");
-            console.log(data);
             if(data){
                 if(data.brLatestByUid){
                     this.setState({
@@ -390,25 +397,33 @@ class GenerateReport extends React.Component{
                 variableName = variableName.replace(/ö/g, 'o');
                 variableName = variableName.replace(/ü/g, 'u');
                 variableName = variableName.replace(/ß/g, 'ss');
-                let dat = data[variableName];
-                let result = dat;
-                if(Array.isArray(dat)){
-                    let datarr = "";
-                    dat.map((da, i) => {
-                        if(dat.length > 1){
-                            datarr += dat[i];
-                            if(dat.length - 1 !== i){
-                                datarr += ", ";
-                            }
-                        } else {
-                            datarr += dat[i];
+                if(data[variableName]){
+                    if(data[variableName].value !== undefined){
+                        let dat = data[variableName].value;
+                        let result = dat;
+                        if(Array.isArray(dat)){
+                            let datarr = "";
+                            dat.map((da, i) => {
+                                if(dat.length > 1){
+                                    datarr += dat[i];
+                                    if(dat.length - 1 !== i){
+                                        datarr += ", ";
+                                    }
+                                } else {
+                                    datarr += dat[i];
+                                }
+                            })
+                            result = datarr;
                         }
-                    })
-                    result = datarr;
+                        text = text.replace(variable, result);
+                    }else {
+                        this.setState({
+                            version: false,
+                            error: true,
+                        });
+                    }
                 }
-                text = text.replace(variable, result);
             });
-
             return text;
         } else {
             return text;
@@ -515,8 +530,6 @@ class GenerateReport extends React.Component{
                         }
                     }
 
-                    
-
                     //console.log(text);
                     // Check if finished
                     if(
@@ -549,8 +562,12 @@ class GenerateReport extends React.Component{
             this.state.userdata !== undefined && 
             this.state.loading
         ){
-            this.createReport();
+            if(!this.state.error && this.state.version){
+                this.createReport();
+            }
         }
+
+        console.log(this.state);
 
         return (
             <MDBContainer className="text-center pt-5">
@@ -580,7 +597,7 @@ class GenerateReport extends React.Component{
                         <MDBCol md="6">
                         { !this.state.error ? (
                             <MDBCard>
-                            { this.state.user && this.state.user.anamneseSet.length >= 1 ? (
+                            { this.state.user && (this.state.user.anamneseSet.length && this.state.version) >= 1 ? (
                                 <MDBCardBody>
                                     { this.state.loading ? (
                                         <>
@@ -635,6 +652,29 @@ class GenerateReport extends React.Component{
                             ) : (
                                 <MDBCardBody>
                                     <MDBAlert color="info" className="mb-0">
+                                    {this.state.version === false ? (
+                                        <>
+                                        <p className="lead">Die Anamnesedaten müssen neu gespeichert werden.</p>
+                                        <p className="mb-3">Sie verwenden eine neue Version der Beautyreport 
+                                        Generierung. Da das Datenformat verbessert wurde, muss die Anamnese erneut 
+                                        gespeichert werden.<br/>
+                                        <strong>Änderungen im Anamnesebogen sind nicht notwendig.</strong>
+                                        </p>
+                                        <Link 
+                                        to={{
+                                        pathname: '/anamnesis',
+                                        state: {
+                                            user: this.state.user
+                                        }
+                                        }}
+                                        >
+                                            <MDBBtn color="info" size="lg" rounded>
+                                                Anamnesedaten neu speichern
+                                            </MDBBtn>
+                                        </Link>
+                                        </>
+                                    ) : (
+                                        <>
                                         <p className="lead">Es wurden keine Anamnesedaten gefunden!</p>
                                         <p className="mb-3">Möglicherweiße wurden die Daten des Anamnese-Gesprächs 
                                         noch nicht in Charm übertragen.</p>
@@ -650,6 +690,9 @@ class GenerateReport extends React.Component{
                                                 Anamnesedaten eintragen
                                             </MDBBtn>
                                         </Link>
+                                        </>
+                                    )}
+                                        
                                     </MDBAlert>
                                 </MDBCardBody>
                             )}
@@ -657,7 +700,7 @@ class GenerateReport extends React.Component{
                         ) : (
                             <MDBCard>
                                 <MDBCardBody>
-                                    {this.state.error.length >= 1 ? (
+                                    {this.state.error && this.state.error.length >= 1 ? (
                                         <>
                                         {this.state.error.map((error, i) => {
                                             return(

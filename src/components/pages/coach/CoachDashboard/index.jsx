@@ -33,8 +33,7 @@ class CoachDashboard extends React.Component{
                 if(userSet.length >= 1){
                     let users = userSet.map((user, i) => {
                         return({
-                            'id': i+1,
-                            'userid': user.customerId,
+                            'userid': user.customerId ? user.customerId : "00000",
                             'first': user.firstName,
                             'last': user.lastName,
                             'email': <a href={"mailto:"+user.email} className="blue-text">{user.email}</a>,
@@ -86,7 +85,8 @@ class CoachDashboard extends React.Component{
                                 to={{
                                 pathname: '/anamnesis',
                                 state: {
-                                    user: user
+                                    user: user,
+                                    userdata: this.props.globalState.userdata
                                 }
                                 }}
                                 >
@@ -147,11 +147,6 @@ class CoachDashboard extends React.Component{
     _getTable = () => {
         return({
                 columns: [
-            {
-                label: '#',
-                field: 'id',
-                sort: 'asc'
-            },
             {
                 label: 'Customer ID',
                 field: 'userid',
@@ -215,7 +210,7 @@ class CoachDashboard extends React.Component{
                         <div className="table-labels">
                         <span><MDBIcon icon="cube" className="pr-1 pl-3 red-text"/>Keine Daten vorhanden</span>
                         <span><MDBIcon icon="cube" className="pr-1 pl-3 purple-text"/>Keine Aktion erforderlich</span>
-                        <span><MDBIcon icon="cube" className="pr-1 pl-3 green-text"/>Daten optimal</span>
+                        <span><MDBIcon icon="cube" className="pr-1 pl-3 green-text"/>Daten vorhanden</span>
                         </div>
                         <MDBDataTable
                         striped

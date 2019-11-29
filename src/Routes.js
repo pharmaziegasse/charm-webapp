@@ -21,12 +21,14 @@ import {
   Anamnesis,
   CoachDashboard,
   NewCustomer,
+  Questionnaire,
 } from './components/pages/coach';
 /**
  * Login: Login page
  */
 import {
   Login,
+  SetPassword,
 } from './components/pages';
 
 class Routes extends React.Component {
@@ -42,7 +44,6 @@ class Routes extends React.Component {
   }
 
   render() {
-    console.log("Called");
     return (
       <Switch>
         <Route
@@ -95,10 +96,20 @@ class Routes extends React.Component {
         path='/report/edit'
         component={(props) => <ReportRevision globalState={this.props.globalState} {...props} />}
         />
+        <Route
+        exact
+        path='/reset'
+        component={(props) => <SetPassword globalState={this.props.globalState} {...props} />}
+        />
         <Route 
         exact
         path='/admin'
         component={() => window.location = 'https://manage.pharmaziegasse.at'}
+        />
+        <Route
+        exact
+        path='/form/:id'
+        component={(props) => <Questionnaire globalState={this.props.globalState} {...props} />}
         />
         <Route 
         exact
@@ -112,7 +123,6 @@ class Routes extends React.Component {
         />
         <Route
           render={function () {
-            console.log("Called");
             return <Redirect to='/login' />;
           }}
         />

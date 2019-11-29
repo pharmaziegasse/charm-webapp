@@ -1,19 +1,38 @@
 #anamnesis {
-    label{
-        &.heading{
-            font-weight: bold !important;
-            margin-top: 2rem;
-        }
-        &.mr-5{
-            margin-right: 1.5rem !important;
-            margin-left: .4rem !important;
-            padding-left: 30px;
-        }
-    }
-    textarea{
-        min-height: 5rem;
-        max-height: 500px;
-    }
+	label {
+		&.heading {
+			font-weight: bold !important;
+			margin-top: 2rem;
+		}
+		&.mr-5 {
+			margin-right: 1.5rem !important;
+			margin-left: 0.4rem !important;
+			padding-left: 30px;
+		}
+	}
+	textarea {
+		min-height: 5rem;
+		max-height: 500px;
+	}
+
+	// Fix spacings between checkbox / radio and label
+	.form-check-input[type="radio"]:not(:checked) + label,
+	.form-check-input[type="radio"]:checked + label,
+	label.btn input[type="radio"]:not(:checked) + label,
+	label.btn input[type="radio"]:checked + label {
+		margin-left: 10px;
+		padding-left: 25px;
+	}
+	.form-check-input[type="checkbox"] + label,
+	label.btn input[type="checkbox"] + label {
+		margin-left: 10px;
+		padding-left: 25px;
+	}
+	span {
+		small {
+			color: #d6d6d6;
+		}
+	}
 }
 
 /** 

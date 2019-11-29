@@ -22,6 +22,12 @@ import {
 import { graphql, withApollo } from "react-apollo";
 import gql from 'graphql-tag';
 
+//> Fetch
+// Get lag long from city name
+import getLatLongByCityname from '../../../../utilities/intel/getLatLongByCity.js';
+// Get weather by lat/lng
+import getWeatherbyLatLng from '../../../../utilities/intel/getWeatherbyLatLng.js';
+
 //> CSS
 import './anamnesis.scss';
 
@@ -72,6 +78,10 @@ const GET_DATA = gql`
                 id
                 username
             }
+            document{
+                id
+                link
+            }
         }
     }
 `;
@@ -95,9 +105,11 @@ class Anamnesis extends React.Component{
         
         // Set user variable
         const user = this.props.location.state.user;
+        const userdata = this.props.location.state.userdata;
         if(!this.state.user){
             this.setState({
-                user: user,
+                user,
+                userdata,
                 uid: user.id
             }, () => this.initialize());
         }
@@ -108,7 +120,33 @@ class Anamnesis extends React.Component{
         this.getAnamneseFields();
         // Get the actual user data (if existant)
         this.getAnmaneseData();
+        // Initialize data fetching
+        this.__init();
     }
+
+    //> Fetching customer data
+    __init = () => {
+        // Here I need to get the user city and convert it to lag/long
+        // We use: https://opencagedata.com/
+        let userdata = this.state.userdata;
+        if(userdata.city && userdata.country){
+            this.__getCityLatLng(userdata.city, userdata.country);
+        }
+    }
+    __getCityLatLng = async (city, country) => {
+        let res = await getLatLongByCityname(city, country);
+        if(res.status === 200){
+            this.__getWeatherData(res.lat, res.lng);
+        }
+    }
+    __getWeatherData = async (lat, lng) => {
+        // Get the history data
+        // We use: https://darksky.net/
+        let res = await getWeatherbyLatLng(lat, lng);
+        this.setState({
+            weatherAPI: res
+        });
+    } 
 
     resetButton = () => {
         // Get the button back to the initial state ready for submit
@@ -144,21 +182,42 @@ class Anamnesis extends React.Component{
             "id": this.state.user.id
         }
         }).then(({data}) => {
+            console.log("Get anamnesis data");
             console.log(data);
+            // Set the Excel document link
+            let documentLink = undefined;
+            if(data.anLatestByUid.document){
+                if(data.anLatestByUid.document.link){
+                    documentLink = "https://manage.pharmaziegasse.at/"+data.anLatestByUid.document.link;
+                }
+            }
             if(data.anLatestByUid){
                 let fD = JSON.parse(data.anLatestByUid.formData);
                 let res = {};
-                // Convert null to undefined
-                Object.keys(fD).map((field, i) => {
-                    res = {
-                        ...res,
-                        [field]: fD[field] !== null ? fD[field] : undefined
-                    }
-                    return i;
-                });
+                console.log(fD);
+                // Check if the data type is old
+                if(fD.uid.value === undefined){
+                    Object.keys(fD).map((field, i) => {
+                        res = {
+                            ...res,
+                            [field]: fD[field] !== null ? fD[field] : undefined
+                        }
+                        return i;
+                    });
+                } else {
+                    // Convert null to undefined
+                    Object.keys(fD).map((field, i) => {
+                        res = {
+                            ...res,
+                            [field]: fD[field] !== null ? fD[field].value : undefined
+                        }
+                        return i;
+                    });
+                }
                 this.setState({
                     ...this.state,
-                    ...res
+                    ...res,
+                    documentLink,
                 });
             }
         })
@@ -172,16 +231,37 @@ class Anamnesis extends React.Component{
     sendData = async () => {
         // Set values that will be set
         // Normalize data
-        let formvalues = {
-            ...this.state
-        };
+        let rtn = {};
+        this.state.data.pages.map((page, i) => {
+            if(page.__typename === "AnamneseAnFormPage"){
+                page.formFields.map((field, key) => {
+                    if(this.state[field.name]){
+                        rtn[field.name] = JSON.stringify({
+                            helpText: field.helpText,
+                            fieldType: field.fieldType,
+                            value: this.state[field.name]
+                        });
+                    } else {
+                        rtn[field.name] = JSON.stringify({
+                            helpText: field.helpText,
+                            fieldType: "",
+                            value: ""
+                        })
+                    }
+                });
+            }
+        });
+        console.log(rtn);
+
+        //rtn = null;
+        
         // Check if the form values have been set
-        if(formvalues !== null && formvalues !== undefined && this.state.urlPath !== undefined){
+        if(rtn !== null && rtn !== undefined && this.state.urlPath !== undefined){
             // Call graphQL mutation
             await this.props.update({
                 variables: {
                     "token": localStorage.getItem('wca'),
-                    "values": formvalues,
+                    "values": rtn,
                     "urlpath": this.state.urlPath
                 }
             })
@@ -190,8 +270,7 @@ class Anamnesis extends React.Component{
                 if(data){
                     if(data.anamneseAnFormPage){
                         let page = data.anamneseAnFormPage;
-                        if(page.result === "OK"){
-                            console.log("Sent");
+                        if(page.result === "OK, parsed special input" || page.result === "OK"){
                             this.setState({
                                 success: true,
                                 errors: [],
@@ -414,7 +493,7 @@ class Anamnesis extends React.Component{
             let display = name.trim();
             return(
                 <MDBInput
-                onClick={() => this.setState({[container]: display})}
+                onClick={() => this.setState({[container]: display}, () => this.resetButton())}
                 checked={this.state[container] && this.state[container] === display ? true : false}
                 label={display}
                 key={key}
@@ -638,6 +717,42 @@ class Anamnesis extends React.Component{
                                         <label className="heading" htmlFor={"fromGroupInput"+i}>
                                             {item.helpText && item.helpText}
                                         </label>
+                                        {item.name === "temperatur" &&
+                                        <>
+                                        {this.state.weatherAPI && this.state.weatherAPI.status === 200 &&
+                                        <span className="text-muted">
+                                        Durchschnittstemperatur am 
+                                        Kundenstandort: {this.state.weatherAPI.avgTemp.toFixed(2)} °C
+                                        <br/>
+                                        <small>Powered by Dark Sky</small>
+                                        </span>
+                                        }
+                                        </>
+                                        }
+                                        {item.name === "luftfeuchtigkeit" &&
+                                        <>
+                                        {this.state.weatherAPI && this.state.weatherAPI.status === 200 &&
+                                        <span className="text-muted">
+                                        Absolute Luftfeuchtigkeit am 
+                                        Kundenstandort: {this.state.weatherAPI.humidity.toFixed(2)} g/m<sup>3</sup>
+                                        <br/>
+                                        <small>Powered by Dark Sky</small>
+                                        </span>
+                                        }
+                                        </>
+                                        }
+                                        {item.name === "uv-index" &&
+                                        <>
+                                        {this.state.weatherAPI && this.state.weatherAPI.status === 200 &&
+                                        <span className="text-muted">
+                                        UV Index am 
+                                        Kundenstandort: {this.state.weatherAPI.uvIndex} 
+                                        <br/>
+                                        <small>Powered by Dark Sky</small>
+                                        </span>
+                                        }
+                                        </>
+                                        }
                                         <MDBFormInline>
                                             {this.printRadio(
                                                 item.choices,
@@ -724,6 +839,8 @@ class Anamnesis extends React.Component{
             }
         }
 
+        console.log(this.state);
+
         if(!this.state.user){
             return(
                 <div className="text-center"><MDBSpinner /></div>
@@ -734,13 +851,47 @@ class Anamnesis extends React.Component{
                     <h2 className="mb-5 text-center">Anamnese für{" "}
                     {this.state.user.firstName+" "+this.state.user.lastName}
                     </h2>
-                    <div className="text-left mt-4">
+                    <MDBRow className="mt-4">
+                    <MDBCol md="6" className="text-left">
                         <Link to="/coach">
                             <MDBBtn color="red">
                                 <MDBIcon icon="angle-left" className="pr-2" />Zurück
                             </MDBBtn>
                         </Link>
-                    </div>
+                        {!this.state.success ? (
+                            <MDBBtn
+                            color="secondary"
+                            onClick={this.sendData}
+                            >
+                                <MDBIcon icon="save" className="pr-2" />
+                                Speichern
+                            </MDBBtn>
+                        ) : (
+                            <MDBBtn
+                            color="success"
+                            disabled
+                            >
+                                <MDBIcon icon="check" className="pr-2" />
+                                Gespeichert
+                            </MDBBtn>
+                        )}
+                    </MDBCol>
+                    <MDBCol md="6" className="text-right">
+                        {this.state.documentLink &&
+                            <MDBBtn
+                            color="green"
+                            onClick={this.sendData}
+                            href={this.state.documentLink}
+                            tag="a"
+                            target="_blank"
+                            >
+                                <MDBIcon far icon="file-excel" className="pr-2" />
+                                Download Excel
+                            </MDBBtn>
+                        }
+                        
+                    </MDBCol>
+                    </MDBRow>
                     <MDBRow className="mb-4">
                         <MDBCol md="8">
                             {this.renderFields()}
