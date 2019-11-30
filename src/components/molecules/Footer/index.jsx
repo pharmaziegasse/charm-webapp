@@ -32,53 +32,47 @@ class Footer extends React.PureComponent{
 
         return(
             <MDBFooter color="unique-darkblue" className="mt-4">
+                {globalState.coach !== undefined && globalState.logged &&
                 <div className="py-4">
                     <MDBContainer>
-                    {
-                        globalState.logged ? (
-                            <>
-                                {!globalState.coach ? (
-                                        <MDBRow className="text-center flex-center">
-                                            <MDBCol md="4">
-                                                <a href="#!">Referral Programm</a>
-                                            </MDBCol>
-                                            <MDBCol md="4">
-                                                <a href="#!"><MDBIcon fab icon="facebook-f" className="pr-2" /></a>
-                                                <a href="#!"><MDBIcon fab icon="instagram" className="pl-2" /></a>
-                                            </MDBCol>
-                                            <MDBCol md="4">
-                                                <a href="#!">Fragen? Wir sind für Sie da!</a>
-                                            </MDBCol>
-                                        </MDBRow>
-                                    ) : (
-                                        <MDBRow className="text-center flex-center">
-                                            <MDBCol md="4">
-                                                <a
-                                                href="mailto:support@aichner-christian.com"
-                                                >
-                                                    <li className="list-unstyled">
-                                                        <MDBIcon icon="medkit" />Support
-                                                    </li>
-                                                </a>
-                                            </MDBCol>
-                                            <MDBCol md="4">
-                                                <li 
-                                                className="list-unstyled clickable"
-                                                onClick={() => this.logout()}
-                                                >
-                                                    <MDBIcon icon="sign-out-alt" />Logout
-                                                </li>
-                                            </MDBCol>
-                                        </MDBRow>
-                                    )
-                                }
-                            </>
-                        ) : (
-                            <p>Noch nicht eingeloggt content</p>
-                        )
-                    }
+                        {!globalState.coach ? (
+                                <MDBRow className="text-center flex-center">
+                                    <MDBCol md="4">
+                                        <a href="#!">Referral Programm</a>
+                                    </MDBCol>
+                                    <MDBCol md="4">
+                                        <a href="#!"><MDBIcon fab icon="facebook-f" className="pr-2" /></a>
+                                        <a href="#!"><MDBIcon fab icon="instagram" className="pl-2" /></a>
+                                    </MDBCol>
+                                    <MDBCol md="4">
+                                        <a href="#!">Fragen? Wir sind für Sie da!</a>
+                                    </MDBCol>
+                                </MDBRow>
+                            ) : (
+                                <MDBRow className="text-center flex-center">
+                                    <MDBCol md="4">
+                                        <a
+                                        href="mailto:support@aichner-christian.com"
+                                        >
+                                            <li className="list-unstyled">
+                                                <MDBIcon icon="medkit" />Support
+                                            </li>
+                                        </a>
+                                    </MDBCol>
+                                    <MDBCol md="4">
+                                        <li 
+                                        className="list-unstyled clickable"
+                                        onClick={() => this.logout()}
+                                        >
+                                            <MDBIcon icon="sign-out-alt" />Logout
+                                        </li>
+                                    </MDBCol>
+                                </MDBRow>
+                            )
+                        }
                     </MDBContainer>
                 </div>
+                }
                 <div className="footer-copyright text-center py-3">
                     <MDBContainer fluid>
                     <div>
