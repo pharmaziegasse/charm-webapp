@@ -19,8 +19,8 @@ import Routes from './Routes';
 
 //> Backend Connection
 // Apollo
-import { graphql, withApollo } from "react-apollo";
-import { gql } from "apollo-boost";
+import { graphql, withApollo } from 'react-apollo';
+import { gql } from 'apollo-boost';
 import * as compose from 'lodash.flowright';
 
 //> Queries and Mutations
