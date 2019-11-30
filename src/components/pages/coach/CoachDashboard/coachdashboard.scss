@@ -22,6 +22,9 @@
 			vertical-align: middle;
 		}
 	}
+	.table-striped tbody tr:nth-of-type(odd) {
+		background: lighten(#e7edf2, 5%);
+	}
 
 	// Action buttons
 	.user-action {

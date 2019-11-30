@@ -284,13 +284,30 @@ class CoachDashboard extends React.Component{
                     </h2>
                     {this.getGreetingQuote()}
                 </div>
-                <div className="mb-4 py-4 text-right greeting-actions">
+                <div className="mb-4 py-4 greeting-actions">
                     <MDBContainer>
-                        <Link to="/add">
-                            <MDBBtn color="green">
-                                <MDBIcon icon="plus-circle" className="pr-2" />Add customer
-                            </MDBBtn>
-                        </Link>
+                        <MDBRow className="flex-center text-center">
+                            <MDBCol md="6">
+                                <p className="lead">
+                                <MDBIcon icon="bolt" className="pr-2 orange-text"/>
+                                Quick actions
+                                </p>
+                            </MDBCol>
+                            <MDBCol md="6">
+                                <Link to="/add">
+                                    <MDBBtn color="green">
+                                        <MDBIcon icon="plus-circle" className="pr-2"/>Kunden anlegen
+                                    </MDBBtn>
+                                </Link>
+                                {globalState.userdata.email === "s.santer@pharmaziegasse.at" &&
+                                <a href="https://manage.pharmaziegasse.at" rel="noopener noreferrer" target="_blank">
+                                    <MDBBtn color="primary">
+                                        <MDBIcon icon="dove" className="pr-2"/>Wagtail CMS
+                                    </MDBBtn>
+                                </a>
+                                }
+                            </MDBCol>
+                        </MDBRow>
                     </MDBContainer>
                 </div>
                 <MDBContainer>
