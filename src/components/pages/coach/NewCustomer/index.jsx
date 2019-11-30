@@ -357,7 +357,22 @@ class NewCustomer extends React.Component{
                 </div>
                 { this.state.success ? (
                     <div className="w-100 h-100 flex-center">
-                        <h2 className="green-text text-center"><MDBIcon icon="check"/><br/>Customer created</h2>
+                        <MDBAlert
+                        color="success"
+                        className="text-center"
+                        >
+                            <p>
+                            <MDBIcon icon="check" className="pr-2"/>
+                            {this.state.firstName + " "+ this.state.lastName} wurde erfolgreich erstellt.
+                            </p>
+                            <Link to="/coach">
+                                <MDBBtn
+                                color="green"
+                                >
+                                Zurück zum Dashboard
+                                </MDBBtn>
+                            </Link>
+                        </MDBAlert>
                     </div>
                 ) : (
                     <MDBRow className="flex-center mt-4 text-center">
@@ -580,17 +595,16 @@ class NewCustomer extends React.Component{
                     <>
                         { !this.state.loading ? (
                             <MDBBtn
-                            color="green"
+                            color="primary"
                             onClick={() => this._createUser()}
                             >
-                            <MDBIcon icon="check" className="pr-2" />Erstellen
+                            <MDBIcon icon="plus" className="pr-2" />Erstellen
                             </MDBBtn>
                         ) : (
                             <MDBSpinner />
                         ) }
                     </>
                 }
-                
                 </div>
             </MDBContainer>
         )
