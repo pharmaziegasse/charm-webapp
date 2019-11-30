@@ -168,7 +168,7 @@ class GenerateReport extends React.Component{
     fetchUserData = async () => {
         await this.props.client.query({
             query: GET_USERDATA,
-            variables: { "token": localStorage.getItem("wca"), "id": this.state.user.id }
+            variables: { "token": localStorage.getItem("fprint"), "id": this.state.user.id }
         }).then(({data}) => {
             if(data.anLatestByUid !== undefined){
                 this.setState({
