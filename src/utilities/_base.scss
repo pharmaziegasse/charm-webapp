@@ -23,7 +23,8 @@
 .btn{
   box-shadow: none;
   border: none;
-  border-radius: 0;
+	border-radius: 0;
+	text-transform: initial;
   &:hover, &:focus, &:active{
     box-shadow: none !important;
     border: none;
