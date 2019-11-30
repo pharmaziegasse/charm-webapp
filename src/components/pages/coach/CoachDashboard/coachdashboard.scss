@@ -14,12 +14,16 @@
 			text-transform: uppercase;
 		}
 	}
+
+	// Search table
 	.table {
 		td,
 		th {
 			vertical-align: middle;
 		}
 	}
+
+	// Action buttons
 	.user-action {
 		button {
 			text-transform: inherit;
@@ -77,6 +81,19 @@
 			}
 		}
 	}
+}
+
+// Greeting
+.greeting{
+	background: #2a3c4a;
+	color: white;
+	svg{
+		max-height: 50px;
+		margin-bottom: 1rem;
+	}
+}
+.greeting-actions{
+	background: #e7edf2;
 }
 
 /** 

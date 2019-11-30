@@ -19,11 +19,94 @@ import {
 //> CSS
 import './coachdashboard.scss';
 
+//> Images
+import { ReactComponent as MorningImg } from  '../../../../assets/icons/morning.svg';
+import { ReactComponent as DayImg } from  '../../../../assets/icons/day.svg';
+import { ReactComponent as NightImg } from  '../../../../assets/icons/night.svg';
+
 class CoachDashboard extends React.Component{
 
     componentDidMount = () => {
         // Set page title
         document.title = "Your customers";
+    }
+
+    getGreetingImg = () => {
+        // Get date
+        let today = new Date()
+        // Get current hours
+        let curHr = today.getHours()
+
+        if (curHr < 11) {
+            return <MorningImg className="img-fluid" />;
+        } else if (curHr < 18) {
+            return <DayImg className="img-fluid" />;
+        } else {
+            return <NightImg className="img-fluid" />;
+        }
+    }
+
+    getGreetingQuote = () => {
+        const quotes = [
+            {
+                text: `Concentrate all your thoughts upon the work in hand. The sun's rays do not burn until brought 
+                to a focus.`,
+                author: "Alexander Graham Bell"
+            },
+            {
+                text: `Either you run the day or the day runs you.`,
+                author: "Jim Rohn"
+            },
+            {
+                text: `When we strive to become better than we are, everything around us becomes better too.`,
+                author: "Paulo Coelho"
+            },
+            {
+                text: `Opportunity is missed by most people because it is dressed in overalls and looks like work.`,
+                author: "Thomas Edison"
+            },
+            {
+                text: `Just one small positive thought in the morning can change your whole day.`,
+                author: "Dalai Lama"
+            },
+            {
+                text: `The future depends on what you do today.`,
+                author: "Mahatma Gandhi"
+            }
+        ];
+
+        const random = Math.floor(Math.random() * ((quotes.length - 1)));
+
+        return (
+            <div className="text-center">
+                <small>
+                    <q>{quotes[random].text}</q>
+                </small>
+                <small className="pl-2">
+                    —{quotes[random].author}
+                </small>
+            </div>
+        )
+    }
+
+    getGreetingTxt = () => {
+        // Get date
+        let today = new Date()
+        // Get current hours
+        let curHr = today.getHours()
+
+        // Store selected greeting
+        let selected = null;
+
+        if (curHr < 11) {
+            selected = <span>Guten Morgen</span>;
+        } else if (curHr < 18) {
+            selected = <span>Willkommen zurück</span>;
+        } else {
+            selected = <span>Guten Abend</span>;
+        }
+
+        return selected;
     }
 
     _getCoachUsers = () => {
@@ -193,45 +276,59 @@ class CoachDashboard extends React.Component{
         if(globalState.logged && !globalState.coach) return <Redirect to="/dashboard"/> 
 
         return(
-            <MDBContainer id="coach" className="pt-5">
-                <h2 className="text-center font-weight-bold">
-                Willkommen zurück, <span>{globalState.userdata.firstName}</span>!
-                </h2>
-                <div className="mt-4 mb-3 text-right">
-                    <Link to="/add">
-                        <MDBBtn color="green">
-                            <MDBIcon icon="plus-circle" className="pr-2" />Add customer
-                        </MDBBtn>
-                    </Link>
+            <div id="coach">
+                <div className="greeting py-5">
+                    {this.getGreetingImg()}
+                    <h2 className="text-center font-weight-bold">
+                    {this.getGreetingTxt()}, <span>{globalState.userdata.firstName}</span>!
+                    </h2>
+                    {this.getGreetingQuote()}
                 </div>
-                <MDBRow className="text-center">
-                    <MDBCol md="12">
-                        <h3>Deine KundInnen</h3>
-                        <div className="table-labels">
-                        <span><MDBIcon icon="cube" className="pr-1 pl-3 red-text"/>Keine Daten vorhanden</span>
-                        <span><MDBIcon icon="cube" className="pr-1 pl-3 purple-text"/>Keine Aktion erforderlich</span>
-                        <span><MDBIcon icon="cube" className="pr-1 pl-3 green-text"/>Daten vorhanden</span>
-                        </div>
-                        <MDBDataTable
-                        striped
-                        bordered
-                        small
-                        exportToCSV
-                        data={this._getTable()}
-                        paginationLabel={[
-                            <MDBIcon icon="angle-left" size="lg" className="pl-3 pr-3" />,
-                            <MDBIcon icon="angle-right" size="lg" className="pl-3 pr-3" />
-                        ]}
-                        />
-                    </MDBCol>
-                    <MDBCol md="6">
+                <div className="mb-4 py-4 text-right greeting-actions">
+                    <MDBContainer>
+                        <Link to="/add">
+                            <MDBBtn color="green">
+                                <MDBIcon icon="plus-circle" className="pr-2" />Add customer
+                            </MDBBtn>
+                        </Link>
+                    </MDBContainer>
+                </div>
+                <MDBContainer>
+                    <MDBRow className="text-center">
+                        <MDBCol md="12">
+                            <h3>Deine KundInnen</h3>
+                            <div className="table-labels">
+                            <span><MDBIcon icon="cube" className="pr-1 pl-3 red-text"/>
+                            Keine Daten vorhanden
+                            </span>
+                            <span><MDBIcon icon="cube" className="pr-1 pl-3 purple-text"/>
+                            Keine Aktion erforderlich
+                            </span>
+                            <span><MDBIcon icon="cube" className="pr-1 pl-3 green-text"/>
+                            Daten vorhanden
+                            </span>
+                            </div>
+                            <MDBDataTable
+                            striped
+                            bordered
+                            small
+                            exportToCSV
+                            data={this._getTable()}
+                            paginationLabel={[
+                                <MDBIcon icon="angle-left" size="lg" className="pl-3 pr-3" />,
+                                <MDBIcon icon="angle-right" size="lg" className="pl-3 pr-3" />
+                            ]}
+                            />
+                        </MDBCol>
+                        <MDBCol md="6">
 
-                    </MDBCol>
-                    <MDBCol md="6">
+                        </MDBCol>
+                        <MDBCol md="6">
 
-                    </MDBCol>
-                </MDBRow>
-            </MDBContainer>
+                        </MDBCol>
+                    </MDBRow>
+                </MDBContainer>
+            </div>
         )
     }
 }
