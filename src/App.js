@@ -7,11 +7,13 @@ import { BrowserRouter as Router } from 'react-router-dom';
 //> Components
 /**
  * Footer: Global Footer
- * Navbar: Global navigation bar
  */
 import {
   Footer,
 } from './components/molecules';
+import {
+  ScrollToTop
+} from './components/atoms';
 // Routes
 import Routes from './Routes';
 
@@ -251,18 +253,20 @@ class App extends React.Component {
     console.log("Updated", this.state);
     return (
       <Router>
-        <div className="flyout">
-          <main>
-            {this.state.loaded &&
-            <Routes 
-            handler={this.handler}
-            globalState={this.state}
-            flushData={this.flushData}
-            />
-            }
-          </main>
-          <Footer globalState={this.state} />
-        </div>
+        <ScrollToTop>
+          <div className="flyout">
+            <main>
+              {this.state.loaded &&
+              <Routes 
+              handler={this.handler}
+              globalState={this.state}
+              flushData={this.flushData}
+              />
+              }
+            </main>
+            <Footer globalState={this.state} />
+          </div>
+        </ScrollToTop>
       </Router>
     );
   }
