@@ -15,6 +15,9 @@ import {
     MDBBtn,
 } from 'mdbreact';
 
+//> CSS
+import './footer.scss';
+
 class Footer extends React.PureComponent{
     logout = () => {
         // Remove the token
@@ -76,12 +79,38 @@ class Footer extends React.PureComponent{
                             <p>Noch nicht eingeloggt content</p>
                         )
                     }
-                        
                     </MDBContainer>
                 </div>
                 <div className="footer-copyright text-center py-3">
                     <MDBContainer fluid>
+                    <div>
                         &copy; 2018 - {new Date().getFullYear()} Copyright: Pharmaziegasse<sup>®</sup>
+                    </div>
+                    <div>
+                        <small className="text-muted">
+                            Development release
+                            <span className="pl-2 pr-2">·</span>
+                            Version v{process.env.REACT_APP_VERSION}
+                            <span className="pl-2 pr-2">·</span>
+                            <a 
+                            href="https://github.com/pharmaziegasse/charm-webapp"
+                            rel="noopener noreferrer"
+                            target="_blank"
+                            >
+                            <MDBIcon fab icon="github" className="pr-2"/>
+                            View on GitHub
+                            </a>
+                            <span className="pl-2 pr-2">·</span>
+                            <a 
+                            href="https://github.com/pharmaziegasse/charm-webapp/issues/new?template=bug_report.md"
+                            rel="noopener noreferrer"
+                            target="_blank"
+                            >
+                            <MDBIcon icon="bug" className="pr-2"/>
+                            Report bug
+                            </a>
+                        </small>
+                    </div>
                     </MDBContainer>
                 </div>
             </MDBFooter>
