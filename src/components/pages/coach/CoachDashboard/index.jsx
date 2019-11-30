@@ -24,11 +24,63 @@ import { ReactComponent as MorningImg } from  '../../../../assets/icons/morning.
 import { ReactComponent as DayImg } from  '../../../../assets/icons/day.svg';
 import { ReactComponent as NightImg } from  '../../../../assets/icons/night.svg';
 
+//> Backend Connection
+// Apollo
+import { graphql, withApollo } from 'react-apollo';
+import { gql } from 'apollo-boost';
+
+//> Queries
+// Get data
+const GET_DATA = gql`
+    query ($token: String!) {
+        userSelf(token: $token) {
+        id
+        userSet{
+            anamneseSet{
+            id
+            }
+            beautyreportSet{
+                id
+                }
+                id
+                customerId
+                firstName
+                lastName
+                email
+                telephone
+            }
+        }
+    }
+`;
+
 class CoachDashboard extends React.Component{
+
+    state = {};
 
     componentDidMount = () => {
         // Set page title
         document.title = "Your customers";
+
+        // Refetch users
+        this._fetchUsers();
+    }
+
+    _fetchUsers = () => {
+        this.props.client.query({
+            query: GET_DATA,
+            variables: { "token": localStorage.getItem("fprint") }
+        }).then(({data}) => {
+            if(data.userSelf){
+                this.setState({
+                    coachusers: {
+                        userdata: data.userSelf
+                    }
+                });
+            }
+        })
+        .catch(error => {
+            console.log("Error",error);
+        })
     }
 
     getGreetingImg = () => {
@@ -110,9 +162,15 @@ class CoachDashboard extends React.Component{
     }
 
     _getCoachUsers = () => {
-        if(this.props.globalState){
-            if(this.props.globalState.userdata){
-                let userSet = this.props.globalState.userdata.userSet;
+        let coach = this.props.globalState;
+
+        if(this.state.coachusers){
+            coach = this.state.coachusers;
+        }
+        
+        if(coach){
+            if(coach.userdata){
+                let userSet = coach.userdata.userSet;
                 if(userSet.length >= 1){
                     let users = userSet.map((user, i) => {
                         return({
@@ -350,7 +408,7 @@ class CoachDashboard extends React.Component{
     }
 }
 
-export default CoachDashboard;
+export default withApollo(CoachDashboard);
 
 /** 
  * SPDX-License-Identifier: (EUPL-1.2)
