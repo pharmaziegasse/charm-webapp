@@ -860,7 +860,7 @@ class Anamnesis extends React.Component{
                         </Link>
                         {!this.state.success ? (
                             <MDBBtn
-                            color="secondary"
+                            color="primary"
                             onClick={this.sendData}
                             >
                                 <MDBIcon icon="save" className="pr-2" />
@@ -900,7 +900,7 @@ class Anamnesis extends React.Component{
                     
                     {!this.state.success ? (
                         <MDBBtn
-                        color="secondary"
+                        color="primary"
                         onClick={this.sendData}
                         >
                             <MDBIcon icon="save" className="pr-2" />
