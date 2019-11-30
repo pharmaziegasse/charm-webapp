@@ -37,6 +37,7 @@ import './login.scss';
 import logo from '../../../assets/logo.png';
 
 //> Queries and Mutations
+// Login
 const LOGIN_USER = gql`
     mutation tokenAuth($username: String!, $password: String!){
         tokenAuth(username: $username, password: $password) {
@@ -92,15 +93,15 @@ class Login extends React.Component {
     }
 
     componentWillMount = () => {
-        // Set page title
-        document.title = "Login";
+      // Set page title
+      document.title = "Login";
 
-        let method = localStorage.getItem('method');
-        if(method){
-            this.setState({
-                method: method
-            });
-        }
+      let method = localStorage.getItem('method');
+      if(method){
+        this.setState({
+          method: method
+        });
+      }
     }
 
     handleChange = (e) => {
@@ -116,37 +117,17 @@ class Login extends React.Component {
         // Validation
         e.target.className = "needs-validation was-validated";
 
-        this._loginAnonymous();
+        if(this.state.method){
+          this._getUsernameByMethod(this.state.method);
+        } else {
+          this._getUsernameByMethod("email");
+        }
     }
 
-    _loginAnonymous = async () => {
-
-        await this.props.mutate({ variables: { "username": "simon", "password": "admin" } })
-        .then(({ loading, data }) => {
-            console.log(data);
-            if(data !== undefined){
-                if(data.tokenAuth !== undefined){
-                    if(data.tokenAuth.token !== undefined){
-                        if(this.state.method === 'phone'){
-                            this._getUsernameByMethod(data.tokenAuth.token, 'phone');
-                        } else {
-                            this._getUsernameByMethod(data.tokenAuth.token, 'email');
-                        }
-                        
-                        //localStorage.setItem("fprint",data.tokenAuth.token);
-                        //this.props.handler(true);
-                    }
-                }
-            }
-        }).catch((loading, error) => {
-            // Username or password is wrong
-            this.props.handler(false);
-        });
-    };
-
-    _getUsernameByMethod = async (token, method) => {
+    _getUsernameByMethod = async (method) => {
         let variables = {};
         let query = undefined;
+        const token = localStorage.getItem('fprint');
 
         if(method === 'phone'){
             variables = { 

@@ -117,16 +117,16 @@ class HomePage extends React.Component {
     // Get global state with login information
     const { globalState } = this.props;
 
-    if(globalState.coach === undefined){
+    // Secure page
+    if(!globalState.logged) { return (<Redirect to="/login"/>) }
+
+    if(!globalState.loaded || globalState.coach === undefined){
       return (
         <div className="w-100 h-100 flex-center">
           <MDBSpinner />
         </div>
       )
     }
-
-    // Secure page
-    if(!globalState.logged) { return (<Redirect to="/login"/>) }
 
     if(globalState.logged && globalState.coach) { return (<Redirect to="/coach"/>) }
 
