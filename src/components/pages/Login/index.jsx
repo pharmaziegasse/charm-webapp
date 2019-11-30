@@ -32,7 +32,12 @@ import * as compose from 'lodash.flowright';
 //> CSS
 import './login.scss';
 
+//> Images
+// Logo
+import logo from '../../../assets/logo.png';
+
 //> Queries and Mutations
+// Login
 const LOGIN_USER = gql`
     mutation tokenAuth($username: String!, $password: String!){
         tokenAuth(username: $username, password: $password) {
@@ -88,15 +93,15 @@ class Login extends React.Component {
     }
 
     componentWillMount = () => {
-        // Set page title
-        document.title = "Login";
+      // Set page title
+      document.title = "Login";
 
-        let method = localStorage.getItem('method');
-        if(method){
-            this.setState({
-                method: method
-            });
-        }
+      let method = localStorage.getItem('method');
+      if(method){
+        this.setState({
+          method: method
+        });
+      }
     }
 
     handleChange = (e) => {
@@ -112,37 +117,17 @@ class Login extends React.Component {
         // Validation
         e.target.className = "needs-validation was-validated";
 
-        this._loginAnonymous();
+        if(this.state.method){
+          this._getUsernameByMethod(this.state.method);
+        } else {
+          this._getUsernameByMethod("email");
+        }
     }
 
-    _loginAnonymous = async () => {
-
-        await this.props.mutate({ variables: { "username": "simon", "password": "admin" } })
-        .then(({ loading, data }) => {
-            console.log(data);
-            if(data !== undefined){
-                if(data.tokenAuth !== undefined){
-                    if(data.tokenAuth.token !== undefined){
-                        if(this.state.method === 'phone'){
-                            this._getUsernameByMethod(data.tokenAuth.token, 'phone');
-                        } else {
-                            this._getUsernameByMethod(data.tokenAuth.token, 'email');
-                        }
-                        
-                        //localStorage.setItem("fprint",data.tokenAuth.token);
-                        //this.props.handler(true);
-                    }
-                }
-            }
-        }).catch((loading, error) => {
-            // Username or password is wrong
-            this.props.handler(false);
-        });
-    };
-
-    _getUsernameByMethod = async (token, method) => {
+    _getUsernameByMethod = async (method) => {
         let variables = {};
         let query = undefined;
+        const token = localStorage.getItem('fprint');
 
         if(method === 'phone'){
             variables = { 
@@ -188,7 +173,7 @@ class Login extends React.Component {
             if(data !== undefined){
                 if(data.tokenAuth !== undefined){
                     if(data.tokenAuth.token !== undefined){
-                        localStorage.setItem('wca',data.tokenAuth.token);
+                        localStorage.setItem('fprint',data.tokenAuth.token);
                         // Remove error message, but keep it loading
                         this.setState({
                             error: false,
@@ -319,9 +304,9 @@ class Login extends React.Component {
         } 
 
         return (
-        <div>
+        <div id="login">
             <MDBEdgeHeader color="secondary-color lighten-3" />
-            <MDBFreeBird id="login">
+            <MDBFreeBird>
                 <MDBRow>
                     <MDBCol
                     md="10"
@@ -334,15 +319,15 @@ class Login extends React.Component {
                                     <MDBSpinner big />
                                 </MDBCol>
                             ) : (
-                                <MDBCol md="6">
+                                <MDBCol md="6" className="text-center">
                                     {this.state.error &&
                                         <MDBAlert color="danger" className="text-center">
                                             Die eingegebene Kombination existiert nicht.
                                         </MDBAlert>
                                     }
-                                    
+                                    <img src={logo} className="img-fluid mb-4" alt="Pharmaziegasse logo"/>
                                     <form onSubmit={this.handleSubmit} className="needs-validation" noValidate>
-                                        <p className="h4 text-center mb-4">Einloggen</p>
+                                        <p className="h4 text-center mb-5">Dein individuelles Beauty Programm</p>
                                         {this.state.method === 'email' ? (
                                             <>
                                                 <label htmlFor="defaultFormLoginEmailEx" className="grey-text">
@@ -429,9 +414,9 @@ class Login extends React.Component {
                                             </MDBBtn>
                                         </div>
                                         <p className="text-muted text-center mt-3">
-                                        Noch kein Mitglied? Jetzt einfach <Link to="/join">
-                                        <strong>Mitglied werden</strong>
-                                        </Link>!
+                                        Noch keinen Zugang? Jetzt einfach <a href="https://www.pharmaziegasse.at/?join">
+                                        <strong>ausprobieren</strong>
+                                        </a>!
                                         </p>
                                     </form>
                                 </MDBCol>

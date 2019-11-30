@@ -15,10 +15,13 @@ import {
     MDBBtn,
 } from 'mdbreact';
 
+//> CSS
+import './footer.scss';
+
 class Footer extends React.PureComponent{
     logout = () => {
         // Remove the token
-        localStorage.removeItem('wca');
+        localStorage.removeItem('fprint');
         // Redirect to login
         window.location.href = '/login'; 
     }
@@ -29,59 +32,77 @@ class Footer extends React.PureComponent{
 
         return(
             <MDBFooter color="unique-darkblue" className="mt-4">
+                {globalState.coach !== undefined && globalState.logged &&
                 <div className="py-4">
                     <MDBContainer>
-                    {
-                        globalState.logged ? (
-                            <>
-                                {!globalState.coach ? (
-                                        <MDBRow className="text-center flex-center">
-                                            <MDBCol md="4">
-                                                <a href="#!">Referral Programm</a>
-                                            </MDBCol>
-                                            <MDBCol md="4">
-                                                <a href="#!"><MDBIcon fab icon="facebook-f" className="pr-2" /></a>
-                                                <a href="#!"><MDBIcon fab icon="instagram" className="pl-2" /></a>
-                                            </MDBCol>
-                                            <MDBCol md="4">
-                                                <a href="#!">Fragen? Wir sind für Sie da!</a>
-                                            </MDBCol>
-                                        </MDBRow>
-                                    ) : (
-                                        <MDBRow className="text-center flex-center">
-                                            <MDBCol md="4">
-                                                <a 
-                                                href="https://kisy.aichner-christian.com/?goto=Charm&token=asdf" 
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                >
-                                                <MDBIcon icon="medkit" className="pr-2" />Technischer Support
-                                                </a>
-                                            </MDBCol>
-                                            <MDBCol md="4">
-                                                <MDBBtn
-                                                color="white"
-                                                rounded
-                                                size="md"
-                                                onClick={() => this.logout()}
-                                                >
-                                                <MDBIcon icon="sign-out-alt" className="pr-2" />Logout
-                                                </MDBBtn>
-                                            </MDBCol>
-                                        </MDBRow>
-                                    )
-                                }
-                            </>
-                        ) : (
-                            <p>Noch nicht eingeloggt content</p>
-                        )
-                    }
-                        
+                        {!globalState.coach ? (
+                                <MDBRow className="text-center flex-center">
+                                    <MDBCol md="4">
+                                        <a href="#!">Referral Programm</a>
+                                    </MDBCol>
+                                    <MDBCol md="4">
+                                        <a href="#!"><MDBIcon fab icon="facebook-f" className="pr-2" /></a>
+                                        <a href="#!"><MDBIcon fab icon="instagram" className="pl-2" /></a>
+                                    </MDBCol>
+                                    <MDBCol md="4">
+                                        <a href="#!">Fragen? Wir sind für Sie da!</a>
+                                    </MDBCol>
+                                </MDBRow>
+                            ) : (
+                                <MDBRow className="text-center flex-center">
+                                    <MDBCol md="4">
+                                        <a
+                                        href="mailto:support@aichner-christian.com"
+                                        >
+                                            <li className="list-unstyled">
+                                                <MDBIcon icon="medkit" />Support
+                                            </li>
+                                        </a>
+                                    </MDBCol>
+                                    <MDBCol md="4">
+                                        <li 
+                                        className="list-unstyled clickable"
+                                        onClick={() => this.logout()}
+                                        >
+                                            <MDBIcon icon="sign-out-alt" />Logout
+                                        </li>
+                                    </MDBCol>
+                                </MDBRow>
+                            )
+                        }
                     </MDBContainer>
                 </div>
+                }
                 <div className="footer-copyright text-center py-3">
                     <MDBContainer fluid>
-                        &copy; 2018 - {new Date().getFullYear()} Copyright: Pharmaziegasse<sup>®</sup>
+                    <div>
+                        &copy; 2018 - {new Date().getFullYear()} Copyright: PHARMAZIEGASSE<sup>®</sup>
+                    </div>
+                    <div>
+                        <small className="text-muted">
+                            Alpha release
+                            <span className="pl-2 pr-2">·</span>
+                            Version v{process.env.REACT_APP_VERSION}
+                            <span className="pl-2 pr-2">·</span>
+                            <a 
+                            href="https://github.com/pharmaziegasse/charm-webapp"
+                            rel="noopener noreferrer"
+                            target="_blank"
+                            >
+                            <MDBIcon fab icon="github" className="pr-2"/>
+                            View on GitHub
+                            </a>
+                            <span className="pl-2 pr-2">·</span>
+                            <a 
+                            href="https://github.com/pharmaziegasse/charm-webapp/issues/new?template=bug_report.md"
+                            rel="noopener noreferrer"
+                            target="_blank"
+                            >
+                            <MDBIcon icon="bug" className="pr-2"/>
+                            Report bug
+                            </a>
+                        </small>
+                    </div>
                     </MDBContainer>
                 </div>
             </MDBFooter>

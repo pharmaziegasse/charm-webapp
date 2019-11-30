@@ -52,7 +52,7 @@ const LINK:HttpLink = new HttpLink({
   uri: APILink,
   headers: {
     authorization:
-      localStorage.getItem('wca')
+      localStorage.getItem('fprint')
   }
 });
 

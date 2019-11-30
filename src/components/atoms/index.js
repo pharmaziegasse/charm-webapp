@@ -3,11 +3,13 @@
 import DocsLink from './DocsLink';
 import MenuLink from './MenuLink';
 import SectionContainer from './SectionContainer';
+import ScrollToTop from './ScrollToTop';
 
 export {
     DocsLink,
     MenuLink,
     SectionContainer,
+    ScrollToTop,
 }
 
 /** 

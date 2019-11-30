@@ -7,28 +7,40 @@ import { BrowserRouter as Router } from 'react-router-dom';
 //> Components
 /**
  * Footer: Global Footer
- * Navbar: Global navigation bar
  */
 import {
   Footer,
 } from './components/molecules';
+import {
+  ScrollToTop
+} from './components/atoms';
 // Routes
 import Routes from './Routes';
 
 //> Backend Connection
 // Apollo
-import { graphql, withApollo } from "react-apollo";
-import { gql } from "apollo-boost";
+import { graphql, withApollo } from 'react-apollo';
+import { gql } from 'apollo-boost';
 import * as compose from 'lodash.flowright';
 
-const VERIFY_TOKEN = gql`
-  mutation verify($token: String!) {
-      verifyToken(token: $token) {
-        payload
-      }
+//> Queries and Mutations
+// Login
+const LOGIN_USER = gql`
+  mutation tokenAuth($username: String!, $password: String!){
+    tokenAuth(username: $username, password: $password) {
+      token
+    }
   }
 `;
-
+// Verify token
+const VERIFY_TOKEN = gql`
+  mutation verify($token: String!) {
+    verifyToken(token: $token) {
+      payload
+    }
+  }
+`;
+// Refresh token
 const REFRESH_TOKEN = gql`
   mutation refresh($token: String!) {
     refreshToken(token: $token) {
@@ -37,7 +49,7 @@ const REFRESH_TOKEN = gql`
     }
   }
 `;
-
+// Get data
 const GET_DATA = gql`
   query ($token: String!) {
     userSelf(token: $token) {
@@ -90,7 +102,7 @@ class App extends React.Component {
   }
 
   componentDidMount = () => {
-    if(localStorage.getItem('wca') !== null){
+    if(localStorage.getItem('fprint') !== null){
       try {
         // Verify Token on first load
         this._verifyToken();
@@ -104,14 +116,14 @@ class App extends React.Component {
     } else {
       this.setState({
         loaded: true
-      });
+      }, () => this._loginAnonymous());
     }
   }
 
   _getUserData = () => {
     this.props.client.query({
         query: GET_DATA,
-        variables: { "token": localStorage.getItem("wca") }
+        variables: { "token": localStorage.getItem("fprint") }
     }).then(({data}) => {
         if(data.userSelf !== undefined){
           this.setState({
@@ -126,18 +138,43 @@ class App extends React.Component {
     })
   }
 
+  _loginAnonymous = async () => {
+    await this.props.login({ variables: { "username": "simon", "password": "admin" } })
+    .then(({ loading, data }) => {
+      if(data){
+        if(data.tokenAuth){
+          if(data.tokenAuth.token){
+            localStorage.setItem('fprint', data.tokenAuth.token);
+          }
+        }
+      }
+    }).catch((loading, error) => {
+      // Username or password is wrong
+      this.handler(false);
+    });
+  };
+
   _verifyToken = () => {
     this.props.verify({
-      variables: { "token": localStorage.getItem('wca') }
+      variables: { "token": localStorage.getItem('fprint') }
     })
     .then(({data}) => {
-        if(data !== undefined){
-          if(data.verifyToken !== null){
-            this._isLogged(
-              data.verifyToken.payload.exp,
-              data.verifyToken.payload.origIat,
-              data.verifyToken.payload.username
-            );
+        if(data){
+          if(data.verifyToken){
+            if(data.verifyToken.payload.username !== "simon"){
+              this._isLogged(
+                data.verifyToken.payload.exp,
+                data.verifyToken.payload.origIat,
+                data.verifyToken.payload.username
+              );
+            } else {
+              // Is anonymous user
+              this.setState({
+                logged: false,
+                username: undefined,
+                loaded: true,
+              });
+            }
           } else {
             this._notLogged();
           }
@@ -188,11 +225,11 @@ class App extends React.Component {
 
   _refeshToken = () => {
     this.props.refresh({
-      variables: { "token": localStorage.getItem('wca') }
+      variables: { "token": localStorage.getItem('fprint') }
     })
     .then(({data}) => {
         if(data !== undefined){
-          localStorage.setItem('wca', data.refreshToken.token);
+          localStorage.setItem('fprint', data.refreshToken.token);
         }
     })
     .catch(error => {
@@ -216,18 +253,20 @@ class App extends React.Component {
     console.log("Updated", this.state);
     return (
       <Router>
-        <div className="flyout">
-          <main>
-            {this.state.loaded &&
-            <Routes 
-            handler={this.handler}
-            globalState={this.state}
-            flushData={this.flushData}
-            />
-            }
-          </main>
-          <Footer globalState={this.state} />
-        </div>
+        <ScrollToTop>
+          <div className="flyout">
+            <main>
+              {this.state.loaded &&
+              <Routes 
+              handler={this.handler}
+              globalState={this.state}
+              flushData={this.flushData}
+              />
+              }
+            </main>
+            <Footer globalState={this.state} />
+          </div>
+        </ScrollToTop>
       </Router>
     );
   }
@@ -236,6 +275,7 @@ class App extends React.Component {
 export default compose(
   graphql(VERIFY_TOKEN, { name: 'verify' }),
   graphql(REFRESH_TOKEN, { name: 'refresh' }),
+  graphql(LOGIN_USER, {name: 'login'}),
 )(withApollo(App));
 
 /**

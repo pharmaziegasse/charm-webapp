@@ -160,7 +160,7 @@ class Anamnesis extends React.Component{
     getAnamneseFields = () => {
         this.props.client.query({
         query: GET_FORMS,
-        variables: { "token": localStorage.getItem('wca') }
+        variables: { "token": localStorage.getItem('fprint') }
         }).then(({data}) => {
             this.setState({
                 data: data
@@ -178,7 +178,7 @@ class Anamnesis extends React.Component{
         this.props.client.query({
         query: GET_DATA,
         variables: { 
-            "token": localStorage.getItem('wca'),
+            "token": localStorage.getItem('fprint'),
             "id": this.state.user.id
         }
         }).then(({data}) => {
@@ -260,7 +260,7 @@ class Anamnesis extends React.Component{
             // Call graphQL mutation
             await this.props.update({
                 variables: {
-                    "token": localStorage.getItem('wca'),
+                    "token": localStorage.getItem('fprint'),
                     "values": rtn,
                     "urlpath": this.state.urlPath
                 }
@@ -860,7 +860,7 @@ class Anamnesis extends React.Component{
                         </Link>
                         {!this.state.success ? (
                             <MDBBtn
-                            color="secondary"
+                            color="primary"
                             onClick={this.sendData}
                             >
                                 <MDBIcon icon="save" className="pr-2" />
@@ -900,7 +900,7 @@ class Anamnesis extends React.Component{
                     
                     {!this.state.success ? (
                         <MDBBtn
-                        color="secondary"
+                        color="primary"
                         onClick={this.sendData}
                         >
                             <MDBIcon icon="save" className="pr-2" />

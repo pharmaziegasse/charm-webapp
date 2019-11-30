@@ -1,0 +1,32 @@
+.page-footer {
+	a {
+		color: #6c757d !important;
+	}
+	a:hover {
+		color: lighten(#6c757d, 10%) !important;
+	}
+
+	li {
+    color: white;
+		background: rgba(255, 255, 255, 0.05);
+		transition: all 0.1s ease;
+		padding: 1rem !important;
+		align-items: center;
+		i {
+			width: 30px;
+			text-align: center;
+			padding-right: 0.5rem;
+		}
+		&:hover {
+			background: rgba(255, 255, 255, 0.1);
+		}
+		.badge {
+			box-shadow: none;
+		}
+	}
+}
+
+/** 
+ * SPDX-License-Identifier: (EUPL-1.2)
+ * Copyright © 2019 Werbeagentur Christian Aichner
+ */

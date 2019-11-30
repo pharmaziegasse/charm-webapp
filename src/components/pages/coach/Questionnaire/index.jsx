@@ -100,7 +100,7 @@ class Anamnesis extends React.Component{
   getAnamneseFields = () => {
     this.props.client.query({
     query: GET_FORMS,
-    variables: { "token": localStorage.getItem('wca') }
+    variables: { "token": localStorage.getItem('fprint') }
     }).then(({data}) => {
       this.setState({
         data
@@ -139,7 +139,7 @@ class Anamnesis extends React.Component{
       // Call graphQL mutation
       await this.props.update({
         variables: {
-          "token": localStorage.getItem('wca'),
+          "token": localStorage.getItem('fprint'),
           "values": rtn,
           "urlpath": this.state.urlPath
         }

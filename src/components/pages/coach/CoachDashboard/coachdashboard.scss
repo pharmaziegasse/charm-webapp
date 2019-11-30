@@ -14,12 +14,19 @@
 			text-transform: uppercase;
 		}
 	}
+
+	// Search table
 	.table {
 		td,
 		th {
 			vertical-align: middle;
 		}
 	}
+	.table-striped tbody tr:nth-of-type(odd) {
+		background: lighten(#e7edf2, 5%);
+	}
+
+	// Action buttons
 	.user-action {
 		button {
 			text-transform: inherit;
@@ -77,6 +84,19 @@
 			}
 		}
 	}
+}
+
+// Greeting
+.greeting{
+	background: #2a3c4a;
+	color: white;
+	svg{
+		max-height: 50px;
+		margin-bottom: 1rem;
+	}
+}
+.greeting-actions{
+	background: #e7edf2;
 }
 
 /** 

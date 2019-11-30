@@ -1,140 +1,195 @@
 .flyout {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  justify-content: space-between;
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	justify-content: space-between;
 }
 
 // Navigation
 .side-nav ul li ~ .nav-settings {
-  width: 100%;
-  bottom: 0;
-  position: absolute;
+	width: 100%;
+	bottom: 0;
+	position: absolute;
 }
 
 // Default loading spinner color
-.preloader-wrapper .spinner-blue, .preloader-wrapper .spinner-blue-only{
-  border-color: #aa66cc !important;
+.preloader-wrapper .spinner-blue,
+.preloader-wrapper .spinner-blue-only {
+	border-color: #aa66cc !important;
 }
+
+//> Custom buttons (btn)
+// Basics
+.btn{
+  box-shadow: none;
+  border: none;
+	border-radius: 0;
+	text-transform: initial;
+  &:hover, &:focus, &:active{
+    box-shadow: none !important;
+    border: none;
+  }
+}
+// Exclude rounded buttons from sharp edges
+.btn-rounded {
+  border-radius: 10em !important;
+}
+// Button colors
+.btn-green{
+  background: lighten(#388e3c, 10%) !important;
+  &:hover, &:focus, &:active{
+    background: lighten(#388e3c, 5%) !important;
+  }
+}
+.btn-primary{
+  background: lighten(#2a3c4a, 10%) !important;
+  &:hover, &:focus, &:active{
+    background: lighten(#2a3c4a, 5%) !important;
+  }
+}
+.btn-secondary{
+  background: lighten(#a6c, 10%) !important;
+  &:hover, &:focus, &:active{
+    background: lighten(#a6c, 5%) !important;
+  }
+}
+.btn-red{
+  background: lighten(#d32f2f, 5%) !important;
+  &:hover, &:focus, &:active{
+    background: #d32f2f !important;
+  }
+}
+
+// Table buttons
+.pagination .page-item.active .page-link{
+  box-shadow: none;
+  border: none;
+  border-radius: 0;
+  background: lighten(#2a3c4a, 10%) !important;
+  &:hover, &:focus, &:active{
+    background: lighten(#2a3c4a, 5%) !important;
+  }
+}
+
 
 // Custom colors
 .unique-blue {
-  background-color: $unique-blue !important;
-  &.darken-1 {
-    background-color: darken($unique-blue, 5%) !important;
-  }
-  &.darken-2 {
-    background-color: darken($unique-blue, 10%) !important;
-  }
-  &.darken-3 {
-    background-color: darken($unique-blue, 15%) !important;
-  }
-  &.lighten-1 {
-    background-color: lighten($unique-blue, 10%) !important;
-  }
-  &.lighten-2 {
-    background-color: lighten($unique-blue, 20%) !important;
-  }
-  &.lighten-3 {
-    background-color: lighten($unique-blue, 30%) !important;
-  }
+	background-color: $unique-blue !important;
+	&.darken-1 {
+		background-color: darken($unique-blue, 5%) !important;
+	}
+	&.darken-2 {
+		background-color: darken($unique-blue, 10%) !important;
+	}
+	&.darken-3 {
+		background-color: darken($unique-blue, 15%) !important;
+	}
+	&.lighten-1 {
+		background-color: lighten($unique-blue, 10%) !important;
+	}
+	&.lighten-2 {
+		background-color: lighten($unique-blue, 20%) !important;
+	}
+	&.lighten-3 {
+		background-color: lighten($unique-blue, 30%) !important;
+	}
 }
 .unique-darkblue {
-  background-color: $unique-darkblue !important;
-  &.darken-1 {
-    background-color: darken($unique-darkblue, 10%) !important;
-  }
-  &.darken-21 {
-    background-color: darken($unique-darkblue, 20%) !important;
-  }
-  &.darken-3 {
-    background-color: darken($unique-darkblue, 30%) !important;
-  }
-  &.lighten-1 {
-    background-color: lighten($unique-darkblue, 10%) !important;
-  }
-  &.lighten-2 {
-    background-color: lighten($unique-darkblue, 20%) !important;
-  }
-  &.lighten-3 {
-    background-color: lighten($unique-darkblue, 30%) !important;
-  }
+	background-color: $unique-darkblue !important;
+	&.darken-1 {
+		background-color: darken($unique-darkblue, 10%) !important;
+	}
+	&.darken-21 {
+		background-color: darken($unique-darkblue, 20%) !important;
+	}
+	&.darken-3 {
+		background-color: darken($unique-darkblue, 30%) !important;
+	}
+	&.lighten-1 {
+		background-color: lighten($unique-darkblue, 10%) !important;
+	}
+	&.lighten-2 {
+		background-color: lighten($unique-darkblue, 20%) !important;
+	}
+	&.lighten-3 {
+		background-color: lighten($unique-darkblue, 30%) !important;
+	}
 }
 
 .unique-darkblue-text {
-  color: $unique-darkblue !important;
+	color: $unique-darkblue !important;
 }
 
 .unique-blue-text {
-  color: $unique-blue !important;
+	color: $unique-blue !important;
 }
 
 // Number input
 .number-input input[type="number"] {
-  -webkit-appearance: textfield;
-  -moz-appearance: textfield;
-  appearance: textfield;
+	-webkit-appearance: textfield;
+	-moz-appearance: textfield;
+	appearance: textfield;
 }
 .number-input input[type="number"]::-webkit-inner-spin-button,
 .number-input input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
+	-webkit-appearance: none;
 }
 .number-input {
-  margin-bottom: 3rem;
+	margin-bottom: 3rem;
 }
 .number-input button {
-  -webkit-appearance: none;
-  background-color: transparent;
-  border: none;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  margin: 0;
-  position: relative;
+	-webkit-appearance: none;
+	background-color: transparent;
+	border: none;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	margin: 0;
+	position: relative;
 }
 .number-input button:before,
 .number-input button:after {
-  display: inline-block;
-  position: absolute;
-  content: "";
-  height: 2px;
-  transform: translate(-50%, -50%);
+	display: inline-block;
+	position: absolute;
+	content: "";
+	height: 2px;
+	transform: translate(-50%, -50%);
 }
 .number-input button.plus:after {
-  transform: translate(-50%, -50%) rotate(90deg);
+	transform: translate(-50%, -50%) rotate(90deg);
 }
 .number-input input[type="number"] {
-  text-align: center;
+	text-align: center;
 }
 .number-input.number-input {
-  border: 1px solid #ced4da;
-  width: 10rem;
-  border-radius: 0.25rem;
+	border: 1px solid #ced4da;
+	width: 10rem;
+	border-radius: 0.25rem;
 }
 .number-input.number-input button {
-  width: 2.6rem;
-  height: 0.7rem;
+	width: 2.6rem;
+	height: 0.7rem;
 }
 .number-input.number-input button.minus {
-  padding-left: 10px;
+	padding-left: 10px;
 }
 .number-input.number-input button:before,
 .number-input.number-input button:after {
-  width: 0.7rem;
-  background-color: #495057;
+	width: 0.7rem;
+	background-color: #495057;
 }
 .number-input.number-input input[type="number"] {
-  max-width: 4rem;
-  padding: 0.5rem;
-  border: 1px solid #ced4da;
-  border-width: 0 1px;
-  font-size: 1rem;
-  height: 2rem;
-  color: #495057;
+	max-width: 4rem;
+	padding: 0.5rem;
+	border: 1px solid #ced4da;
+	border-width: 0 1px;
+	font-size: 1rem;
+	height: 2rem;
+	color: #495057;
 }
 
-.clickable{
-  cursor: pointer;
+.clickable {
+	cursor: pointer;
 }
 
 /** 
