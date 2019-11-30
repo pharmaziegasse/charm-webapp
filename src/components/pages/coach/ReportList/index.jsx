@@ -101,7 +101,7 @@ class ReportList extends React.Component{
     fetchAllReports = (uid) => {;
         this.props.client.query({
         query: GET_REPORTS,
-        variables: { "id": uid, "token": localStorage.getItem("wca") }
+        variables: { "id": uid, "token": localStorage.getItem("fprint") }
         }).then(({data}) => {
             if(data.brLatestByUid){
                 console.log("Data");

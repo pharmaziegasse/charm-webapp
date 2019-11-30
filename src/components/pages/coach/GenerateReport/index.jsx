@@ -140,7 +140,7 @@ class GenerateReport extends React.Component{
     fetchTemplate = () => {
         this.props.client.query({
             query: GET_TEMPLATE,
-            variables: { "token": localStorage.getItem("wca") }
+            variables: { "token": localStorage.getItem("fprint") }
         }).then(({data}) => {
             if(data.pages !== undefined){
                 let template = undefined;
@@ -329,7 +329,7 @@ class GenerateReport extends React.Component{
         this.props.client.query({
             query: GET_LINK,
             variables: { 
-                "token": localStorage.getItem("wca"),
+                "token": localStorage.getItem("fprint"),
                 "id": this.props.location.state.user.id
             }
         }).then(({data}) => {
@@ -353,7 +353,7 @@ class GenerateReport extends React.Component{
         }
         this.props.send({
             variables: { 
-                "token": localStorage.getItem("wca"),
+                "token": localStorage.getItem("fprint"),
                 "urlPath": this.state.urlPath,
                 "values": values
             }

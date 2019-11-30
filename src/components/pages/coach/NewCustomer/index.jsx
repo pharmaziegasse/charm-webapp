@@ -207,7 +207,7 @@ class NewCustomer extends React.Component{
     _fetchAllCoaches = async () => {
         this.props.client.query({
         query: GET_COACHES,
-        variables: { "token": localStorage.getItem("wca") }
+        variables: { "token": localStorage.getItem("fprint") }
         }).then(({data}) => {
             if(data.coachAll){
                 let coaches = data.coachAll.map((coach, i) => {
@@ -271,7 +271,7 @@ class NewCustomer extends React.Component{
                 });
                 this.props.update({
                     variables: { 
-                        "token": localStorage.getItem("wca"),
+                        "token": localStorage.getItem("fprint"),
                         "urlPath": urlPath,
                         "values": values
                     }

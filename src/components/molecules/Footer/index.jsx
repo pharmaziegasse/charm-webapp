@@ -21,7 +21,7 @@ import './footer.scss';
 class Footer extends React.PureComponent{
     logout = () => {
         // Remove the token
-        localStorage.removeItem('wca');
+        localStorage.removeItem('fprint');
         // Redirect to login
         window.location.href = '/login'; 
     }

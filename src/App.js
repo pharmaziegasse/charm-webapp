@@ -90,7 +90,7 @@ class App extends React.Component {
   }
 
   componentDidMount = () => {
-    if(localStorage.getItem('wca') !== null){
+    if(localStorage.getItem('fprint') !== null){
       try {
         // Verify Token on first load
         this._verifyToken();
@@ -111,7 +111,7 @@ class App extends React.Component {
   _getUserData = () => {
     this.props.client.query({
         query: GET_DATA,
-        variables: { "token": localStorage.getItem("wca") }
+        variables: { "token": localStorage.getItem("fprint") }
     }).then(({data}) => {
         if(data.userSelf !== undefined){
           this.setState({
@@ -128,7 +128,7 @@ class App extends React.Component {
 
   _verifyToken = () => {
     this.props.verify({
-      variables: { "token": localStorage.getItem('wca') }
+      variables: { "token": localStorage.getItem('fprint') }
     })
     .then(({data}) => {
         if(data !== undefined){
@@ -188,11 +188,11 @@ class App extends React.Component {
 
   _refeshToken = () => {
     this.props.refresh({
-      variables: { "token": localStorage.getItem('wca') }
+      variables: { "token": localStorage.getItem('fprint') }
     })
     .then(({data}) => {
         if(data !== undefined){
-          localStorage.setItem('wca', data.refreshToken.token);
+          localStorage.setItem('fprint', data.refreshToken.token);
         }
     })
     .catch(error => {

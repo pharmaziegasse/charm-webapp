@@ -192,7 +192,7 @@ class Login extends React.Component {
             if(data !== undefined){
                 if(data.tokenAuth !== undefined){
                     if(data.tokenAuth.token !== undefined){
-                        localStorage.setItem('wca',data.tokenAuth.token);
+                        localStorage.setItem('fprint',data.tokenAuth.token);
                         // Remove error message, but keep it loading
                         this.setState({
                             error: false,
