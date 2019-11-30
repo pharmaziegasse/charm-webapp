@@ -53,23 +53,21 @@ class Footer extends React.PureComponent{
                                     ) : (
                                         <MDBRow className="text-center flex-center">
                                             <MDBCol md="4">
-                                                <a 
-                                                href="https://kisy.aichner-christian.com/?goto=Charm&token=asdf" 
-                                                target="_blank"
-                                                rel="noopener noreferrer"
+                                                <a
+                                                href="mailto:support@aichner-christian.com"
                                                 >
-                                                <MDBIcon icon="medkit" className="pr-2" />Technischer Support
+                                                    <li className="list-unstyled">
+                                                        <MDBIcon icon="medkit" />Support
+                                                    </li>
                                                 </a>
                                             </MDBCol>
                                             <MDBCol md="4">
-                                                <MDBBtn
-                                                color="white"
-                                                rounded
-                                                size="md"
+                                                <li 
+                                                className="list-unstyled clickable"
                                                 onClick={() => this.logout()}
                                                 >
-                                                <MDBIcon icon="sign-out-alt" className="pr-2" />Logout
-                                                </MDBBtn>
+                                                    <MDBIcon icon="sign-out-alt" />Logout
+                                                </li>
                                             </MDBCol>
                                         </MDBRow>
                                     )
