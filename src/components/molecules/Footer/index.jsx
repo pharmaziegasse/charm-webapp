@@ -84,11 +84,11 @@ class Footer extends React.PureComponent{
                 <div className="footer-copyright text-center py-3">
                     <MDBContainer fluid>
                     <div>
-                        &copy; 2018 - {new Date().getFullYear()} Copyright: Pharmaziegasse<sup>®</sup>
+                        &copy; 2018 - {new Date().getFullYear()} Copyright: PHARMAZIEGASSE<sup>®</sup>
                     </div>
                     <div>
                         <small className="text-muted">
-                            Development release
+                            Alpha release
                             <span className="pl-2 pr-2">·</span>
                             Version v{process.env.REACT_APP_VERSION}
                             <span className="pl-2 pr-2">·</span>
