@@ -32,6 +32,10 @@ import * as compose from 'lodash.flowright';
 //> CSS
 import './login.scss';
 
+//> Images
+// Logo
+import logo from '../../../assets/logo.png';
+
 //> Queries and Mutations
 const LOGIN_USER = gql`
     mutation tokenAuth($username: String!, $password: String!){
@@ -319,9 +323,9 @@ class Login extends React.Component {
         } 
 
         return (
-        <div>
+        <div id="login">
             <MDBEdgeHeader color="secondary-color lighten-3" />
-            <MDBFreeBird id="login">
+            <MDBFreeBird>
                 <MDBRow>
                     <MDBCol
                     md="10"
@@ -334,15 +338,15 @@ class Login extends React.Component {
                                     <MDBSpinner big />
                                 </MDBCol>
                             ) : (
-                                <MDBCol md="6">
+                                <MDBCol md="6" className="text-center">
                                     {this.state.error &&
                                         <MDBAlert color="danger" className="text-center">
                                             Die eingegebene Kombination existiert nicht.
                                         </MDBAlert>
                                     }
-                                    
+                                    <img src={logo} className="img-fluid mb-4" alt="Pharmaziegasse logo"/>
                                     <form onSubmit={this.handleSubmit} className="needs-validation" noValidate>
-                                        <p className="h4 text-center mb-4">Einloggen</p>
+                                        <p className="h4 text-center mb-5">Dein individuelles Beauty Programm</p>
                                         {this.state.method === 'email' ? (
                                             <>
                                                 <label htmlFor="defaultFormLoginEmailEx" className="grey-text">
@@ -429,9 +433,9 @@ class Login extends React.Component {
                                             </MDBBtn>
                                         </div>
                                         <p className="text-muted text-center mt-3">
-                                        Noch kein Mitglied? Jetzt einfach <Link to="/join">
-                                        <strong>Mitglied werden</strong>
-                                        </Link>!
+                                        Noch keinen Zugang? Jetzt einfach <a href="https://www.pharmaziegasse.at/?join">
+                                        <strong>ausprobieren</strong>
+                                        </a>!
                                         </p>
                                     </form>
                                 </MDBCol>

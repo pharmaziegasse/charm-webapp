@@ -5,6 +5,23 @@
     span{
         cursor: pointer;
     }
+
+    // Logo
+    img{
+        max-height: 30px;
+    }
+    
+    // Top background
+    .edge-header{
+        height: 400px;
+        background-image: url('../../../assets/model.jpeg');
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+    // Card
+    .free-bird{
+        margin-top: -250px;
+    }
 }
 
 /** 
