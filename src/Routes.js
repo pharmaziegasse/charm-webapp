@@ -29,6 +29,7 @@ import {
 import {
   Login,
   SetPassword,
+  SignUp,
 } from './components/pages';
 
 class Routes extends React.Component {
@@ -55,6 +56,11 @@ class Routes extends React.Component {
         exact
         path='/login'
         component={(props) => <Login handler = {this.handleLogin} globalState={this.props.globalState} {...props} />}
+        />
+        <Route
+        exact
+        path='/signup'
+        component={(props) => <SignUp handler = {this.handleLogin} globalState={this.props.globalState} {...props} />}
         />
         <Route
         exact
