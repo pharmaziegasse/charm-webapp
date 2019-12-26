@@ -70,21 +70,24 @@ class SetPassword extends React.Component {
     // Get username
     let username = param.user;
 
+    console.log(activationToken, username);
+
     this.setState({
       activationToken,
       username,
-    });
+    }, () => console.log(this.state));
   }
 
   submitForm = () => {
+    console.log(this.state);
     if(this.state.password){
       if(this.state.passwordRepeat){
         if(this.state.password === this.state.passwordRepeat){
-          if(this.state.accessToken && this.state.username){
+          if(this.state.activationToken && this.state.username){
             this.props.set({
               variables: {
-                "atoken": this.state.accessToken,
-                "password": this.state.password,
+                "aToken": this.state.activationToken,
+                "psw": this.state.password,
                 "username": this.state.username
               }
             })
@@ -130,6 +133,8 @@ class SetPassword extends React.Component {
     if(this.state.username === undefined || this.state.activationToken === undefined){
       return <Redirect to="/login"/>;
     }
+
+    console.log(this.token);
 
     return(
       <MDBContainer className="py-5">
