@@ -165,7 +165,7 @@ class SignUp extends React.Component {
                                       }
                                       <div className="text-center mt-4">
                                           <MDBBtn color="success" type="submit">
-                                              <MDBIcon icon="angle-right" className="pr-2" />Einloggen
+                                              <MDBIcon icon="angle-right" className="pr-2" />Jetzt Programm erhalten
                                           </MDBBtn>
                                       </div>
                                       <p className="text-muted text-center mt-3">
