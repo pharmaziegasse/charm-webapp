@@ -145,7 +145,7 @@ class CoachDashboard extends React.Component{
                 let customers = response.data.customers;
                 // Fetch all Charm users and pass shopify users
                 this._fetchAllUsers(customers);
-            } else if(response.status === 403){
+            } else if(response.status === 401 || response.status === 403){
                 // Forbidden (token invalid)
                 this._loginUser();
             } else {
@@ -287,9 +287,7 @@ class CoachDashboard extends React.Component{
                 }
             })
             .catch((error) => {
-                this.setState({
-                    syncing: false
-                }, () => console.log("Error",error));
+                console.log("Error",error);
             })
     }
 
