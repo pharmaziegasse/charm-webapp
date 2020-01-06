@@ -1,7 +1,7 @@
 @font-face {
     font-family: 'tstar_probold';
-    src: url('fonts/tstar-pro-bold-webfont.woff2') format('woff2'),
-        url('fonts/tstar-pro-bold-webfont.woff') format('woff');
+    src: url('./utilities/fonts/tstar-pro-bold-webfont.woff2') format('woff2'),
+        url('./utilities/fonts/tstar-pro-bold-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
 
@@ -9,8 +9,8 @@
 
 @font-face {
     font-family: 'tstar_proregular';
-    src: url('fonts/tstar-pro-regular-webfont.woff2') format('woff2'),
-        url('fonts/tstar-pro-regular-webfont.woff') format('woff');
+    src: url('./utilities/fonts/tstar-pro-regular-webfont.woff2') format('woff2'),
+        url('./utilities/fonts/tstar-pro-regular-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
 
@@ -18,8 +18,8 @@
 
 @font-face {
     font-family: 'tstar_proitalic';
-    src: url('fonts/tstar-pro-italic-webfont.woff2') format('woff2'),
-        url('fonts/tstar-pro-italic-webfont.woff') format('woff');
+    src: url('./utilities/fonts/tstar-pro-italic-webfont.woff2') format('woff2'),
+        url('./utilities/fonts/tstar-pro-italic-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
 

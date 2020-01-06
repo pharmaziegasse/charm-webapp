@@ -4,6 +4,12 @@ import React from 'react';
 // Redirect from Router
 import { Link, Redirect } from 'react-router-dom';
 
+//> Additional
+// Fetching API
+import axios from 'axios';
+// Validator
+import validator from 'validator';
+
 //> MDB
 // "Material Design for Bootstrap" is a great UI design framework
 import {
@@ -28,6 +34,7 @@ import { ReactComponent as NightImg } from  '../../../../assets/icons/night.svg'
 // Apollo
 import { graphql, withApollo } from 'react-apollo';
 import { gql } from 'apollo-boost';
+import * as compose from 'lodash.flowright';
 
 //> Queries
 // Get data
@@ -52,6 +59,54 @@ const GET_DATA = gql`
         }
     }
 `;
+// Get all users
+const GET_USERS_ALL = gql`
+    query ($token: String!) {
+        userAll(token: $token) {
+        id
+        telephone
+        email
+        firstName
+        lastName
+        address
+        city
+        country
+        postalCode
+        newsletter
+        isCustomer
+        userSet{
+            anamneseSet{
+            id
+            }
+            beautyreportSet{
+                id
+                }
+                id
+                customerId
+                firstName
+                lastName
+                email
+                telephone
+            }
+        }
+    }
+`;
+// Create new user
+const CREATE_USER = gql`
+    mutation createUser ($token: String!, $urlPath: String!, $values: GenericScalar!) {
+        userUserFormPage(
+            token: $token,
+            url: $urlPath,
+            values: $values
+        ) {
+            result
+            errors {
+            name
+            errors
+            }
+        }
+    }
+`;
 
 class CoachDashboard extends React.Component{
 
@@ -62,7 +117,48 @@ class CoachDashboard extends React.Component{
         document.title = "Your customers";
 
         // Refetch users
+        this._loginUser();
         this._fetchUsers();
+    }
+
+    _fetchNodeUsers = (token) => {
+        const config = {
+            headers: {'Authorization': "bearer " + token}
+        };
+
+        axios.get( 
+        'https://charmnode.herokuapp.com/users',
+        config
+        ).then((response) => {
+            if(response.status === 200){
+                let customers = response.data.customers;
+                console.log(customers);
+                // Fetch all Charm users and pass shopify users
+                this._fetchAllUsers(customers);
+            } else {
+                console.log(response);
+            }
+        }).catch((error) => {
+            console.error(error)
+        });
+    }
+
+    _loginUser = () => {
+        axios.post("https://charmnode.herokuapp.com/login", {
+            "username": process.env.REACT_APP_NODE_USER,
+            "password": process.env.REACT_APP_NODE_PASS
+        })
+        .then((response) => {
+            if(response.status === 200){
+                this.setState({
+                    jwt: response.data.token
+                }, () => this._fetchNodeUsers(response.data.token));
+            } else {
+                console.log(response);
+            }
+        }, (error) => {
+            console.error(error);
+        });
     }
 
     _fetchUsers = () => {
@@ -81,6 +177,80 @@ class CoachDashboard extends React.Component{
         .catch(error => {
             console.log("Error",error);
         })
+    }
+    _fetchAllUsers = (customers) => {
+        this.props.client.query({
+            query: GET_USERS_ALL,
+            variables: { "token": localStorage.getItem("fprint") }
+        }).then(({data}) => {
+            let users = data.userAll;
+            this._getDifference(users, customers);
+        })
+        .catch(error => {
+            console.log("Error",error);
+        })
+    }
+
+    _getDifference = (users, customers) => {
+        // Check if user is in Shopify but not in Charm
+        let selection = customers.map((customer, i) => {
+            if(users.some(user => user.telephone === customer.phone)){
+                // User already exists
+                return undefined;
+            } else{
+                // User does not exist
+                return customer;
+            }
+        })
+
+        // Remove all undefined entries from array
+        selection = selection.filter(function(item){
+            return typeof item !== 'undefined';  
+        });
+
+        console.log(selection);
+
+        selection.map((customer, i) => {
+            this._createUser(customer);
+        });       
+    }
+
+    _createUser = (data) => {
+        // Get all values and prepare them for API handling
+        const values = {
+            "title": undefined,
+            "coach_id": 2,
+            "first_name": data.first_name,
+            "last_name": data.last_name,
+            "email": data.email ? data.email : undefined,
+            "birthdate": undefined,
+            "telephone": data.phone ? data.phone : undefined,
+            "address": data.default_address.address1 ? data.default_address.address1 : undefined,
+            "city": data.default_address.city ? data.default_address.city : undefined,
+            "postal_code": data.default_address.province_code ? data.default_address.province_code : undefined,
+            "country": data.default_address.country_code ? data.default_address.country_code : undefined,
+            "newsletter": data.accepts_marketing ? true : false,
+            "verified": data.verified_email ? true : false,
+            "customer_id": data.id
+        }
+            this.props.create({
+                variables: { 
+                    "token": localStorage.getItem("fprint"),
+                    "urlPath": "/internal/user-registration-page",
+                    "values": values
+                }
+            }).then(({data}) => {
+                console.log(data);
+                
+                // Check if selected coach is current coach
+                if(true){
+                    // Refetch users so the list is up to date
+                    this._fetchUsers();
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            })
     }
 
     getGreetingImg = () => {
@@ -286,6 +456,7 @@ class CoachDashboard extends React.Component{
     }
 
     _getTable = () => {
+        console.log("Table refreshed");
         return({
                 columns: [
             {
@@ -408,7 +579,9 @@ class CoachDashboard extends React.Component{
     }
 }
 
-export default withApollo(CoachDashboard);
+export default compose(
+    graphql(CREATE_USER, { name: 'create' }),
+)(withApollo(CoachDashboard));
 
 /** 
  * SPDX-License-Identifier: (EUPL-1.2)
