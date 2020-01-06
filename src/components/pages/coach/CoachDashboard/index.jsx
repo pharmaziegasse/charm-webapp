@@ -35,6 +35,9 @@ import { ReactComponent as NightImg } from  '../../../../assets/icons/night.svg'
 import { graphql, withApollo } from 'react-apollo';
 import { gql } from 'apollo-boost';
 import * as compose from 'lodash.flowright';
+import { ApolloClient } from "apollo-client";
+import { HttpLink } from "apollo-link-http";
+import { InMemoryCache } from "apollo-cache-inmemory";
 
 //> Queries
 // Get data
@@ -51,6 +54,7 @@ const GET_DATA = gql`
                 }
                 id
                 customerId
+                dateJoined
                 firstName
                 lastName
                 email
@@ -69,6 +73,7 @@ const GET_USERS_ALL = gql`
         firstName
         lastName
         address
+        dateJoined
         city
         country
         postalCode
@@ -108,6 +113,31 @@ const CREATE_USER = gql`
     }
 `;
 
+const clientNoCache = new ApolloClient({
+    link: new HttpLink({
+        uri: 'https://manage.pharmaziegasse.at/api/graphql'
+    }),
+    cache: new InMemoryCache(),
+    defaultOptions: {
+        query: {
+            fetchPolicy: 'network-only',
+            errorPolicy: 'all',
+        },
+    }
+});
+const clientOnlyCache = new ApolloClient({
+    link: new HttpLink({
+        uri: 'https://manage.pharmaziegasse.at/api/graphql'
+    }),
+    cache: new InMemoryCache(),
+    defaultOptions: {
+        query: {
+            fetchPolicy: 'cache-first',
+            errorPolicy: 'all',
+        },
+    }
+});
+
 class CoachDashboard extends React.Component{
 
     state = {}
@@ -117,7 +147,7 @@ class CoachDashboard extends React.Component{
         document.title = "Your customers";
         // Refetch users
         this._loginUser();
-        this._fetchUsers();
+        this._fetchUsersFirstTime();
 
         // Get custom greeting info
         this.getGreetingImg();
@@ -128,7 +158,7 @@ class CoachDashboard extends React.Component{
         this.setState({
             syncing: true
         });
-        this._fetchUsers();
+        this._fetchUsersWithoutCache();
         this._fetchNodeUsers(this.state.jwt);
     }
 
@@ -190,19 +220,39 @@ class CoachDashboard extends React.Component{
         });
     }
 
-    _fetchUsers = () => {
-        this.props.client.query({
+    _fetchUsersWithoutCache = () => {
+        clientNoCache.query({
             query: GET_DATA,
             variables: { "token": localStorage.getItem("fprint") }
         }).then(({data}) => {
-            console.log("Fetched users for coach");
-            console.log(data);
+            console.log("Fetched data directly from server.");
             if(data.userSelf){
                 this.setState({
                     coachusers: {
                         userdata: data.userSelf
                     }
                 });
+            }
+        })
+        .catch(error => {
+            this.setState({
+                syncing: false
+            }, () => console.log("Error",error));
+        })
+    }
+
+    _fetchUsersFirstTime = () => {
+        clientOnlyCache.query({
+            query: GET_DATA,
+            variables: { "token": localStorage.getItem("fprint") }
+        }).then(({data}) => {
+            console.log("Fetched data from cache.");
+            if(data.userSelf){
+                this.setState({
+                    coachusers: {
+                        userdata: data.userSelf
+                    }
+                }, () => this._fetchUsersWithoutCache());
             }
         })
         .catch(error => {
@@ -380,6 +430,9 @@ class CoachDashboard extends React.Component{
             if(coach.userdata){
                 let userSet = coach.userdata.userSet;
                 if(userSet.length >= 1){
+
+                    userSet.sort((a, b) => (a.dateJoined < b.dateJoined) ? 1 : -1)
+
                     let users = userSet.map((user, i) => {
                         return({
                             'userid': user.customerId ? user.customerId : "00000",
