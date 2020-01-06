@@ -333,7 +333,7 @@ class CoachDashboard extends React.Component{
                 // Check if selected coach is current coach
                 if(true){
                     // Refetch users so the list is up to date
-                    this._fetchUsers();
+                    this._fetchUsersWithoutCache();
                 }
             })
             .catch((error) => {
