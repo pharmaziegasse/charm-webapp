@@ -263,7 +263,7 @@ class CoachDashboard extends React.Component{
     }
     
     _fetchAllUsers = (customers) => {
-        this.props.client.query({
+        clientNoCache.query({
             query: GET_USERS_ALL,
             variables: { "token": localStorage.getItem("fprint") }
         }).then(({data}) => {
