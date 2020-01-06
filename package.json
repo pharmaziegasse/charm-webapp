@@ -13,7 +13,7 @@
     "graphql": "^14.5.8",
     "graphql-tag": "^2.10.1",
     "lodash.flowright": "^3.5.0",
-    "mdbreact": "./mdbreact-4.22.1.tgz",
+    "mdbreact": "./mdbreact-4.24.0.tgz",
     "moment": "^2.24.0",
     "node-sass": "^4.13.0",
     "query-string": "^6.9.0",
@@ -24,7 +24,7 @@
     "react-phone-input-2": "^2.10.0",
     "react-router-dom": "^5.1.2",
     "react-rte": "^0.16.1",
-    "react-scripts": "3.0.1",
+    "react-scripts": "^3.3.0",
     "react-select-country-list": "^2.0.1",
     "validator": "^12.1.0"
   },
