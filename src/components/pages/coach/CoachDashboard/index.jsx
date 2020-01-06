@@ -41,13 +41,13 @@ import * as compose from 'lodash.flowright';
 const GET_DATA = gql`
     query ($token: String!) {
         userSelf(token: $token) {
-        id
-        userSet{
-            anamneseSet{
             id
-            }
-            beautyreportSet{
-                id
+            userSet{
+                anamneseSet{
+                    id
+                }
+                beautyreportSet{
+                    id
                 }
                 id
                 customerId
@@ -110,15 +110,26 @@ const CREATE_USER = gql`
 
 class CoachDashboard extends React.Component{
 
-    state = {};
+    state = {}
 
     componentDidMount = () => {
         // Set page title
         document.title = "Your customers";
-
         // Refetch users
         this._loginUser();
         this._fetchUsers();
+
+        // Get custom greeting info
+        this.getGreetingImg();
+        this.getGreetingQuote();
+    }
+
+    syncManually = () => {
+        this.setState({
+            syncing: true
+        });
+        this._fetchUsers();
+        this._fetchNodeUsers(this.state.jwt);
     }
 
     _fetchNodeUsers = (token) => {
@@ -132,18 +143,32 @@ class CoachDashboard extends React.Component{
         ).then((response) => {
             if(response.status === 200){
                 let customers = response.data.customers;
-                console.log(customers);
                 // Fetch all Charm users and pass shopify users
                 this._fetchAllUsers(customers);
+            } else if(response.status === 403){
+                // Forbidden (token invalid)
+                this._loginUser();
             } else {
-                console.log(response);
+                this.setState({
+                    syncing: false
+                }, () => console.log("Error",response));
             }
         }).catch((error) => {
-            console.error(error)
+            this.setState({
+                syncing: false
+            }, () => console.log("Error",error));
         });
     }
 
     _loginUser = () => {
+        // Start syncing animation
+        if(!this.state.syncing){
+            this.setState({
+                syncing: true
+            });
+        }
+
+        // Login to get JWT
         axios.post("https://charmnode.herokuapp.com/login", {
             "username": process.env.REACT_APP_NODE_USER,
             "password": process.env.REACT_APP_NODE_PASS
@@ -154,10 +179,14 @@ class CoachDashboard extends React.Component{
                     jwt: response.data.token
                 }, () => this._fetchNodeUsers(response.data.token));
             } else {
-                console.log(response);
+                this.setState({
+                    syncing: false
+                }, () => console.log("Error",response));
             }
         }, (error) => {
-            console.error(error);
+            this.setState({
+                syncing: false
+            }, () => console.log("Error",error));
         });
     }
 
@@ -166,6 +195,8 @@ class CoachDashboard extends React.Component{
             query: GET_DATA,
             variables: { "token": localStorage.getItem("fprint") }
         }).then(({data}) => {
+            console.log("Fetched users for coach");
+            console.log(data);
             if(data.userSelf){
                 this.setState({
                     coachusers: {
@@ -175,7 +206,9 @@ class CoachDashboard extends React.Component{
             }
         })
         .catch(error => {
-            console.log("Error",error);
+            this.setState({
+                syncing: false
+            }, () => console.log("Error",error));
         })
     }
     
@@ -188,7 +221,9 @@ class CoachDashboard extends React.Component{
             this._getDifference(users, customers);
         })
         .catch(error => {
-            console.log("Error",error);
+            this.setState({
+                syncing: false
+            }, () => console.log("Error",error));
         })
     }
 
@@ -209,11 +244,13 @@ class CoachDashboard extends React.Component{
             return typeof item !== 'undefined';  
         });
 
-        console.log(selection);
-
         selection.map((customer, i) => {
             this._createUser(customer);
-        });       
+        });
+
+        this.setState({
+            syncing: undefined
+        });
     }
 
     _createUser = (data) => {
@@ -249,8 +286,10 @@ class CoachDashboard extends React.Component{
                     this._fetchUsers();
                 }
             })
-            .catch(error => {
-                console.error(error);
+            .catch((error) => {
+                this.setState({
+                    syncing: false
+                }, () => console.log("Error",error));
             })
     }
 
@@ -261,11 +300,11 @@ class CoachDashboard extends React.Component{
         let curHr = today.getHours()
 
         if (curHr < 11) {
-            return <MorningImg className="img-fluid" />;
+            this.setState({greetingImage: <MorningImg className="img-fluid" />});
         } else if (curHr < 18) {
-            return <DayImg className="img-fluid" />;
+            this.setState({greetingImage: <DayImg className="img-fluid" />});
         } else {
-            return <NightImg className="img-fluid" />;
+            this.setState({greetingImage: <NightImg className="img-fluid" />});
         }
     }
 
@@ -300,16 +339,18 @@ class CoachDashboard extends React.Component{
 
         const random = Math.floor(Math.random() * ((quotes.length - 1)));
 
-        return (
-            <div className="text-center">
-                <small>
-                    <q>{quotes[random].text}</q>
-                </small>
-                <small className="pl-2">
-                    —{quotes[random].author}
-                </small>
-            </div>
-        )
+        this.setState({
+            greetingQuote: (
+                <div className="text-center">
+                    <small>
+                        <q>{quotes[random].text}</q>
+                    </small>
+                    <small className="pl-2">
+                        —{quotes[random].author}
+                    </small>
+                </div>
+            )
+        });
     }
 
     getGreetingTxt = () => {
@@ -333,11 +374,9 @@ class CoachDashboard extends React.Component{
     }
 
     _getCoachUsers = () => {
-        let coach = this.props.globalState;
+        let coach = this.state.coachusers;
 
-        if(this.state.coachusers){
-            coach = this.state.coachusers;
-        }
+        console.log("State",coach);
         
         if(coach){
             if(coach.userdata){
@@ -457,7 +496,6 @@ class CoachDashboard extends React.Component{
     }
 
     _getTable = () => {
-        console.log("Table refreshed");
         return({
                 columns: [
             {
@@ -508,11 +546,11 @@ class CoachDashboard extends React.Component{
         return(
             <div id="coach">
                 <div className="greeting py-5">
-                    {this.getGreetingImg()}
+                    {this.state.greetingImage}
                     <h2 className="text-center font-weight-bold">
                     {this.getGreetingTxt()}, <span>{globalState.userdata.firstName}</span>!
                     </h2>
-                    {this.getGreetingQuote()}
+                    {this.state.greetingQuote}
                 </div>
                 <div className="mb-4 py-4 greeting-actions">
                     <MDBContainer>
@@ -524,11 +562,31 @@ class CoachDashboard extends React.Component{
                                 </p>
                             </MDBCol>
                             <MDBCol md="6">
-                                <Link to="/add">
-                                    <MDBBtn color="green">
-                                        <MDBIcon icon="plus-circle" className="pr-2"/>Kunden anlegen
-                                    </MDBBtn>
-                                </Link>
+                                <MDBBtn 
+                                color={!this.state.syncing ? ( 
+                                    this.state.syncing === false ? "danger" : "blue" 
+                                ) : "cyan"} 
+                                onClick={this.syncManually}
+                                disabled={this.state.syncing ? true : false}
+                                >
+                                {!this.state.syncing ? (
+                                    <>
+                                    {this.state.syncing === false ? (
+                                        <MDBIcon icon="times-circle" className="mr-2"/>
+                                    ) : (
+                                        <MDBIcon icon="sync-alt" className="pr-2"/>
+                                    )}
+                                    </>
+                                    
+                                ) : (
+                                    <MDBIcon icon="sync-alt fa-spin" className="mr-2"/>
+                                )}
+                                {!this.state.syncing ? ( 
+                                    this.state.syncing === false ? "Try again" : "Sync" 
+                                ): ( 
+                                    "Syncing" 
+                                )}
+                                </MDBBtn>
                                 {globalState.userdata.email === "s.santer@pharmaziegasse.at" &&
                                 <a href="https://manage.pharmaziegasse.at" rel="noopener noreferrer" target="_blank">
                                     <MDBBtn color="primary">
