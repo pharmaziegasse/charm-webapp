@@ -178,6 +178,7 @@ class CoachDashboard extends React.Component{
             console.log("Error",error);
         })
     }
+    
     _fetchAllUsers = (customers) => {
         this.props.client.query({
             query: GET_USERS_ALL,
