@@ -21,7 +21,7 @@ import {
 //> Additional libraries
 // Phone input
 import ReactPhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/dist/style.css';
+import 'react-phone-input-2/lib/style.css';
 
 //> Backend Connection
 // Apollo
