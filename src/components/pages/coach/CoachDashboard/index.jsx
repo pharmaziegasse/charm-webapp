@@ -423,8 +423,6 @@ class CoachDashboard extends React.Component{
 
     _getCoachUsers = () => {
         let coach = this.state.coachusers;
-
-        console.log("State",coach);
         
         if(coach){
             if(coach.userdata){
@@ -669,6 +667,7 @@ class CoachDashboard extends React.Component{
                             bordered
                             small
                             exportToCSV
+                            disableRetreatAfterSorting
                             data={this._getTable()}
                             paginationLabel={[
                                 <MDBIcon icon="angle-left" size="lg" className="pl-3 pr-3" />,
