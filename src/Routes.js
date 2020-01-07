@@ -20,7 +20,6 @@ import {
   ReportList,
   Anamnesis,
   CoachDashboard,
-  NewCustomer,
   Questionnaire,
 } from './components/pages/coach';
 /**
@@ -68,15 +67,6 @@ class Routes extends React.Component {
         globalState={this.props.globalState} {...props}
         />
         }
-
-        />
-        <Route
-        exact
-        path='/add'
-        component={(props) => <NewCustomer 
-        globalState={this.props.globalState} {...props}
-        flushData={this.flushData}
-        />}
         />
         <Route
         exact
