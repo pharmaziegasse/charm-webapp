@@ -228,14 +228,21 @@ class GenerateReport extends React.Component{
     }
 
     _getReturnValue = (item, condition) => {
-        console.log(item);
-        console.log(condition);
-        item = item.value;
-        console.log(item);
+        //> Debugging
+        // Item to be tested
+        //console.log("Item",item);
+        // Condition to be tested against
+        //console.log("Condition",condition);
+
+        // If the item has a nested value, use the nested value
+        if(item.value){
+            item = item.value;
+        }
+
+        //console.log(item);
 
         // If its a string
         if(typeof item == "string"){
-            console.log("is string");
             item = item.replace(/\s/g, '_');
         }
         // If it's an object
@@ -280,10 +287,10 @@ class GenerateReport extends React.Component{
 
         // Debugging
         //console.log(condition, replacement, variableName);
-        
         if(replacement !== undefined){
-            if(Array.isArray(replacement)){
-                let repl = replacement.map((item, i) => {
+            if(Array.isArray(replacement.value)){
+                //console.log("Multiple values");
+                let repl = replacement.value.map((item, i) => {
                     return this._getReturnValue(item, condition);
                 });
                 if(repl.includes(true)){
@@ -292,6 +299,7 @@ class GenerateReport extends React.Component{
                     return false;
                 }
             } else {
+                //console.log("Single value");
                 return this._getReturnValue(replacement, condition);
             }
             
@@ -493,9 +501,12 @@ class GenerateReport extends React.Component{
                     //console.log(statement)
                     
                     if(statement !== ""){
+                        //console.log("##############################################");
+
                         let statementResult = this._normalizeStatement(statement);
 
-                        // Debugging
+                        //> Debugging
+                        //console.log(statement);
                         //console.log(statementResult);
 
                         if(statementResult){
