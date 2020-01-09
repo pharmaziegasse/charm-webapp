@@ -583,11 +583,20 @@ class GenerateReport extends React.Component{
         return (
             <MDBContainer className="text-center pt-5">
                 <h2 className="text-center font-weight-bold">
-                Beautyreport erstellen
+                Create beauty report
                 </h2>
                 <div className="mt-4">
                     <MDBRow>
                         <MDBCol md="12" className="text-left">
+                            <Link
+                            to={{
+                            pathname: '/coach'
+                            }}
+                            >
+                                <MDBBtn color="red">
+                                    <MDBIcon icon="angle-left" className="pr-2" />Dashboard
+                                </MDBBtn>
+                            </Link>
                             <Link 
                             onClick={this.props.flushData}
                             to={{
@@ -597,8 +606,8 @@ class GenerateReport extends React.Component{
                             }
                             }}
                             >
-                                <MDBBtn color="red">
-                                    <MDBIcon icon="angle-left" className="pr-2" />Zurück
+                                <MDBBtn color="primary">
+                                    <MDBIcon icon="list" className="pr-2" />Report list
                                 </MDBBtn>
                             </Link>
                         </MDBCol>
@@ -614,7 +623,7 @@ class GenerateReport extends React.Component{
                                         <>
                                             <MDBProgress material preloader />
                                             
-                                            <p className="lead">Beautyreport wird erstellt...</p>
+                                            <p className="lead">The beauty report is being created...</p>
                                         </>
                                     ) : (
                                         <>
@@ -638,10 +647,10 @@ class GenerateReport extends React.Component{
                                                 icon="check"
                                                 className="pr-2"
                                                 />
-                                                Beautyreport erstellt und gespeichert!
+                                                Beautyreport created and successfully saved.
                                                 </p>
                                             </MDBAlert>
-                                            <p className="lead">Download als</p>
+                                            <p className="lead">Download as</p>
                                             {this.state.doclink ? (
                                                 <>
                                                     <a

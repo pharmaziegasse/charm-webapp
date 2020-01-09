@@ -279,7 +279,7 @@ class ReportList extends React.Component{
                     <MDBCol md="6" className="text-left">
                         <Link to="/coach">
                             <MDBBtn color="red">
-                                <MDBIcon icon="angle-left" className="pr-2" />Zurück
+                                <MDBIcon icon="angle-left" className="pr-2" />Dashboard
                             </MDBBtn>
                         </Link>
                     </MDBCol>
@@ -296,7 +296,7 @@ class ReportList extends React.Component{
                             color="secondary"
                             rounded
                             >
-                            <MDBIcon icon="plus" className="pr-2" />Neuen Report generieren
+                            <MDBIcon icon="plus" className="pr-2" />Create new report
                             </MDBBtn>
                         </Link>
                     </MDBCol>
@@ -310,7 +310,7 @@ class ReportList extends React.Component{
                                 <MDBCard>
                                 {this.state.reports.latest ? (
                                     <MDBCardBody className="active-report">
-                                        <p className="lead font-weight-bold">Neuester Beautyreport</p>
+                                        <p className="lead font-weight-bold">Latest beautyreport</p>
                                         <small>{this.getDate(this.state.reports.latest.date)}</small>
                                         <p className="lead mt-3 mb-2">Download</p>
                                         {this.state.reports.latest.document &&
@@ -329,20 +329,20 @@ class ReportList extends React.Component{
                                         }
                                         
                                         <hr/>
-                                        <p className="lead my-3">Neuste Version hochladen</p>
+                                        <p className="lead my-3">Upload latest version</p>
                                         <MDBFileInput
                                         btnTitle="File auswählen"
                                         btnColor="purple"
                                         textFieldTitle="Lade das neueste PDF hoch"
                                         />
-                                        <p className="lead mt-3">Aktuelle Version</p>
-                                        <small>Hochgeladen: 19.09.2019 12:42:22</small>
+                                        <p className="lead mt-3">Current report</p>
+                                        <small>Uploaded: 19.09.2019 12:42:22</small>
                                         <MDBBtn color="red" disabled className="d-block mt-3 ml-auto mr-auto">
                                             <MDBIcon icon="file-pdf" className="pr-2"/>PDF anzeigen
                                         </MDBBtn>
                                         <MDBInput 
                                         disabled
-                                        label="Für Kunden sichtbar"
+                                        label="Visible for customers"
                                         filled
                                         type="checkbox"
                                         id="show_latest"
@@ -375,13 +375,13 @@ class ReportList extends React.Component{
                                     onClick={() => {this.setState({showLegacy: true})}}
                                     className="blue-text clickable"
                                     >
-                                    Ältere Versionen anzeigen
+                                    Show older versions
                                     </span>
                                 )}
                                 
                             </>
                         ) : (
-                            <h3>Noch kein Beauty-Report vorhanden</h3>
+                            <h3>No beautyreports yet.</h3>
                         )
                         }
                     </div>

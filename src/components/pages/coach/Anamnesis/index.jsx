@@ -855,7 +855,7 @@ class Anamnesis extends React.Component{
                     <MDBCol md="6" className="text-left">
                         <Link to="/coach">
                             <MDBBtn color="red">
-                                <MDBIcon icon="angle-left" className="pr-2" />Zurück
+                                <MDBIcon icon="angle-left" className="pr-2" />Dashboard
                             </MDBBtn>
                         </Link>
                         {!this.state.success ? (
@@ -864,7 +864,7 @@ class Anamnesis extends React.Component{
                             onClick={this.sendData}
                             >
                                 <MDBIcon icon="save" className="pr-2" />
-                                Speichern
+                                Save
                             </MDBBtn>
                         ) : (
                             <MDBBtn
@@ -872,11 +872,29 @@ class Anamnesis extends React.Component{
                             disabled
                             >
                                 <MDBIcon icon="check" className="pr-2" />
-                                Gespeichert
+                                Saved successfully
                             </MDBBtn>
                         )}
                     </MDBCol>
                     <MDBCol md="6" className="text-right">
+                        {this.state.success &&
+                            <Link 
+                            to={{
+                            pathname: '/report/add',
+                            state: {
+                                user: this.props.location.state.user
+                            }
+                            }}
+                            >
+                                <MDBBtn
+                                color="green"
+                                outline
+                                >
+                                    <MDBIcon fa icon="signature" className="pr-2" />
+                                    Create Beautyreport
+                                </MDBBtn>
+                            </Link>
+                        }
                         {this.state.documentLink &&
                             <MDBBtn
                             color="green"
@@ -889,7 +907,6 @@ class Anamnesis extends React.Component{
                                 Download Excel
                             </MDBBtn>
                         }
-                        
                     </MDBCol>
                     </MDBRow>
                     <MDBRow className="mb-4">
@@ -904,16 +921,43 @@ class Anamnesis extends React.Component{
                         onClick={this.sendData}
                         >
                             <MDBIcon icon="save" className="pr-2" />
-                            Speichern
+                            Save
                         </MDBBtn>
                     ) : (
+                        <>
                         <MDBBtn
                         color="success"
                         disabled
                         >
                             <MDBIcon icon="check" className="pr-2" />
-                            Gespeichert
+                            Saved successfully
                         </MDBBtn>
+                        <Link 
+                        to={{
+                        pathname: '/report/add',
+                        state: {
+                            user: this.props.location.state.user
+                        }
+                        }}
+                        >
+                            <MDBBtn
+                            color="green"
+                            outline
+                            >
+                                <MDBIcon fa icon="signature" className="pr-2" />
+                                Create Beautyreport
+                            </MDBBtn>
+                        </Link>
+                        <Link
+                        to={{
+                        pathname: '/coach'
+                        }}
+                        >
+                            <MDBBtn color="red">
+                                <MDBIcon icon="angle-left" className="pr-2" />Dashboard
+                            </MDBBtn>
+                        </Link>
+                        </>
                     )}
                 </MDBContainer>
             );
