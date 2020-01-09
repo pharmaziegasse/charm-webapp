@@ -27,6 +27,11 @@ import {
 //> Connection
 import { withApollo } from "react-apollo";
 import gql from "graphql-tag";
+//> Backend Connection
+// Apollo
+import { ApolloClient } from "apollo-client";
+import { HttpLink } from "apollo-link-http";
+import { InMemoryCache } from "apollo-cache-inmemory";
 
 //> CSS
 import './reportlist.scss';
@@ -49,6 +54,11 @@ const GET_REPORTS = gql`
             __typename
             id
             date
+            user{
+                firstName
+                lastName
+                customerId
+            }
             document{
                 __typename
                 id
@@ -57,6 +67,19 @@ const GET_REPORTS = gql`
         }
     }
 `;
+
+const clientNoCache = new ApolloClient({
+    link: new HttpLink({
+        uri: 'https://manage.pharmaziegasse.at/api/graphql'
+    }),
+    cache: new InMemoryCache(),
+    defaultOptions: {
+        query: {
+            fetchPolicy: 'network-only',
+            errorPolicy: 'all',
+        },
+    }
+});
 
 class ReportList extends React.Component{
     constructor(props){
@@ -75,21 +98,16 @@ class ReportList extends React.Component{
     componentDidMount = () => {
         // Set page title
         document.title = "Beautyreport List";
-        
-        if(this.props.location){
-            if(this.props.location.state){
-                if(this.props.location.state.user.id){
+        if(this.props.match){
+            if(this.props.match.params){
+                if(this.props.match.params.uid){
                     this.setState({
-                        user: this.props.location.state.user,
-                        loading: true
-                    }, () => this.fetchReports(this.props.location.state.user.id));
+                        uid: this.props.match.params.uid,
+                        loading: true,
+                    }, () => this.fetchReports(this.props.match.params.uid));
                 }
             }
         }
-    }
-
-    componentWillUnmount = () => {
-        //clearInterval(this.interval);
     }
 
     fetchReports = (uid) => {
@@ -99,7 +117,7 @@ class ReportList extends React.Component{
     }
 
     fetchAllReports = (uid) => {;
-        this.props.client.query({
+        clientNoCache.query({
         query: GET_REPORTS,
         variables: { "id": uid, "token": localStorage.getItem("fprint") }
         }).then(({data}) => {
@@ -107,10 +125,12 @@ class ReportList extends React.Component{
                 console.log("Data");
                 console.log(data);
                 this.setState({
+                    user: data.brLatestByUid.user,
                     reports: { 
                         ...this.state.reports,
                         latest: data.brLatestByUid
                     },
+                    exists: true,
                     loading: false
                 });
             }
@@ -122,10 +142,16 @@ class ReportList extends React.Component{
                         ...this.state.reports,
                         legacy: data.brByUid
                     },
+                    exists: true,
                     loading: false
                 });
             } else {
                 console.log("There are no Beautyreports for this user");
+            }
+            if(data.brLatestByUid === null){
+                this.setState({
+                    exists: false,
+                })
             }
         })
         .catch(error => {
@@ -258,22 +284,27 @@ class ReportList extends React.Component{
 
     render() {
         // Get global state with login information
-        const { globalState, location } = this.props;
+        const { globalState, match } = this.props;
         //> Route protection
         // Only logged in uses can access this page
         if(!globalState.logged) return <Redirect to="/login"/>
         // If logged in but not coach
         if(globalState.logged && !globalState.coach) return <Redirect to="/dashboard"/> 
         
-        if(!location.state) return <Redirect to="/coach"/>
+        if(this.state.uid === false || this.state.exists === false) return <Redirect to="/coach"/>
 
         console.log(this.state);
 
         return (
             <MDBContainer className="text-center pt-5" id="reportlist">
-                <h2 className="text-center font-weight-bold">
-                Beautyreports von {location.state.user.firstName + " " + location.state.user.lastName}
-                </h2>
+                
+                {this.state.user ? (
+                    <h2 className="text-center font-weight-bold">
+                    Beauty reports of {this.state.user.firstName + " " +this.state.user.lastName}
+                    </h2>
+                ) : (
+                    <p>Loading..</p>
+                )}
                 <div className="mt-4">
                 <MDBRow>
                     <MDBCol md="6" className="text-left">
@@ -286,17 +317,15 @@ class ReportList extends React.Component{
                     <MDBCol md="6" className="text-right">
                         <Link 
                         to={{
-                        pathname: '/report/add',
-                        state: {
-                            user: this.props.location.state.user
-                        }
+                        pathname: '/create/' + this.state.uid
                         }}
                         >
                             <MDBBtn
-                            color="secondary"
-                            rounded
+                            color="green"
+                            
                             >
-                            <MDBIcon icon="plus" className="pr-2" />Create new report
+                                <MDBIcon fa icon="signature" className="pr-2" />
+                                Create Beautyreport
                             </MDBBtn>
                         </Link>
                     </MDBCol>

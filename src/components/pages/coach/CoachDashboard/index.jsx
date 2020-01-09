@@ -443,10 +443,7 @@ class CoachDashboard extends React.Component{
                                 {user.beautyreportSet.length >= 1 ? (
                                     <Link 
                                     to={{
-                                    pathname: '/report',
-                                    state: {
-                                        user: user
-                                    }
+                                    pathname: '/reports/'+user.id
                                     }}
                                     >
                                         <MDBTooltip
@@ -463,10 +460,7 @@ class CoachDashboard extends React.Component{
                                 ) : (
                                     <Link 
                                     to={{
-                                    pathname: '/report/add',
-                                    state: {
-                                        user: user
-                                    }
+                                    pathname: '/create/'+user.id
                                     }}
                                     >
                                         <MDBTooltip
@@ -483,11 +477,7 @@ class CoachDashboard extends React.Component{
                                 )}
                                 <Link 
                                 to={{
-                                pathname: '/anamnesis',
-                                state: {
-                                    user: user,
-                                    userdata: this.props.globalState.userdata
-                                }
+                                pathname: '/anamnesis/'+user.id
                                 }}
                                 >
                                 {

@@ -61,6 +61,11 @@ const GET_USERDATA = gql`
             user {
                 id
                 username
+                firstName
+                lastName
+                anamneseSet{
+                    id
+                }
             }
         }
     }
@@ -125,12 +130,12 @@ class GenerateReport extends React.Component{
         // Set page title
         document.title = "Generate Report";
 
-        if(this.props.location){
-            if(this.props.location.state){
-                if(this.props.location.state.user.id){
+        if(this.props.match){
+            if(this.props.match.params){
+                if(this.props.match.params.uid){
                     this.setState({
-                        user: this.props.location.state.user,
-                        loading: true
+                        uid: this.props.match.params.uid,
+                        loading: true,
                     }, () => this.fetchData());
                 }
             }
@@ -168,26 +173,38 @@ class GenerateReport extends React.Component{
     fetchUserData = async () => {
         await this.props.client.query({
             query: GET_USERDATA,
-            variables: { "token": localStorage.getItem("fprint"), "id": this.state.user.id }
+            variables: { "token": localStorage.getItem("fprint"), "id": this.state.uid }
         }).then(({data}) => {
+            console.log(data);
+            console.log(data.anLatestByUid);
+
             if(data.anLatestByUid !== undefined){
-                this.setState({
-                    userdata: data.anLatestByUid
-                });
+                if(data.anLatestByUid.user.anamneseSet.length >= 1){
+                    this.setState({
+                        user: data.anLatestByUid.user,
+                        userdata: data.anLatestByUid,
+                        hasReports: true,
+                    }, () => this.fetchTemplate());
+                }
             }
         })
         .catch(error => {
+            if(error.message === "GraphQL error: User matching query does not exist."){
+                this.setState({
+                    exists: false
+                });
+            }
+            if(error.message === "GraphQL error: Anamnese matching query does not exist."){
+                this.setState({
+                    hasReports: false
+                });
+            }
             console.error("Query error:",error);
         })
     }
 
     fetchData = () => {
-        // Check if there is anamnesis data
-        if(this.state.user.anamneseSet.length >= 1){
-            // Fetch data required for creating a report
-            this.fetchTemplate();
-            this.fetchUserData();
-        }
+        this.fetchUserData();
     }
 
     _normalizeStatement = (condition, key) => {
@@ -333,12 +350,11 @@ class GenerateReport extends React.Component{
     }
 
     getLink = () => {
-        console.log("User ID",this.props.location.state.user.id);
         this.props.client.query({
             query: GET_LINK,
             variables: { 
                 "token": localStorage.getItem("fprint"),
-                "id": this.props.location.state.user.id
+                "id": this.state.uid
             }
         }).then(({data}) => {
             if(data){
@@ -356,11 +372,11 @@ class GenerateReport extends React.Component{
 
     sendData = (result) => {
         let values = {
-            "uid": this.state.user.id,
+            "uid": this.state.uid,
             "data": JSON.stringify(result)
         }
         this.props.send({
-            variables: { 
+            variables: {
                 "token": localStorage.getItem("fprint"),
                 "urlPath": this.state.urlPath,
                 "values": values
@@ -558,14 +574,12 @@ class GenerateReport extends React.Component{
 
     render() {
         // Get global state with login information
-        const { globalState, location } = this.props;
+        const { globalState } = this.props;
         //> Route protection
         // Only logged in uses can access this page
         if(!globalState.logged) return <Redirect to="/login"/>
         // If logged in but not coach
         if(globalState.logged && !globalState.coach) return <Redirect to="/dashboard"/> 
-        
-        if(!location.state) return <Redirect to="/coach"/>
         
         // Check if the data has been set
         if(
@@ -578,12 +592,18 @@ class GenerateReport extends React.Component{
             }
         }
 
+        if(this.state.exists === false) return <Redirect to="/coach"/> 
+
         console.log(this.state);
 
         return (
             <MDBContainer className="text-center pt-5">
                 <h2 className="text-center font-weight-bold">
-                Create beauty report
+                Create beauty report for {this.state.user &&
+                <>
+                {this.state.user.firstName+" "+this.state.user.lastName}
+                </>
+                }
                 </h2>
                 <div className="mt-4">
                     <MDBRow>
@@ -600,10 +620,7 @@ class GenerateReport extends React.Component{
                             <Link 
                             onClick={this.props.flushData}
                             to={{
-                            pathname: '/report',
-                            state: {
-                                user: location.state.user
-                            }
+                            pathname: '/reports/' + this.state.uid
                             }}
                             >
                                 <MDBBtn color="primary">
@@ -617,7 +634,7 @@ class GenerateReport extends React.Component{
                         <MDBCol md="6">
                         { !this.state.error ? (
                             <MDBCard>
-                            { this.state.user && (this.state.user.anamneseSet.length && this.state.version) >= 1 ? (
+                            { this.state.uid && (this.state.hasReports && this.state.version >= 1) ? (
                                 <MDBCardBody>
                                     { this.state.loading ? (
                                         <>
@@ -682,10 +699,7 @@ class GenerateReport extends React.Component{
                                         </p>
                                         <Link 
                                         to={{
-                                        pathname: '/anamnesis',
-                                        state: {
-                                            user: this.state.user
-                                        }
+                                        pathname: '/anamnesis/' + this.state.uid
                                         }}
                                         >
                                             <MDBBtn color="info" size="lg" rounded>
@@ -700,10 +714,7 @@ class GenerateReport extends React.Component{
                                         noch nicht in Charm übertragen.</p>
                                         <Link 
                                         to={{
-                                        pathname: '/anamnesis',
-                                        state: {
-                                            user: this.state.user
-                                        }
+                                        pathname: '/anamnesis/' + this.state.uid
                                         }}
                                         >
                                             <MDBBtn color="info" size="md" rounded>
