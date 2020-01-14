@@ -20,6 +20,14 @@ import {
     MDBIcon,
     MDBDataTable,
     MDBTooltip,
+    MDBPopover,
+    MDBPopoverBody,
+    MDBPopoverHeader,
+    MDBModal,
+    MDBModalBody,
+    MDBModalHeader,
+    MDBModalFooter,
+    MDBAlert,
 } from 'mdbreact';
 
 //> CSS
@@ -55,6 +63,8 @@ const GET_DATA = gql`
                 id
                 customerId
                 dateJoined
+                isActive
+                isCustomer
                 firstName
                 lastName
                 email
@@ -74,6 +84,8 @@ const GET_USERS_ALL = gql`
         lastName
         address
         dateJoined
+        isActive
+        isCustomer
         city
         country
         postalCode
@@ -81,7 +93,7 @@ const GET_USERS_ALL = gql`
         isCustomer
         userSet{
             anamneseSet{
-            id
+                id
             }
             beautyreportSet{
                 id
@@ -91,6 +103,8 @@ const GET_USERS_ALL = gql`
                 firstName
                 lastName
                 email
+                isActive
+                isCustomer
                 telephone
             }
         }
@@ -106,9 +120,52 @@ const CREATE_USER = gql`
         ) {
             result
             errors {
-            name
-            errors
+                name
+                errors
             }
+        }
+    }
+`;
+// Remove user
+const REMOVE_CUSTOMER = gql`
+    mutation alterCustomer($id:Int!){
+        alterUser(
+            userId: $id
+            isActive: false
+        ){
+            result
+            msgCode
+            message
+        }
+    }
+`;
+// Modify user
+const ALTER_CUSTOMER = gql`
+    mutation alterCustomer(
+            $id: Int!
+            $address: String!
+            $city: String!
+            $email: String!
+            $firstname: String!
+            $lastname: String!
+            $phone: String!
+            $zip: String!
+            $country: String!
+        ){
+        alterUser(
+            userId: $id
+            address: $address
+            city: $city
+            email: $email
+            firstName: $firstname
+            lastName: $lastname
+            telephone: $phone
+            postalCode: $zip
+            country: $country
+        ){
+            result
+            msgCode
+            message
         }
     }
 `;
@@ -140,7 +197,9 @@ const clientOnlyCache = new ApolloClient({
 
 class CoachDashboard extends React.Component{
 
-    state = {}
+    state = {
+        modal: false
+    }
 
     componentDidMount = () => {
         // Set page title
@@ -154,9 +213,28 @@ class CoachDashboard extends React.Component{
         this.getGreetingQuote();
     }
 
+    toggle = (user) => {
+        if(!this.state.modal){
+            this.setState({
+                modal: true,
+                modalUser: {
+                    name: user.firstName + " " + user.lastName,
+                    uid: user.id
+                }
+            });
+        } else {
+            this.setState({
+                modal: false,
+                modalUser: undefined,
+            })
+        }
+        
+    }
+
     syncManually = () => {
         this.setState({
-            syncing: true
+            syncing: true,
+            userSyncErrors: false,
         });
         this._fetchUsersWithoutCache();
         this._fetchNodeUsers(this.state.jwt);
@@ -295,12 +373,115 @@ class CoachDashboard extends React.Component{
         });
 
         selection.map((customer, i) => {
-            this._createUser(customer);
+            if(customer){
+                this._createUser(customer);
+            }
         });
+
+        this._checkForUpdates(users, customers);
+    }
+
+    _checkForUpdates = (users, customers) => {
+        console.log(users);
+        console.log(customers);
+        let t = 0;
+        users.map((user, u) => {
+            customers.map((customer, c) => {
+                if(user.telephone === customer.phone){
+                    // Synced user counter +1
+                    t++;
+                    if(
+                        user.email === customer.email &&
+                        user.firstName === customer.first_name &&
+                        user.lastName === customer.last_name &&
+                        user.address === customer.default_address.address1 &&
+                        user.city === customer.default_address.city &&
+                        user.postalCode === customer.default_address.zip &&
+                        user.country === customer.default_address.country_code &&
+                        user.telephone === customer.phone &&
+                        user.newsletter === customer.accepts_marketing
+                    ){
+                        console.log("Data good");
+                    } else {
+                        /*console.log("###########################################");
+                        console.log(
+                            user.email,
+                            customer.email,
+                            user.email === customer.email
+                        );
+                        console.log(
+                            user.address,
+                            customer.default_address.address1,
+                            user.address === customer.default_address.address1
+                        );
+                        console.log(
+                            user.firstName,
+                            customer.first_name,
+                            user.firstName === customer.first_name
+                        );
+                        console.log(
+                            user.lastName,
+                            customer.last_name,
+                            user.lastName === customer.last_name
+                        );
+                        console.log(
+                            user.city,
+                            customer.default_address.city,
+                            user.city === customer.default_address.city
+                        );
+                        console.log(
+                            user.postalCode,
+                            customer.default_address.zip,
+                            user.postalCode === customer.default_address.zip
+                        );
+                        console.log(
+                            user.country,
+                            customer.default_address.country_code,
+                            user.country === customer.default_address.country_code
+                        );
+                        console.log(
+                            user.telephone,
+                            customer.phone,
+                            user.telephone === customer.phone
+                        );
+                        console.log(
+                            user.newsletter,
+                            customer.accepts_marketing,
+                            user.newsletter === customer.accepts_marketing
+                        );*/
+                        
+                        this._modifyUser(user.id, customer);
+                    }
+                }
+            })
+        });
+        console.log("Total synced users: "+t);
 
         this.setState({
             syncing: undefined
         });
+    }
+
+    _modifyUser = (id, customer) => {
+        // Get all values and prepare them for API handling
+        /*this.props.alter({
+            variables: {
+                id,
+                address: customer.default_address.address1,
+                city: customer.default_address.city,
+                email: customer.email,
+                firstname: customer.first_name,
+                lastname: customer.last_name,
+                phone: customer.phone,
+                zip: customer.default_address.country_code,
+                country: customer.default_address.country_code
+            }
+        }).then(({data}) => {
+            console.log("Success",data);
+        })
+        .catch((error) => {
+            console.log("Error",error);
+        })*/
     }
 
     _createUser = (data) => {
@@ -315,30 +496,50 @@ class CoachDashboard extends React.Component{
             "telephone": data.phone ? data.phone : undefined,
             "address": data.default_address.address1 ? data.default_address.address1 : undefined,
             "city": data.default_address.city ? data.default_address.city : undefined,
-            "postal_code": data.default_address.province_code ? data.default_address.province_code : undefined,
+            "postal_code": data.default_address.zip ? data.default_address.zip : undefined,
             "country": data.default_address.country_code ? data.default_address.country_code : undefined,
             "newsletter": data.accepts_marketing ? true : false,
             "verified": data.verified_email ? true : false,
             "customer_id": data.id
         }
-            this.props.create({
-                variables: { 
-                    "token": localStorage.getItem("fprint"),
-                    "urlPath": "/internal/user-registration-page",
-                    "values": values
+
+        let name = data.first_name+" "+data.last_name;
+
+        this.props.create({
+            variables: { 
+                "token": localStorage.getItem("fprint"),
+                "urlPath": "/internal/user-registration-page",
+                "values": values
+            }
+        }).then(({data}) => {
+            console.log(data);
+            
+            // Check if selected coach is current coach
+            if(data.userUserFormPage.result === "OK"){
+                // Refetch users so the list is up to date
+                this._fetchUsersWithoutCache();
+            } else {
+                if(data.userUserFormPage.result === "FAIL"){
+                    if(data.userUserFormPage.errors){
+                        let errors = [];
+
+                        errors.push("User "+name+" was not synced due to errors: ");
+
+                        data.userUserFormPage.errors.map((error, i) => {
+                            errors.push(error.name+" - "+error.errors[0]);
+                        });
+
+                        this.setState({
+                            userSyncErrors: errors
+                        });
+                    }
                 }
-            }).then(({data}) => {
-                console.log(data);
-                
-                // Check if selected coach is current coach
-                if(true){
-                    // Refetch users so the list is up to date
-                    this._fetchUsersWithoutCache();
-                }
-            })
-            .catch((error) => {
-                console.log("Error",error);
-            })
+                console.log("Failing to create user.");
+            }
+        })
+        .catch((error) => {
+            console.log("Error",error);
+        })
     }
 
     getGreetingImg = () => {
@@ -421,6 +622,27 @@ class CoachDashboard extends React.Component{
         return selected;
     }
 
+    removeCustomer = (uid) => {
+        console.log("Called remove Customer");
+        clientNoCache.mutate({
+            mutation: REMOVE_CUSTOMER,
+            variables: { 
+                "token": localStorage.getItem("fprint"),
+                "id": uid
+            }
+        }).then(({data}) => {
+            console.log("Data",data);
+            this.setState({
+                modal: false,
+                modalUser: undefined
+            })
+            this._fetchUsersWithoutCache();
+        })
+        .catch(error => {
+            console.log("Error",error);
+        })
+    }
+
     _getCoachUsers = () => {
         let coach = this.state.coachusers;
         
@@ -432,99 +654,128 @@ class CoachDashboard extends React.Component{
                     userSet.sort((a, b) => (a.dateJoined < b.dateJoined) ? 1 : -1)
 
                     let users = userSet.map((user, i) => {
-                        return({
-                            'userid': user.customerId ? user.customerId : "00000",
-                            'first': user.firstName,
-                            'last': user.lastName,
-                            'email': <a href={"mailto:"+user.email} className="blue-text">{user.email}</a>,
-                            'phone': user.telephone,
-                            'actions':
-                            <div className="user-action">
-                                {user.beautyreportSet.length >= 1 ? (
-                                    <Link 
-                                    to={{
-                                    pathname: '/reports/'+user.id
-                                    }}
-                                    >
-                                        <MDBTooltip
-                                            placement="top"
+                        if(user.isActive){
+                            return({
+                                'first': user.firstName,
+                                'last': user.lastName,
+                                'email': <a href={"mailto:"+user.email} className="blue-text">{user.email}</a>,
+                                'phone': user.telephone,
+                                'actions':
+                                <div className="user-action">
+                                    {user.beautyreportSet.length >= 1 ? (
+                                        <Link 
+                                        to={{
+                                        pathname: '/reports/'+user.id
+                                        }}
                                         >
-                                            <MDBBtn rounded outline color="green">
-                                            <MDBIcon icon="signature" size="lg" />
-                                            </MDBBtn>
-                                            <div>
-                                                Beautyreports einsehen
-                                            </div>
-                                        </MDBTooltip>
-                                    </Link>
-                                ) : (
-                                    <Link 
-                                    to={{
-                                    pathname: '/create/'+user.id
-                                    }}
-                                    >
-                                        <MDBTooltip
-                                            placement="top"
-                                        >
-                                            <MDBBtn rounded outline color="danger">
-                                            <MDBIcon icon="signature" size="lg" />
-                                            </MDBBtn>
-                                            <div>
-                                                Beautyreport erstellen
-                                            </div>
-                                        </MDBTooltip>
-                                    </Link>
-                                )}
-                                <Link 
-                                to={{
-                                pathname: '/anamnesis/'+user.id
-                                }}
-                                >
-                                {
-                                    user.anamneseSet.length >= 1 ? (
-                                        <MDBTooltip
-                                            placement="top"
-                                        >
-                                            <MDBBtn outline rounded color="purple">
-                                                <MDBIcon icon="file" size="lg" />
-                                            </MDBBtn>
-                                            <div>
-                                                Anamnese erneuern
-                                            </div>
-                                        </MDBTooltip>
+                                            <MDBTooltip
+                                                placement="top"
+                                            >
+                                                <MDBBtn outline color="green">
+                                                <MDBIcon icon="signature" size="lg" />
+                                                </MDBBtn>
+                                                <div>
+                                                    Beautyreports einsehen
+                                                </div>
+                                            </MDBTooltip>
+                                        </Link>
                                     ) : (
-                                        <MDBTooltip
-                                            placement="top"
+                                        <Link 
+                                        to={{
+                                        pathname: '/create/'+user.id
+                                        }}
                                         >
-                                            <MDBBtn outline rounded color="danger">
-                                                <MDBIcon far icon="file" size="lg" />
+                                            <MDBTooltip
+                                                placement="top"
+                                            >
+                                                <MDBBtn outline color="danger">
+                                                <MDBIcon icon="signature" size="lg" />
+                                                </MDBBtn>
+                                                <div>
+                                                    Beautyreport erstellen
+                                                </div>
+                                            </MDBTooltip>
+                                        </Link>
+                                    )}
+                                    <Link 
+                                    to={{
+                                    pathname: '/anamnesis/'+user.id
+                                    }}
+                                    >
+                                    {
+                                        user.anamneseSet.length >= 1 ? (
+                                            <MDBTooltip
+                                                placement="top"
+                                            >
+                                                <MDBBtn outline color="purple">
+                                                    <MDBIcon icon="file" size="lg" />
+                                                </MDBBtn>
+                                                <div>
+                                                    Anamnese erneuern
+                                                </div>
+                                            </MDBTooltip>
+                                        ) : (
+                                            <MDBTooltip
+                                                placement="top"
+                                            >
+                                                <MDBBtn outline color="danger">
+                                                    <MDBIcon far icon="file" size="lg" />
+                                                </MDBBtn>
+                                                <div>
+                                                    Anamnese hinzufügen
+                                                </div>
+                                            </MDBTooltip>
+                                        )
+                                    }
+                                    </Link>
+                                    <MDBTooltip
+                                        placement="top"
+                                    >
+                                    <MDBBtn
+                                    href={"https://api.whatsapp.com/send?phone="+user.telephone.replace('+','')}
+                                    target="_blank"
+                                    className={true === false ? "btn-whatsapp-chat notification" : "btn-whatsapp-chat"}
+                                    outline
+                                    color="success"
+                                    >
+                                        <MDBIcon fab icon="whatsapp" size="lg" />
+                                    </MDBBtn>
+                                    <div>
+                                        Mit {user.firstName} chatten
+                                    </div>
+                                    </MDBTooltip>
+                                    <MDBPopover
+                                    placement="right"
+                                    popover
+                                    clickable
+                                    id="popper1"
+                                    >
+                                    <MDBBtn
+                                    className="px-3"
+                                    color="primary"
+                                    >
+                                        <MDBIcon icon="ellipsis-h" size="md" />
+                                    </MDBBtn>
+                                    <div>
+                                        <MDBPopoverHeader>Settings</MDBPopoverHeader>
+                                        <MDBPopoverBody>
+                                            <MDBBtn
+                                            className="w-100"
+                                            color="danger"
+                                            size="md"
+                                            onClick={() => this.toggle(user)}
+                                            >
+                                                <MDBIcon icon="trash" className="mr-2" />
+                                                Remove {user.firstName}
                                             </MDBBtn>
-                                            <div>
-                                                Anamnese hinzufügen
-                                            </div>
-                                        </MDBTooltip>
-                                    )
-                                }
-                                </Link>
-                                <MDBTooltip
-                                    placement="top"
-                                >
-                                <MDBBtn
-                                href={"https://api.whatsapp.com/send?phone="+user.telephone.replace('+','')}
-                                target="_blank"
-                                className={true === false ? "btn-whatsapp-chat notification" : "btn-whatsapp-chat"}
-                                outline
-                                rounded
-                                color="success"
-                                >
-                                    <MDBIcon fab icon="whatsapp" size="lg" />
-                                </MDBBtn>
-                                <div>
-                                    Mit {user.firstName} chatten
+                                        </MDBPopoverBody>
+                                    </div>
+                                    </MDBPopover>
                                 </div>
-                                </MDBTooltip>
-                            </div>
-                        })
+                            });
+                        } else {
+                            return null;
+                        }
                     });
                     return users;
                 } else {
@@ -537,11 +788,6 @@ class CoachDashboard extends React.Component{
     _getTable = () => {
         return({
                 columns: [
-            {
-                label: 'Customer ID',
-                field: 'userid',
-                sort: 'asc'
-            },
             {
                 label: 'First',
                 field: 'first',
@@ -638,18 +884,24 @@ class CoachDashboard extends React.Component{
                     </MDBContainer>
                 </div>
                 <MDBContainer>
+                    {this.state.userSyncErrors &&
+                    <MDBAlert color="danger" className="text-center">
+                        <p className="lead">Error syncing user</p>
+                        <p>{this.state.userSyncErrors}</p>
+                    </MDBAlert>
+                    }
                     <MDBRow className="text-center">
                         <MDBCol md="12">
-                            <h3>Deine KundInnen</h3>
+                            <h3>Your customers</h3>
                             <div className="table-labels">
                             <span><MDBIcon icon="cube" className="pr-1 pl-3 red-text"/>
-                            Keine Daten vorhanden
+                            No data present
                             </span>
                             <span><MDBIcon icon="cube" className="pr-1 pl-3 purple-text"/>
-                            Keine Aktion erforderlich
+                            No action needed
                             </span>
                             <span><MDBIcon icon="cube" className="pr-1 pl-3 green-text"/>
-                            Daten vorhanden
+                            Data present
                             </span>
                             </div>
                             <MDBDataTable
@@ -672,6 +924,40 @@ class CoachDashboard extends React.Component{
 
                         </MDBCol>
                     </MDBRow>
+                    {this.state.modalUser &&
+                    <MDBModal 
+                    modalStyle="danger"
+                    className="text-white"
+                    size="sm"
+                    backdrop={true}
+                    isOpen={this.state.modal}
+                    toggle={this.toggle}
+                    >
+                        <MDBModalHeader
+                        className="text-center"
+                        titleClass="w-100"
+                        tag="p"
+                        >
+                            Are you sure?
+                        </MDBModalHeader>
+                        <MDBModalBody className="text-center">
+                            <p className="lead mb-0">Remove customer <strong>{this.state.modalUser.name}</strong>?</p>
+                        </MDBModalBody>
+                        <MDBModalFooter className="justify-content-center">
+                            <MDBBtn 
+                            color="danger"
+                            onClick={() => this.removeCustomer(this.state.modalUser.uid)}
+                            >
+                            <MDBIcon 
+                            icon="trash"
+                            className="mr-2"
+                            />
+                            Yes
+                            </MDBBtn>
+                            <MDBBtn color="danger" outline onClick={this.toggle}>No</MDBBtn>
+                        </MDBModalFooter>
+                    </MDBModal>
+                    }
                 </MDBContainer>
             </div>
         )
@@ -680,6 +966,7 @@ class CoachDashboard extends React.Component{
 
 export default compose(
     graphql(CREATE_USER, { name: 'create' }),
+    graphql(ALTER_CUSTOMER, { name: 'alter' }),
 )(withApollo(CoachDashboard));
 
 /** 

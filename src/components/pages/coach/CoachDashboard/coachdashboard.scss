@@ -21,6 +21,9 @@
 		th {
 			vertical-align: middle;
 		}
+		.btn{
+			border-radius: 10px;
+		}
 	}
 	.table-striped tbody tr:nth-of-type(odd) {
 		background: lighten(#e7edf2, 5%);
