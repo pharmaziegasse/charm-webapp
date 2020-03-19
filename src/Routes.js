@@ -20,7 +20,6 @@ import {
   ReportList,
   Anamnesis,
   CoachDashboard,
-  NewCustomer,
   Questionnaire,
 } from './components/pages/coach';
 /**
@@ -58,7 +57,7 @@ class Routes extends React.Component {
         />
         <Route
         exact
-        path='/anamnesis'
+        path='/anamnesis/:uid'
         component={(props) => <Anamnesis globalState={this.props.globalState} {...props} />}
         />
         <Route
@@ -68,24 +67,15 @@ class Routes extends React.Component {
         globalState={this.props.globalState} {...props}
         />
         }
-
         />
         <Route
         exact
-        path='/add'
-        component={(props) => <NewCustomer 
-        globalState={this.props.globalState} {...props}
-        flushData={this.flushData}
-        />}
-        />
-        <Route
-        exact
-        path='/report'
+        path='/reports/:uid'
         component={(props) => <ReportList globalState={this.props.globalState} {...props} />}
         />
         <Route
         exact
-        path='/report/add'
+        path='/create/:uid'
         component={(props) => <GenerateReport 
         globalState={this.props.globalState} {...props} 
         flushData={this.flushData}
@@ -93,7 +83,7 @@ class Routes extends React.Component {
         />
         <Route
         exact
-        path='/report/edit'
+        path='/edit/:uid'
         component={(props) => <ReportRevision globalState={this.props.globalState} {...props} />}
         />
         <Route

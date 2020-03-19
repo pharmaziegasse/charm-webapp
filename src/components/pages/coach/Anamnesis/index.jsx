@@ -67,6 +67,19 @@ const UPDATE_FORMS = gql`
         }
     }
 `;
+// Update data
+const GET_BASIC_USERDATA = gql`
+    query getBasicData($token: String!, $id: Int!) {
+        userById(token: $token, id: $id) {
+            id
+            firstName
+            lastName
+            username
+            city
+            country
+        }
+    }
+`;
 // Get anamnesis data
 const GET_DATA = gql`
     query getAnamneseData_byUid($token: String!, $id: Int!) {
@@ -102,47 +115,53 @@ class Anamnesis extends React.Component{
     componentDidMount = () => {
         // Set page title
         document.title = "Anamnese";
-        
-        // Set user variable
-        const user = this.props.location.state.user;
-        const userdata = this.props.location.state.userdata;
-        if(!this.state.user){
-            this.setState({
-                user,
-                userdata,
-                uid: user.id
-            }, () => this.initialize());
+        console.log(this.props);
+        if(this.props.match){
+            if(this.props.match.params){
+                if(this.props.match.params.uid){
+                    this.setState({
+                        uid: this.props.match.params.uid
+                    }, () => this.initialize());
+                }
+            }
         }
     }
 
     initialize = async () => {
         // Get the types and names of the anamnesis fields
         this.getAnamneseFields();
-        // Get the actual user data (if existant)
-        this.getAnmaneseData();
-        // Initialize data fetching
-        this.__init();
     }
 
     //> Fetching customer data
     __init = () => {
+        this.getBasicUserData();
+    }
+    __initExternal = (user) => {
         // Here I need to get the user city and convert it to lag/long
         // We use: https://opencagedata.com/
-        let userdata = this.state.userdata;
-        if(userdata.city && userdata.country){
-            this.__getCityLatLng(userdata.city, userdata.country);
+        if(user.city && user.country){
+            this.__getCityLatLng(user.city, user.country);
         }
     }
     __getCityLatLng = async (city, country) => {
+        console.log(city, country);
         let res = await getLatLongByCityname(city, country);
-        if(res.status === 200){
-            this.__getWeatherData(res.lat, res.lng);
-        }
+        if(res){
+            console.log("Result", res);
+            if(res.status === 200){
+                if(res.lat && res.lng){
+                    console.log("Get weather data");
+                    this.__getWeatherData(res.lat, res.lng);
+                }
+            }
+        }        
     }
     __getWeatherData = async (lat, lng) => {
+        console.log(lat, lng);
         // Get the history data
         // We use: https://darksky.net/
         let res = await getWeatherbyLatLng(lat, lng);
+        console.log(res);
         this.setState({
             weatherAPI: res
         });
@@ -157,6 +176,23 @@ class Anamnesis extends React.Component{
         }
     }
 
+    getBasicUserData = () => {
+        this.props.client.query({
+        query: GET_BASIC_USERDATA,
+        variables: { "token": localStorage.getItem('fprint'), "id": this.state.uid }
+        }).then(({data}) => {
+            console.log(data);
+            this.setState({
+                user: data.userById
+            }, () => this.__initExternal(data.userById));
+        })
+        .catch(error => {
+            this.setState({
+                user: false
+            }, () => console.error(error));
+        });
+    }
+
     getAnamneseFields = () => {
         this.props.client.query({
         query: GET_FORMS,
@@ -164,7 +200,7 @@ class Anamnesis extends React.Component{
         }).then(({data}) => {
             this.setState({
                 data: data
-            });
+            }, () => this.getAnmaneseData());
         })
         .catch(error => {
             this.setState({
@@ -174,16 +210,17 @@ class Anamnesis extends React.Component{
     }
 
     getAnmaneseData = () => {
-        console.log(this.state.user);
+        console.log("called");
         this.props.client.query({
         query: GET_DATA,
         variables: { 
             "token": localStorage.getItem('fprint'),
-            "id": this.state.user.id
+            "id": this.state.uid
         }
         }).then(({data}) => {
             console.log("Get anamnesis data");
             console.log(data);
+            
             // Set the Excel document link
             let documentLink = undefined;
             if(data.anLatestByUid.document){
@@ -218,13 +255,14 @@ class Anamnesis extends React.Component{
                     ...this.state,
                     ...res,
                     documentLink,
-                });
+                }, () => this.__init());
             }
         })
         .catch(error => {
+            console.log(error);
             this.setState({
                 formdata: false
-            }, () => console.log(error.message));
+            }, () => this.__init());
         });
     }
 
@@ -822,7 +860,7 @@ class Anamnesis extends React.Component{
 
     render() {
         // Get global state with login information
-        const { globalState, location } = this.props;
+        const { globalState } = this.props;
 
         //> Route protection
         // Only logged in uses can access this page
@@ -831,13 +869,7 @@ class Anamnesis extends React.Component{
         if(globalState.logged && !globalState.coach) return <Redirect to="/dashboard"/> 
 
         // Check if the state has been set in the parent component
-        if(location.state === undefined){
-            return <Redirect to="/coach"/> 
-        } else {
-            if(location.state.user === undefined){
-                return <Redirect to="/coach"/> 
-            }
-        }
+
 
         console.log(this.state);
 
@@ -855,7 +887,7 @@ class Anamnesis extends React.Component{
                     <MDBCol md="6" className="text-left">
                         <Link to="/coach">
                             <MDBBtn color="red">
-                                <MDBIcon icon="angle-left" className="pr-2" />Zurück
+                                <MDBIcon icon="angle-left" className="pr-2" />Dashboard
                             </MDBBtn>
                         </Link>
                         {!this.state.success ? (
@@ -864,7 +896,7 @@ class Anamnesis extends React.Component{
                             onClick={this.sendData}
                             >
                                 <MDBIcon icon="save" className="pr-2" />
-                                Speichern
+                                Save
                             </MDBBtn>
                         ) : (
                             <MDBBtn
@@ -872,11 +904,26 @@ class Anamnesis extends React.Component{
                             disabled
                             >
                                 <MDBIcon icon="check" className="pr-2" />
-                                Gespeichert
+                                Saved successfully
                             </MDBBtn>
                         )}
                     </MDBCol>
                     <MDBCol md="6" className="text-right">
+                        {this.state.success &&
+                            <Link 
+                            to={{
+                            pathname: '/create/'+this.state.uid
+                            }}
+                            >
+                                <MDBBtn
+                                color="green"
+                                outline
+                                >
+                                    <MDBIcon fa icon="signature" className="pr-2" />
+                                    Create Beautyreport
+                                </MDBBtn>
+                            </Link>
+                        }
                         {this.state.documentLink &&
                             <MDBBtn
                             color="green"
@@ -889,7 +936,6 @@ class Anamnesis extends React.Component{
                                 Download Excel
                             </MDBBtn>
                         }
-                        
                     </MDBCol>
                     </MDBRow>
                     <MDBRow className="mb-4">
@@ -904,16 +950,40 @@ class Anamnesis extends React.Component{
                         onClick={this.sendData}
                         >
                             <MDBIcon icon="save" className="pr-2" />
-                            Speichern
+                            Save
                         </MDBBtn>
                     ) : (
+                        <>
                         <MDBBtn
                         color="success"
                         disabled
                         >
                             <MDBIcon icon="check" className="pr-2" />
-                            Gespeichert
+                            Saved successfully
                         </MDBBtn>
+                        <Link 
+                        to={{
+                        pathname: '/create/'+this.state.uid
+                        }}
+                        >
+                            <MDBBtn
+                            color="green"
+                            outline
+                            >
+                                <MDBIcon fa icon="signature" className="pr-2" />
+                                Create Beautyreport
+                            </MDBBtn>
+                        </Link>
+                        <Link
+                        to={{
+                        pathname: '/coach'
+                        }}
+                        >
+                            <MDBBtn color="red">
+                                <MDBIcon icon="angle-left" className="pr-2" />Dashboard
+                            </MDBBtn>
+                        </Link>
+                        </>
                     )}
                 </MDBContainer>
             );

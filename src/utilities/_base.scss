@@ -59,6 +59,12 @@
     background: #d32f2f !important;
   }
 }
+.btn-blue{
+  background: #1976d2;
+  &:hover, &:focus, &:active{
+    background: lighten(#1976d2, 5%) !important;
+  }
+}
 
 // Table buttons
 .pagination .page-item.active .page-link{
